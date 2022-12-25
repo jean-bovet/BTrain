@@ -96,7 +96,7 @@ struct TrainControlMoveSheet: View {
                         if let selectedBlock = blockId {
                             let routeId = Route.automaticRouteId(for: train.id)
                             let destination = Destination(selectedBlock, direction: direction)
-                            try doc.start(train: train.id, withRoute: routeId, destination: destination)
+                            try doc.start(trainId: train.id, withRoute: routeId, destination: destination)
                         }
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()

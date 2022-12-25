@@ -981,10 +981,10 @@ class FixedRoutingTests: BTTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .previous)
 
         train.locomotive?.allowedDirections = .forward
-        XCTAssertThrowsError(try doc.start(train: train.id, withRoute: route.id, destination: nil))
+        XCTAssertThrowsError(try doc.start(trainId: train.id, withRoute: route.id, destination: nil))
 
         train.locomotive?.allowedDirections = .any
-        XCTAssertNoThrow(try doc.start(train: train.id, withRoute: route.id, destination: nil))
+        XCTAssertNoThrow(try doc.start(trainId: train.id, withRoute: route.id, destination: nil))
     }
 
     func testASCIIProducer() throws {

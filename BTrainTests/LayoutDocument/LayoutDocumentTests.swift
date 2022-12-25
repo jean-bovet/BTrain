@@ -60,7 +60,7 @@ class LayoutDocumentTests: XCTestCase {
         let block = layout.blocks[route.partialSteps[0].stepBlockId]!
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: .next)
 
-        try doc.start(train: train.id, withRoute: route.id, destination: nil)
+        try doc.start(trainId: train.id, withRoute: route.id, destination: nil)
         doc.stop(train: train)
     }
 

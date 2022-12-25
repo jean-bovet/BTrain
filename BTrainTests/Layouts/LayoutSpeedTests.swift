@@ -133,7 +133,7 @@ final class LayoutSpeedTests: XCTestCase {
 
         let route = layout.newRoute(id: "s1-b2", [(s1.id.uuid, .next), (b2.id.uuid, .next)])
 
-        try doc.start(train: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
+        try doc.start(trainId: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
 
         t1.requestedState = .branchRight
         train.leading.updateSettledDistance()

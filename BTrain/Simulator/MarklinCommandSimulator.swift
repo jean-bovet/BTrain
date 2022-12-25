@@ -129,40 +129,52 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         })
 
         for train in layout.trains.elements.filter({ $0.block != nil }) {
-            guard let loc = train.locomotive else {
-                continue
-            }
-
-            guard let simLoc = locomotives.first(where: { $0.id == loc.id }) else {
-                continue
-            }
-
-            guard let block = train.block else {
-                continue
-            }
-            
-            guard let direction = block.trainInstance?.direction else {
-                continue
-            }
-            
-            if let simTrain = trains.first(where: { $0.id == train.id }) {
-                simTrain.loc.speed = loc.speed.actualSteps
-                simTrain.loc.directionForward = loc.directionForward
-                simTrain.loc.block = .init(block: block, direction: direction)
-            } else {
-                let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: simLoc, layout: layout, delegate: self)
-                simTrain.loc.speed = loc.speed.actualSteps
-                simTrain.loc.directionForward = loc.directionForward
-                simTrain.loc.block = .init(block: block, direction: direction)
-                trains.append(simTrain)
-            }
+            updateTrain(train: train)
         }
 
         objectWillChange.send()
     }
 
     func trainPositionChangedManually(train: Train) {
-        updateListOfTrains()
+        updateTrain(train: train)
+    }
+    
+    func trainAutomaticRouteStarted(train: Train) {
+        updateTrain(train: train)
+    }
+    
+    private func updateTrain(train: Train) {
+        guard let layout = layout else {
+            return
+        }
+
+        guard let loc = train.locomotive else {
+            return
+        }
+
+        guard let block = train.block else {
+            return
+        }
+        
+        guard let direction = block.trainInstance?.direction else {
+            return
+        }
+
+        if let simTrain = trains.first(where: { $0.id == train.id }) {
+            simTrain.loc.speed = loc.speed.actualSteps
+            simTrain.loc.directionForward = loc.directionForward
+            simTrain.loc.block = .init(block: block, direction: direction)
+        } else {
+            guard let simLoc = locomotives.first(where: { $0.id == loc.id }) else {
+                return
+            }
+
+            let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: simLoc, layout: layout, delegate: self)
+            simTrain.loc.speed = loc.speed.actualSteps
+            simTrain.loc.directionForward = loc.directionForward
+            simTrain.loc.block = .init(block: block, direction: direction)
+            trains.append(simTrain)
+        }
     }
     
     func start(_ port: UInt16 = 8080) {
@@ -283,6 +295,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         for train in trains {
             if train.loc.loc.actualAddress == address.actualAddress(for: decoderType) {
                 train.loc.directionForward = direction == .forward
+                toggleTrainDirectionInBlock(locomotive: train.loc)
             }
         }
 
@@ -350,6 +363,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func setLocomotiveDirection(locomotive: SimulatorLocomotive, directionForward: Bool) {
         // Remember this direction in the simulator train itself
         locomotive.directionForward = directionForward
+        toggleTrainDirectionInBlock(locomotive: locomotive)
 
         // Note: directionForward is actually ignored because the message sent by the Central Station is `emergencyStop`
         // and the client must request the locomotive direction explicitly.
@@ -369,6 +383,12 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func send(_ message: MarklinCANMessage) {
         server?.connections.forEach { connection in
             connection.send(data: message.data)
+        }
+    }
+    
+    func toggleTrainDirectionInBlock(locomotive: SimulatorLocomotive) {
+        if let block = locomotive.block {
+            locomotive.block = .init(block: block.block, direction: block.direction.opposite)
         }
     }
 

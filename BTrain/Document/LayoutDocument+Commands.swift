@@ -21,10 +21,13 @@ extension LayoutDocument {
         layoutController.stop(onCompletion: onCompletion)
     }
 
-    func start(train: Identifier<Train>, withRoute route: Identifier<Route>, destination: Destination?) throws {
+    func start(trainId: Identifier<Train>, withRoute route: Identifier<Route>, destination: Destination?) throws {
         // Note: the simulator holds a reference to the layout and will automatically simulate any
         // enabled route associated with a train.
-        try layoutController.start(routeID: route, trainID: train, destination: destination)
+        if let train = layout.trains[trainId] {
+            simulator.trainAutomaticRouteStarted(train: train)
+        }
+        try layoutController.start(routeID: route, trainID: trainId, destination: destination)
     }
 
     func startAll() {

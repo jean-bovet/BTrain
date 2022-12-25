@@ -43,7 +43,7 @@ struct TrainControlRouteView: View {
                             Button("Start") {
                                 do {
                                     trainRuntimeError = nil
-                                    try document.start(train: train.id, withRoute: route.id, destination: nil)
+                                    try document.start(trainId: train.id, withRoute: route.id, destination: nil)
                                 } catch {
                                     trainRuntimeError = error.localizedDescription
                                 }

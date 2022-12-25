@@ -89,7 +89,7 @@ class LayoutErrorTests: XCTestCase {
     func testRouteNotFound() {
         do {
             let doc = LayoutDocument(layout: layout)
-            try doc.start(train: train0.id, withRoute: Identifier<Route>(uuid: "foo"), destination: nil)
+            try doc.start(trainId: train0.id, withRoute: Identifier<Route>(uuid: "foo"), destination: nil)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Route foo not found")
