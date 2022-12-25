@@ -17,7 +17,7 @@ class PathFinderTests: BTTestCase {
     func testSimplePath() throws {
         let layout = LayoutComplexLoop().newLayout()
 
-        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
     }
@@ -25,7 +25,7 @@ class PathFinderTests: BTTestCase {
     func testSimplePathAvoidingFirstReservedBlock() throws {
         let layout = LayoutComplexLoop().newLayout()
 
-        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock)!
+        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
     }
@@ -36,7 +36,7 @@ class PathFinderTests: BTTestCase {
         let t6 = layout.turnout("t6")
         t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
 
-        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
     }
 
@@ -47,13 +47,13 @@ class PathFinderTests: BTTestCase {
 
         // Ensure that by specifying a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
-        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)
+        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)
         XCTAssertNil(path)
 
         // Now let's try again with a look ahead of just one block,
         // in which case the reservation of b2 will be ignored because it is
         // past the look ahead
-        let path2 = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock)!
+        let path2 = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock, shortestPath: true)!
         XCTAssertEqual(path2.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
 
@@ -62,39 +62,39 @@ class PathFinderTests: BTTestCase {
         let b1 = layout.block(named: "b1")
         b1.reservation = Reservation("other", .next)
 
-        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b3:next", "s2:next"])
 
         let t2 = layout.turnout(named: "t2")
         t2.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
 
-        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathBlockDisabled() throws {
         let layout = LayoutLoopWithStation().newLayout()
 
-        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
 
         let b1 = layout.block(named: "b1")
         b1.enabled = false
 
-        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b3:next", "s2:next"])
     }
 
     func testPathTurnoutDisabled() throws {
         let layout = LayoutLoopWithStation().newLayout()
 
-        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
 
         let t2 = layout.turnout(named: "t2")
         t2.enabled = false
 
-        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+        path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
 
@@ -138,7 +138,7 @@ class PathFinderTests: BTTestCase {
     func testPathBetweenTwoBlocksWithMultipleTurnouts() throws {
         let layout = LayoutComplexWithHiddenStation().newLayout()
 
-        let path = try layout.bestPath(from: "S3", fromDirection: .previous, toReachBlock: "IL_3", toDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        let path = try layout.bestPath(from: "S3", fromDirection: .previous, toReachBlock: "IL_3", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["S3:previous", "IL_3:next"])
 
         // Note: ensure the path goes via the turnouts T15-T18-T17 and not via T15-T13-T17 which is a longer initiative.

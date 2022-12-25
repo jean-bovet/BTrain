@@ -48,10 +48,10 @@ class SimulatorViewTests: RootViewTests {
 
         let simulatorTrainControl = try forEachView.view(SimulatorTrainControlView.self, 0)
 
-        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().text(0).string())
+        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().text(1).string())
 
         // Now tap on the direction of the first train and see if it is reflected in the train list
-        let toggleButton = try simulatorTrainControl.hStack().group(1).button(0)
+        let toggleButton = try simulatorTrainControl.hStack().group(2).button(0)
 
         try toggleButton.tap()
         XCTAssertFalse(simulatorTrain1.directionForward)
@@ -82,7 +82,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list
-        let slider = try simulatorTrainControl.hStack().group(1).hStack(1).slider(0)
+        let slider = try simulatorTrainControl.hStack().group(2).hStack(1).slider(0)
         try slider.setValue(100)
         try slider.callOnEditingChanged()
         // Note: for some reason, setting the slider.setValue(100)
