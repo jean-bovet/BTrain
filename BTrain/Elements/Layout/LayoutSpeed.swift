@@ -38,11 +38,22 @@ struct LayoutSpeed {
 
         // The braking distance is respected if it is shorter or equal to the leading distance available.
         let respected = result.distance <= leadingDistance
+        
+        // Debug message
+        var message: String
         if respected {
-            BTLogger.router.debug("\(train.description(layout), privacy: .public): can come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            message = "can come to a full stop in "
         } else {
-            BTLogger.router.debug("\(train.description(layout), privacy: .public): ⚠️ cannot come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            message = "⚠️ cannot come to a full stop in "
         }
+        message += result.distance.distanceString
+        message += " (in \(result.duration.durationString))"
+
+        message += " at \(speed.speedString)."
+        message += " The leading distance is \(leadingDistance.distanceString) with blocks \(train.leading.blocks.toStrings())"
+        message += " and \(distanceLeftInBlock.distanceString) left in block."
+        BTLogger.router.debug("\(train.description(layout), privacy: .public): \(message, privacy: .public)")
+        
         return respected
     }
 

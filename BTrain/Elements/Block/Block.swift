@@ -205,6 +205,14 @@ final class Block: Element, ObservableObject {
     }
 }
 
+extension Array where Element == Block {
+    func toStrings() -> [String] {
+        map { block in
+            block.name
+        }
+    }
+}
+
 extension Block: Restorable {
     func restore(layout _: Layout) {
         if trainInstance == nil {

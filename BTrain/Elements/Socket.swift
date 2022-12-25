@@ -45,6 +45,26 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
         }
     }
 
+    func description(_ layout: Layout) -> String {
+        if let block = layout.blocks[block] {
+            if let socketId = socketId {
+                return "{\(block.name):\(socketId)}"
+            } else {
+                return "{\(block.name):*}"
+            }
+        } else if let turnout = layout.turnouts[turnout] {
+            if let socketId = socketId {
+                return "{\(turnout.name)|\(turnout.actualState):\(socketId)}"
+            } else {
+                return "{\(turnout.name)|\(turnout.actualState):*}"
+            }
+        } else {
+            let msg = "Orphaned socket!"
+            assertionFailure(msg)
+            return msg
+        }
+    }
+    
     static func block(_ id: Identifier<Block>) -> Socket {
         Socket(block: id, turnout: nil, socketId: nil)
     }

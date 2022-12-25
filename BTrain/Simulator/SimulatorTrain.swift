@@ -71,7 +71,7 @@ final class SimulatorTrain: ObservableObject, Element {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
                 
-        debug("updated distance to \(loc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed) kph.")
+        debug("updated distance to \(loc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed.speedString).")
         delegate?.trainDidChange(event: .distanceUpdated)
     }
     
@@ -168,12 +168,14 @@ final class SimulatorTrain: ObservableObject, Element {
                 fromSocket = block.block.previous
             }
             if let transition = try layout.transition(from: fromSocket) {
+                debug("follow \(transition.description(layout))")
                 try moveToNextElement(transition: transition)
             } else {
                 throw SimulatorTrainError.transitionNotFoundFromSocket(socket: fromSocket)
             }
         } else if let turnout = loc.turnout {
             if let transition = try layout.transition(from: turnout.toSocket) {
+                debug("follow \(transition.description(layout))")
                 try moveToNextElement(transition: transition)
             } else {
                 throw SimulatorTrainError.transitionNotFoundFromSocket(socket: turnout.toSocket)
@@ -191,7 +193,7 @@ final class SimulatorTrain: ObservableObject, Element {
         if let nextBlockId = toSocket.block {
             if let nextBlock = layout.blocks[nextBlockId] {
                 let direction: Direction = toSocketId == nextBlock.previous.socketId ? .next : .previous
-                loc.block = .init(block: nextBlock, direction: direction)
+                loc.block = .init(block: nextBlock, direction: direction, directionForward: loc.directionForward)
                 loc.turnout = nil
                 loc.distance = direction == .next ? 0 : (nextBlock.length ?? 0)
                 debug("moved to block \(nextBlock.name) in \(direction).")
@@ -217,7 +219,20 @@ final class SimulatorTrain: ObservableObject, Element {
     }
     
     private func debug(_ msg: String) {
-        BTLogger.simulator.debug("\(self.name, privacy: .public): \(msg, privacy: .public)")
+        BTLogger.simulator.debug("\(self.name, privacy: .public) [\(self.loc.locationString, privacy: .public)]: \(msg, privacy: .public)")
+    }
+}
+
+private extension SimulatorLocomotive {
+    
+    var locationString: String {
+        if let block = block {
+            return "\(block.block.name)"
+        } else if let turnout = turnout {
+            return "\(turnout.turnout.name)"
+        } else {
+            return "?"
+        }
     }
 }
 
@@ -229,16 +244,5 @@ private extension Block.BlockFeedback {
         } else {
             return "n/a"
         }
-    }
-}
-
-private extension Double {
-    
-    var distanceString: String {
-        String(format: "%.1f cm", self)
-    }
-    
-    var durationString: String {
-        String(format: "%.1f sec", self)
     }
 }

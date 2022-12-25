@@ -29,6 +29,7 @@ final class SimulatorLocomotive: ObservableObject, Element {
     struct CurrentBlock {
         let block: Block
         let direction: Direction
+        let directionForward: Bool
     }
     
     struct CurrentTurnout {

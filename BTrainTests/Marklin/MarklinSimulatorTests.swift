@@ -157,7 +157,7 @@ class MarklinSimulatorTests: XCTestCase {
         
         let delegate = MockSimulatorTrainDelegate(layout: layout)
         let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)
-        simTrain.loc.block = .init(block: blockA, direction: .next)
+        simTrain.loc.block = .init(block: blockA, direction: .next, directionForward: train.locomotive!.directionForward)
         
         XCTAssertEqual(delegate.events.count, 0)
         while simTrain.loc.block?.block.id != blockB.id {            
@@ -187,7 +187,7 @@ class MarklinSimulatorTests: XCTestCase {
         
         let delegate = MockSimulatorTrainDelegate(layout: layout)
         let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)
-        simTrain.loc.block = .init(block: blockA, direction: .next)
+        simTrain.loc.block = .init(block: blockA, direction: .next, directionForward: train.locomotive!.directionForward)
         
         XCTAssertEqual(delegate.events.count, 0)
         while simTrain.loc.block?.block.id != blockD2.id {

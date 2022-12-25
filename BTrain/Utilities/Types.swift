@@ -18,3 +18,22 @@ typealias CompletionCancelBlock = (_ completed: Bool) -> Void
 /// Global time factor scale used by unit tests to speed up the time it takes for turnouts and speed changes to happen.
 /// Note: any timer or time-scheduling code should use this factor.
 var BaseTimeFactor = 1.0
+
+extension Double {
+    
+    var distanceString: String {
+        String(format: "%.1fcm", self)
+    }
+    
+    var durationString: String {
+        String(format: "%.2fsec", self)
+    }
+}
+
+extension SpeedKph {
+    
+    var speedString: String {
+        "\(self)kph"
+    }
+    
+}

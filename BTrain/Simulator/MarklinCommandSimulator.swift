@@ -163,7 +163,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         if let simTrain = trains.first(where: { $0.id == train.id }) {
             simTrain.loc.speed = loc.speed.actualSteps
             simTrain.loc.directionForward = loc.directionForward
-            simTrain.loc.block = .init(block: block, direction: direction)
+            simTrain.loc.block = .init(block: block, direction: direction, directionForward: loc.directionForward)
+            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \((loc.directionForward ? "forward":"backward"))")
         } else {
             guard let simLoc = locomotives.first(where: { $0.id == loc.id }) else {
                 return
@@ -172,7 +173,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: simLoc, layout: layout, delegate: self)
             simTrain.loc.speed = loc.speed.actualSteps
             simTrain.loc.directionForward = loc.directionForward
-            simTrain.loc.block = .init(block: block, direction: direction)
+            simTrain.loc.block = .init(block: block, direction: direction, directionForward: loc.directionForward)
+            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \((loc.directionForward ? "forward":"backward"))")
             trains.append(simTrain)
         }
     }
@@ -292,6 +294,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func directionChanged(address: UInt32, decoderType: DecoderType?, direction: Command.Direction) {
+        BTLogger.simulator.debug("Direction changed for \(address.toHex()): direction \(direction.rawValue)")
+
         for train in trains {
             if train.loc.loc.actualAddress == address.actualAddress(for: decoderType) {
                 train.loc.directionForward = direction == .forward
@@ -387,8 +391,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func toggleTrainDirectionInBlock(locomotive: SimulatorLocomotive) {
-        if let block = locomotive.block {
-            locomotive.block = .init(block: block.block, direction: block.direction.opposite)
+        if let block = locomotive.block, locomotive.directionForward != block.directionForward {
+            let newDirection = block.direction.opposite
+            locomotive.block = .init(block: block.block, direction: newDirection, directionForward: locomotive.directionForward)
+            BTLogger.simulator.debug("Changed locomotive \(locomotive.id) direction to \(newDirection)")
         }
     }
 
