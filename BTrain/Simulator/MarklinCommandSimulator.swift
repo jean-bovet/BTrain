@@ -12,7 +12,6 @@
 
 import Combine
 import Foundation
-import Gzip
 import SwiftUI
 
 // This class simulates the Marklin Central Station 3 in order for BTrain
@@ -264,7 +263,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             break
 
         case .locomotives(priority: _, descriptor: _):
-            provideLocomotives()
+            // Note: this is now provided by the MarklinCS3Server which serves the locomotives over http
+            break
 
         case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
             provideDirection(address: address.actualAddress(for: decoderType))
@@ -313,34 +313,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func functionChanged(address: UInt32, decoderType _: DecoderType?, index: UInt8, value: UInt8) {
         let message = MarklinCANMessageFactory.function(addr: address, index: index, value: value)
         send(message.ack)
-    }
-
-    func provideLocomotives() {
-        guard let file = Bundle.main.url(forResource: "Locomotives", withExtension: "cs2") else {
-            BTLogger.simulator.error("Unable to find the Locomotives.cs2 file")
-            return
-        }
-        let data = try! Data(contentsOf: file)
-        var compressedData = try! data.gzipped()
-
-        // Insert the 4 bytes CRC (?)
-        compressedData.insert(contentsOf: [0, 0, 0, 0], at: 0)
-
-        // Send the compressed data in the background
-        DispatchQueue.global(qos: .background).async {
-            let message = MarklinCANMessageFactory.configData(length: UInt32(compressedData.count))
-            self.send(message)
-
-            let dataLength = 8 // 8 bytes at a time can be sent out
-            let numberOfMessages = Int(round(Double(compressedData.count) / Double(dataLength)))
-            for index in 0 ..< numberOfMessages {
-                let start = index * dataLength
-                let end = min(compressedData.count, (index + 1) * dataLength)
-                let slice = compressedData[start ..< end]
-                let message = MarklinCANMessageFactory.configData(bytes: [UInt8](slice))
-                self.send(message)
-            }
-        }
     }
 
     func provideDirection(address: UInt32) {

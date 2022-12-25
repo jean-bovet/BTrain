@@ -86,7 +86,6 @@
 		A73B1639274B60A10073947D /* BTLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B1638274B60A10073947D /* BTLogger.swift */; };
 		A73B163C274DC0F50073947D /* TurnoutEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B163B274DC0F50073947D /* TurnoutEditingView.swift */; };
 		A73B1643274DC4D20073947D /* FeedbackEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B1642274DC4D20073947D /* FeedbackEditingView.swift */; };
-		A73E07EB27694D17005F9D64 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = A73E07EA27694D17005F9D64 /* Gzip */; };
 		A73E07EE276970ED005F9D64 /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = A73E07ED276970ED005F9D64 /* ViewInspector */; };
 		A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */; };
 		A73E07F227697285005F9D64 /* TrainViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07F127697285005F9D64 /* TrainViewTests.swift */; };
@@ -175,7 +174,6 @@
 		A75933E727E9903E00ECB7A0 /* TurnoutDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75933E627E9903E00ECB7A0 /* TurnoutDetailsView.swift */; };
 		A75C2DCB28233C2F0043D462 /* LayoutIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */; };
 		A75F41AF293D83E8003C709F /* RoutePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41AE293D83E8003C709F /* RoutePicker.swift */; };
-		A75F41B52940D5A8003C709F /* icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = A75F41B42940D5A8003C709F /* icon.svg */; };
 		A75F41B72940D63C003C709F /* MarklinFunctionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */; };
 		A75F41B92943F984003C709F /* TrainControlFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */; };
 		A75F41BE2944E78F003C709F /* MarklinInterfaceResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */; };
@@ -595,7 +593,6 @@
 		A75933E627E9903E00ECB7A0 /* TurnoutDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutDetailsView.swift; sourceTree = "<group>"; };
 		A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutIdentity.swift; sourceTree = "<group>"; };
 		A75F41AE293D83E8003C709F /* RoutePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePicker.swift; sourceTree = "<group>"; };
-		A75F41B42940D5A8003C709F /* icon.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = icon.svg; sourceTree = "<group>"; };
 		A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinFunctionsTests.swift; sourceTree = "<group>"; };
 		A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlFunctionsView.swift; sourceTree = "<group>"; };
 		A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceResources.swift; sourceTree = "<group>"; };
@@ -835,7 +832,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7710E612778E8DE00C08150 /* OrderedCollections in Frameworks */,
-				A73E07EB27694D17005F9D64 /* Gzip in Frameworks */,
 				A79406612809D71500F6A427 /* GraphicsRenderer in Frameworks */,
 				A77A029D2915E0B90017667A /* Swifter in Frameworks */,
 			);
@@ -1054,7 +1050,6 @@
 				A73AFE892726594800E1ED21 /* Assets.xcassets */,
 				A73AFE8E2726594800E1ED21 /* BTrain.entitlements */,
 				A7C8A2EA279BDE52000C7246 /* Predefined.btrain */,
-				A75F41B42940D5A8003C709F /* icon.svg */,
 				A77A02962915BBFB0017667A /* CS3Server */,
 				A73AFE8B2726594800E1ED21 /* Preview Content */,
 			);
@@ -1928,7 +1923,6 @@
 			);
 			name = BTrain;
 			packageProductDependencies = (
-				A73E07EA27694D17005F9D64 /* Gzip */,
 				A7710E602778E8DE00C08150 /* OrderedCollections */,
 				A79406602809D71500F6A427 /* GraphicsRenderer */,
 				A77A029C2915E0B90017667A /* Swifter */,
@@ -1987,7 +1981,6 @@
 			);
 			mainGroup = A73AFE792726594600E1ED21;
 			packageReferences = (
-				A73E07E927694D17005F9D64 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				A73E07EC276970ED005F9D64 /* XCRemoteSwiftPackageReference "ViewInspector" */,
 				A7710E5F2778E8DE00C08150 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				A794065F2809D71500F6A427 /* XCRemoteSwiftPackageReference "GraphicsRenderer" */,
@@ -2014,7 +2007,6 @@
 				A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */,
 				A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */,
 				A79079A7277FB8E700771A60 /* Credits.rtf in Resources */,
-				A75F41B52940D5A8003C709F /* icon.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2717,14 +2709,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A73E07E927694D17005F9D64 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/1024jp/GzipSwift";
-			requirement = {
-				branch = develop;
-				kind = branch;
-			};
-		};
 		A73E07EC276970ED005F9D64 /* XCRemoteSwiftPackageReference "ViewInspector" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nalexn/ViewInspector";
@@ -2760,11 +2744,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A73E07EA27694D17005F9D64 /* Gzip */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A73E07E927694D17005F9D64 /* XCRemoteSwiftPackageReference "GzipSwift" */;
-			productName = Gzip;
-		};
 		A73E07ED276970ED005F9D64 /* ViewInspector */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A73E07EC276970ED005F9D64 /* XCRemoteSwiftPackageReference "ViewInspector" */;
