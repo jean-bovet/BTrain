@@ -118,6 +118,26 @@ class TrainEventStateMachineTests: XCTestCase {
         train.onReservedBlocksLengthEnough = { _ in true }
         XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksSettledLengthChanged(train), train: train), nil)
     }
+    
+    func testChangeDirectionWhenStartingRoute() throws {
+        train.shouldChangeDirection = true
+        train.mode = .managed
+        train.state = .stopped
+        train.onUpdateReservedBlocks = { true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(train.changeDirectionCount, 1)
+        XCTAssertFalse(train.shouldChangeDirection)
+    }
+    
+    func testChangeDirectionAfterStopInRoute() throws {
+        train.shouldChangeDirection = true
+        train.mode = .managed
+        train.state = .stopped
+        train.onUpdateReservedBlocks = { true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .restartTimerFired(train), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(train.changeDirectionCount, 1)
+        XCTAssertFalse(train.shouldChangeDirection)
+    }
 }
 
 extension StateMachine.TrainEvent: Equatable {

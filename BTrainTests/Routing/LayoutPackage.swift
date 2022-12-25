@@ -210,7 +210,7 @@ extension Layout: LayoutParserResolver {
                 if index < block.feedbacks.count {
                     return block.feedbacks[index].distance!.before
                 } else {
-                    return block.feedbacks[index - 1].distance!.after
+                    return block.length!.before
                 }
             }
         }

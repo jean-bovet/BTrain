@@ -190,7 +190,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 return
             }
 
-            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): generating a new route at \(self.frontBlock.name, privacy: .public) because the leading blocks could not be reserved for route steps \(self.route.steps.debugDescription, privacy: .public), occupied blocks \(self.train.occupied.blocks, privacy: .public)")
+            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): generating a new route at \(self.frontBlock.name, privacy: .public) because the leading blocks could not be reserved for route steps \(self.route.steps.description(self.layout), privacy: .public), occupied blocks \(self.train.occupied.blocks, privacy: .public)")
 
             // Update the automatic route
             if try updateAutomaticRoute(for: train, layout: layout) {
@@ -204,7 +204,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let result = try layout.updateAutomaticRoute(for: train.id)
         switch result {
         case let .success(route):
-            BTLogger.router.debug("\(train.description(layout), privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
+            BTLogger.router.debug("\(train.description(layout), privacy: .public): generated route is \(route.steps.description(layout), privacy: .public)")
             return true
 
         case let .failure(error):

@@ -15,7 +15,7 @@ import Foundation
 extension TrainControlling {
     /// Returns true if the train should stop in the current block
     func shouldStopInBlock() throws -> Bool {
-        try shouldStopInBlock(ignoreReservedBlocks: false)
+        try shouldStopInBlock(ignoreReservedBlocks: false, ignoreChangeInDirection: false)
     }
 
     /// Returns true if the train should stop in the current block because there is not enough
@@ -25,10 +25,13 @@ extension TrainControlling {
     }
 
     /// Returns true if the train should stop in the current block
-    /// - Parameter ignoreReservedBlocks: true to ignore the reserved blocks. For example, to allow a train to start,
-    /// we need to ignore the reserved block because the train, which is stopped, doesn't have any reserved blocks yet.
+    /// - Parameters:
+    ///   - ignoreReservedBlocks: true to ignore the reserved blocks.
+    ///   - ignoreChangeInDirection: true to ignore change in direction request.
     /// - Returns: true if the train should stop in the current block
-    func shouldStopInBlock(ignoreReservedBlocks: Bool) throws -> Bool {
+    ///
+    ///    
+    func shouldStopInBlock(ignoreReservedBlocks: Bool, ignoreChangeInDirection: Bool) throws -> Bool {
         guard mode != .unmanaged else {
             return false
         }
@@ -61,7 +64,7 @@ extension TrainControlling {
         }
 
         // If the block requires a change of direction, we need to stop
-        if shouldChangeDirection {
+        if !ignoreChangeInDirection && shouldChangeDirection {
             return true
         }
 

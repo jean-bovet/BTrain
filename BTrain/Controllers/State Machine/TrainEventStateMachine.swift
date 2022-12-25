@@ -56,9 +56,10 @@ struct TrainEventStateMachine {
                 train.routeWillStart()
 
                 if try train.updateReservedBlocks() {
-                    // Note: change the train direction is necessary after the necessary blocks
-                    // have been reserved. Changing the direction will unblock the train which
-                    // is going to be started automatically.
+                    // Note: change the train direction needs to happen after the necessary blocks
+                    // have been reserved because updateReservedBlocks() updates also the automatic route
+                    // which will give indication if the train needs to change its direction or not.
+                    // Changing the direction will unblock the train which is going to be started automatically.
                     if train.shouldChangeDirection {
                         try train.changeDirection()
                     }
@@ -101,8 +102,18 @@ struct TrainEventStateMachine {
 
         case .restartTimerFired:
             train.startedRouteIndex = train.currentRouteIndex
-            if try !train.shouldStopInBlock(ignoreReservedBlocks: true) && train.updateReservedBlocks() {
-                return .reservedBlocksChanged(train)
+            
+            // Notes:
+            // - Ignore any reserved block because there are no reserved blocks yet, the train is stopped.
+            // - Ignore any change in direction because such a request will be honored right below
+            if try !train.shouldStopInBlock(ignoreReservedBlocks: true, ignoreChangeInDirection: true) {
+                if try train.updateReservedBlocks() {
+                    if train.shouldChangeDirection {
+                        try train.changeDirection()
+                    }
+
+                    return .reservedBlocksChanged(train)
+                }
             }
 
         case .reservedBlocksChanged(_), .reservedBlocksSettledLengthChanged:

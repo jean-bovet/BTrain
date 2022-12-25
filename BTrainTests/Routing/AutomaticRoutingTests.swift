@@ -580,19 +580,19 @@ class AutomaticRoutingTests: BTTestCase {
         // cannot take into account that in this state, the train has been setup in the block using its forward direction and then it was toggled inside the block
         // to finally be in the direction backward. This toggle is causing the back position to be not tied to a feedback position (it is computed using the front
         // position and the length of the train) which is why we need to specify the distance manually.
-        try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼰{79.999}0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 🔵!􀼮⟷0 ≏ 􀼰{79.999}0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
         // Note: once a feedback is detected "in front" of the train, then the back position will be again aligned with a feedback position and the ASCII representation
         // will be able to represent it correctly.
-        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≡ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 ≏ 🔵!􀼮⟷0 ≡ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵!􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵!􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼰0 ≏ }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡!􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼰0 ≏ }}", [])
 
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴􀼮⟷0 ≡ 􀼰0 }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴!􀼮⟷0 ≡ 􀼰0 }}", [])
 
         // Start the train to go back to s1, by reversing its direction
         try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
@@ -612,6 +612,87 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
     }
 
+    //    ┌─────────┐                      ┌─────────┐             ┌─────────┐
+    //    │   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
+    //    └─────────┘                      └─────────┘             └─────────┘
+    //         ▲            │         │                    ▲            │
+    //         │            │         │                    │            │
+    //         │            ▼         ▼                    │            │
+    //         │       ┌─────────┐                    ┌─────────┐       │
+    //         │       │   b2    │─▶ t3  ────────────▶│   b3    │       │
+    //         │       └─────────┘                    └─────────┘       ▼
+    //    ┌─────────┐                                              ┌─────────┐
+    //    │   b5    │◀─────────────────────────────────────────────│   b4    │
+    //    └─────────┘                                              └─────────┘
+    func testMoveForwardAndChangeToBackward() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let train = layout.trains[0]
+        train.locomotive!.allowedDirections = .any
+        train.locomotive?.length = 20
+        train.wagonsLength = 0
+
+        // Note: the train is layout in the s2 in the direction .next but the route will find the shortest path to s2 which requires the train to move backward
+        let p = try setup(layout: layout, fromBlockId: layout.block(named: "s2").id, destination: nil, position: .automatic, direction: .next, routeSteps: ["s2:next", "b4:next", "b5:next", "s1:next"])
+        
+        // ******************
+        // **** s2 -> s1 ****
+        // ******************
+        
+        try p.assert("automatic-0: {r0{s2 ≏ 􀼰0 ≏ 🔵􀼮0 }} [r0[b4 ≏ ≏ ]] [b5 ≏ ≏ ] {s1 ≏ ≏ }", ["b4"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [r0[b4 􀼰0 ≡ 🔵􀼮0 ≏ ]] [r0[b5 ≏ ≏ ]] {s1 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [r0[b5 􀼰0 ≡ 🔵􀼮0 ≏ ]] {r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [b5 ≏ ≏ ] {r0{s1 􀼰0 ≡ 🟡􀼮0 ≏ }}", [])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [b5 ≏ ≏ ] {r0{s1 ≏ 􀼰0 ≡ 🔴􀼮0 }}", [])
+        
+        // Artificially set the restart time to 0 which will make the train restart again
+        p.layoutController.restartTimerFired(train)
+        p.layoutController.waitUntilSettled()
+
+        // ******************
+        // **** s1 -> s2 ****
+        // ******************
+
+        // Note: because the train changed direction inside s1, the position of the tail cannot be represented
+        // accurately with the ASCII representation which is why the distance of the tail is specified.
+        try p.assert("automatic-0: !{r0{s1 🔵!􀼮0 ≏ 􀼰{60.001}0 ≏ }} ![r0[b5 ≏ ≏ ]] ![b4 ≏ ≏ ] !{s2 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: !{r0{s1 ≏ 🔵!􀼮0 ≡ 􀼰0 }} ![r0[b5 ≏ ≏ ]] ![b4 ≏ ≏ ] !{s2 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![r0[b5 🔵!􀼮0 ≡ 􀼰0 ≏ ]] ![r0[b4 ≏ ≏ ]] !{s2 ≏ ≏ }", ["b4"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![r0[b4 🔵!􀼮0 ≡ 􀼰0 ≏ ]] !{r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![b4 ≏ ≏ ] !{r0{s2 🟡!􀼮0 ≡ 􀼰0 ≏ }}", [])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![b4 ≏ ≏ ] !{r0{s2 ≏ 🔴!􀼮0 ≡ 􀼰0 }}", [])
+        
+        // Artificially set the restart time to 0 which will make the train restart again
+        p.layoutController.restartTimerFired(train)
+        p.layoutController.waitUntilSettled()
+        
+        // ******************
+        // **** s2 -> s1 ****
+        // ******************
+        
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮{39.999}0 ≏ }} [r0[b4 ≏ ≏ ]] [b5 ≏ ≏ ] {s1 ≏ ≏ }", ["b4"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [r0[b4 􀼰0 ≡ 🔵􀼮0 ≏ ]] [r0[b5 ≏ ≏ ]] {s1 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [r0[b5 􀼰0 ≡ 🔵􀼮0 ≏ ]] {r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [b5 ≏ ≏ ] {r0{s1 􀼰0 ≡ 🟡􀼮0 ≏ }}", [])
+        try p.assert("automatic-0: {s2 ≏ ≏ } [b4 ≏ ≏ ] [b5 ≏ ≏ ] {r0{s1 ≏ 􀼰0 ≡ 🔴􀼮0 }}", [])
+
+        // Artificially set the restart time to 0 which will make the train restart again
+        p.layoutController.restartTimerFired(train)
+        p.layoutController.waitUntilSettled()
+
+        // ******************
+        // **** s1 -> s2 ****
+        // ******************
+
+        // Note: because the train changed direction inside s1, the position of the tail cannot be represented
+        // accurately with the ASCII representation which is why the distance of the tail is specified.
+        try p.assert("automatic-0: !{r0{s1 🔵!􀼮0 ≏ 􀼰{60.001}0 ≏ }} ![r0[b5 ≏ ≏ ]] ![b4 ≏ ≏ ] !{s2 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: !{r0{s1 ≏ 🔵!􀼮0 ≡ 􀼰0 }} ![r0[b5 ≏ ≏ ]] ![b4 ≏ ≏ ] !{s2 ≏ ≏ }", ["b5"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![r0[b5 🔵!􀼮0 ≡ 􀼰0 ≏ ]] ![r0[b4 ≏ ≏ ]] !{s2 ≏ ≏ }", ["b4"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![r0[b4 🔵!􀼮0 ≡ 􀼰0 ≏ ]] !{r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![b4 ≏ ≏ ] !{r0{s2 🟡!􀼮0 ≡ 􀼰0 ≏ }}", [])
+        try p.assert("automatic-0: !{s1 ≏ ≏ } ![b5 ≏ ≏ ] ![b4 ≏ ≏ ] !{r0{s2 ≏ 🔴!􀼮0 ≡ 􀼰0 }}", [])
+    }
+    
     // MARK: - - Utility
 
     private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {

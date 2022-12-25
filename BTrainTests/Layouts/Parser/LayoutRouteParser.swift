@@ -300,14 +300,16 @@ final class LayoutRouteParser {
         let speed: UInt16
         let direction: Direction
         let allowedDirection: Locomotive.AllowedDirection
+        let distance: Double?
         let uuid: String
     }
 
-    // <Speed Symbol>[speed value][direction in block]􀼮[allowed direction symbol ⟷]<identifier>
+    // <Speed Symbol>[speed value][direction in block]􀼮[allowed direction symbol ⟷][distance]<identifier>
     // 🟡17!􀼮⟷1
     // 🟡17!􀼮1
     // 🟡17􀼮1
     // 🟡􀼮1
+    // 🟡􀼮{39.99}1
     func parseTrainAttributes() -> TrainAttributes? {
         let defaultSpeed: UInt16
         if sp.matches("🔴") {
@@ -344,9 +346,17 @@ final class LayoutRouteParser {
             allowedDirection = .forward
         }
 
+        let distance: Double?
+        if sp.matches("{") {
+            distance = sp.matchesDouble()
+            sp.eat("}")
+        } else {
+            distance = nil
+        }
+
         let uuid = parseUUID()
 
-        return .init(speed: speed, direction: direction, allowedDirection: allowedDirection, uuid: uuid)
+        return .init(speed: speed, direction: direction, allowedDirection: allowedDirection, distance: distance, uuid: uuid)
     }
 
     func createTrain(position: Int, block: Block, directionInBlock _: Direction, attributes: TrainAttributes) {
@@ -365,7 +375,7 @@ final class LayoutRouteParser {
             layout.locs.insert(loc)
 
             let train: Train
-            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: attributes.direction)
+            let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: attributes.direction)
             if let parsedTrain = parsedTrain {
                 train = parsedTrain
                 train.positions.head = .init(blockId: block.id, index: position, distance: distance)

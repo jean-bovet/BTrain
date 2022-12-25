@@ -154,7 +154,12 @@ final class MockTrainController: TrainControlling {
 
     func stopImmediately() {}
 
-    func changeDirection() throws {}
+    var changeDirectionCount = 0
+    
+    func changeDirection() throws {
+        shouldChangeDirection = false
+        changeDirectionCount += 1
+    }
 
     func reschedule() {
         // no-op

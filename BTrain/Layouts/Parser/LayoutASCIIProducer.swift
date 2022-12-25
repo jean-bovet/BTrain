@@ -96,15 +96,15 @@ final class LayoutASCIIProducer {
 
         let feedbacks = reverse ? block.feedbacks.reversed() : block.feedbacks
         for index in feedbacks.indices {
-            let actualIndex = reverse ? feedbacks.count - index - 1 : index
+            let partIndex = reverse ? feedbacks.count - index - 1 : index
 
-            let feedback = feedbacks[actualIndex]
+            let feedback = feedbacks[index]
             guard let f = layout.feedbacks[feedback.feedbackId] else {
                 throw LayoutError.feedbackNotFound(feedbackId: feedback.feedbackId)
             }
 
             if reverse {
-                if let part = train(block, actualIndex + 1) {
+                if let part = train(block, partIndex + 1) {
                     text += " " + part
                 }
             }
@@ -116,7 +116,7 @@ final class LayoutASCIIProducer {
             }
 
             if !reverse {
-                if let part = train(block, actualIndex + 1) {
+                if let part = train(block, partIndex + 1) {
                     text += " " + part
                 }
             }
@@ -230,7 +230,11 @@ final class LayoutASCIIProducer {
             case .locomotive:
                 return stringFrom(train)
             case .wagon:
-                return "􀼯\(train.id)"
+                if let tail = train.positions.tail, tail.index == position && tail.blockId == block.id {
+                    return "􀼰\(train.id)"
+                } else {
+                    return "􀼯\(train.id)"
+                }
             }
         } else {
             return nil
@@ -238,16 +242,26 @@ final class LayoutASCIIProducer {
     }
 
     func stringFrom(_ train: Train) -> String {
+        var text: String
         switch train.state {
         case .running:
-            return "🟢􀼮\(train.id)"
+            if train.speed?.requestedKph == LayoutFactory.DefaultLimitedSpeed {
+                text = "🔵"
+            } else {
+                text = "🟢"
+            }
         case .braking:
-            return "🟡􀼮\(train.id)"
+            text = "🟡"
         case .stopping:
-            return "🟠􀼮\(train.id)"
+            text = "🟠"
         case .stopped:
-            return "🔴􀼮\(train.id)"
+            text = "🔴"
         }
+        if !train.directionForward {
+            text += "!"
+        }
+        text += "􀼮\(train.id)"
+        return text
     }
 
     private func addSpace(_ text: inout String) {
