@@ -45,7 +45,7 @@ struct SimulatorView: View {
                         Text("Slow")
                         Slider(
                             value: $simulator.simulationSpeedFactor,
-                            in: 0 ... Double(4.0),
+                            in: 0.5 ... Double(4.0),
                             step: 0.5
                         ) {} onEditingChanged: { _ in
                         }

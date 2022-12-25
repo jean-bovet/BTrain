@@ -27,12 +27,17 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @Published var locomotives = [SimulatorLocomotive]()
     @Published var trains = [SimulatorTrain]()
 
-    @AppStorage("simulatorSpeedFactor") var simulationSpeedFactor = 1.0
+    @AppStorage("simulatorSpeedFactor") var simulationSpeedFactor = 1.0 {
+        didSet {
+            BaseTimeFactor = 1.0 / simulationSpeedFactor
+            scheduleTimer()
+        }
+    }
 
     @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
     
     /// The interval of time between the simulation
-    let timerInterval = 0.250
+    let timerInterval: TimeInterval = 0.250
 
     /// Internal global variable used to create a unique port each time a simulator instance
     /// is created, which allows for multiple document to be opened (and operated) at the same time
@@ -215,7 +220,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func timerFired(timer: Timer) {
-        simulateLayout(duration: timer.timeInterval * simulationSpeedFactor)
+        simulateLayout(duration: timerInterval)
     }
     
     func register(with connection: ServerConnection) {
