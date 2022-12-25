@@ -13,12 +13,15 @@
 import SwiftUI
 
 struct SimulatorTrainControlView: View {
+    let iconManager: LocomotiveIconManager
     let simulator: MarklinCommandSimulator
     @ObservedObject var simLoc: SimulatorLocomotive
 
     var body: some View {
         HStack {
+            LocomotiveIconView(locomotiveIconManager: iconManager, loc: simLoc.loc, size: .small, hideIfNotDefined: true)
             Text(simLoc.loc.name)
+            
 
             Group {
                 Button {
@@ -40,6 +43,7 @@ struct SimulatorTrainControlView: View {
                     }
 
                     Text("\(Int(simLoc.speed.value)) steps")
+                        .padding(.trailing)
                 }
             }
         }
@@ -65,7 +69,7 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
     static let simulatorTrain = SimulatorLocomotive(loc: layout.locomotives[0])
 
     static var previews: some View {
-        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
+        SimulatorTrainControlView(iconManager: LocomotiveIconManager(), simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
                                   simLoc: simulatorTrain)
     }
 }

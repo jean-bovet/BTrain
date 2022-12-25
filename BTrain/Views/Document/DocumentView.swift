@@ -44,7 +44,7 @@ struct DocumentView: View {
                         .frame(height: 150)
                 }
                 if document.simulator.started, showSimulator {
-                    SimulatorView(simulator: document.simulator)
+                    SimulatorView(iconManager: document.locomotiveIconManager, simulator: document.simulator)
                         .frame(height: 300)
                 }
             }

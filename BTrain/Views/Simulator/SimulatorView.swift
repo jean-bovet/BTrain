@@ -13,6 +13,7 @@
 import SwiftUI
 
 struct SimulatorView: View {
+    let iconManager: LocomotiveIconManager
     @ObservedObject var simulator: MarklinCommandSimulator
 
     @State private var trainForward = true
@@ -33,7 +34,7 @@ struct SimulatorView: View {
             ScrollView {
                 VStack {
                     ForEach(simulator.locomotives, id: \.self) { train in
-                        SimulatorTrainControlView(simulator: simulator, simLoc: train)
+                        SimulatorTrainControlView(iconManager: iconManager, simulator: simulator, simLoc: train)
                     }
                 }.disabled(!simulator.enabled)
             }
@@ -92,6 +93,6 @@ struct SimulatorView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        SimulatorView(simulator: simulator)
+        SimulatorView(iconManager: LocomotiveIconManager(), simulator: simulator)
     }
 }

@@ -23,6 +23,7 @@ struct LocomotiveIconView: View, DropDelegate {
     enum Size {
         case large
         case medium
+        case small
     }
 
     var iconWidth: Double {
@@ -31,6 +32,8 @@ struct LocomotiveIconView: View, DropDelegate {
             return 200
         case .medium:
             return 100
+        case .small:
+            return 50
         }
     }
 
