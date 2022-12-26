@@ -31,19 +31,19 @@ final class SimulatorLocomotive: ObservableObject, Element {
         let direction: Direction
         let directionForward: Bool
     }
-    
+
     struct CurrentTurnout {
         let turnout: Turnout
         let fromSocket: Socket
         let toSocket: Socket
     }
-    
+
     /// The block in which the locomotive is located
     @Published var block: CurrentBlock?
-    
+
     /// The turnout in which the locomotive is located
     @Published var turnout: CurrentTurnout?
-    
+
     /// The distance of the locomotive within the block or the turnout
     @Published var distance = 0.0
 
@@ -52,11 +52,10 @@ final class SimulatorLocomotive: ObservableObject, Element {
         self.loc = loc
         directionForward = loc.directionForward
     }
-    
 }
 
 extension SimulatorLocomotive: Comparable {
-    static func <(lhs: SimulatorLocomotive, rhs: SimulatorLocomotive) -> Bool {
-        return lhs.loc < rhs.loc
+    static func < (lhs: SimulatorLocomotive, rhs: SimulatorLocomotive) -> Bool {
+        lhs.loc < rhs.loc
     }
 }

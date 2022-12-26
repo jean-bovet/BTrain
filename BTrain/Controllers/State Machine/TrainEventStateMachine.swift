@@ -94,7 +94,7 @@ struct TrainEventStateMachine {
 
         case .restartTimerFired:
             train.startedRouteIndex = train.currentRouteIndex
-            
+
             // Notes:
             // - Ignore any reserved block because there are no reserved blocks yet, the train is stopped.
             // - Ignore any change in direction because such a request will be honored right below

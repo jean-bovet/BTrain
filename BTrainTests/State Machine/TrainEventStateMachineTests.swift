@@ -118,7 +118,7 @@ class TrainEventStateMachineTests: XCTestCase {
         train.onReservedBlocksLengthEnough = { _ in true }
         XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksSettledLengthChanged(train), train: train), nil)
     }
-    
+
     func testChangeDirectionWhenStartingRoute() throws {
         train.shouldChangeDirection = true
         train.mode = .managed
@@ -130,7 +130,7 @@ class TrainEventStateMachineTests: XCTestCase {
         XCTAssertEqual(train.changeDirectionCount, 1)
         XCTAssertFalse(train.shouldChangeDirection)
     }
-    
+
     func testChangeDirectionAfterStopInRoute() throws {
         train.shouldChangeDirection = true
         train.mode = .managed

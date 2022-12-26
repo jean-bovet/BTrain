@@ -20,20 +20,17 @@ typealias CompletionCancelBlock = (_ completed: Bool) -> Void
 var BaseTimeFactor = 1.0
 
 extension Double {
-    
     var distanceString: String {
         String(format: "%.1fcm", self)
     }
-    
+
     var durationString: String {
         String(format: "%.2fsec", self)
     }
 }
 
 extension SpeedKph {
-    
     var speedString: String {
         "\(self)kph"
     }
-    
 }

@@ -58,7 +58,7 @@ final class BTLogger {
 
     /// The reservation logger instance
     static var reservation = newLogger(category: .reservation)
-    
+
     /// The simulator logger instance
     static var simulator = newLogger(category: .simulator)
 

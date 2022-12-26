@@ -64,7 +64,7 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
             return msg
         }
     }
-    
+
     static func block(_ id: Identifier<Block>) -> Socket {
         Socket(block: id, turnout: nil, socketId: nil)
     }

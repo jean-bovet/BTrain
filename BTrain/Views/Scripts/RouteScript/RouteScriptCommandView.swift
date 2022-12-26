@@ -19,7 +19,7 @@ struct RouteScriptCommandView: View {
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
-    
+
     var functions: some View {
         HStack {
             if command.functions.isEmpty {
@@ -39,7 +39,7 @@ struct RouteScriptCommandView: View {
                         }
                     }
                     .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow) })
-                        .help(function.resolvedName(catalog: doc.locomotiveFunctionsCatalog))
+                    .help(function.resolvedName(catalog: doc.locomotiveFunctionsCatalog))
                 }
                 Button("Edit…") {
                     showFunctionsSheet.toggle()

@@ -30,7 +30,7 @@ extension TrainControlling {
     ///   - ignoreChangeInDirection: true to ignore change in direction request.
     /// - Returns: true if the train should stop in the current block
     ///
-    ///    
+    ///
     func shouldStopInBlock(ignoreReservedBlocks: Bool, ignoreChangeInDirection: Bool) throws -> Bool {
         guard mode != .unmanaged else {
             return false
@@ -64,7 +64,7 @@ extension TrainControlling {
         }
 
         // If the block requires a change of direction, we need to stop
-        if !ignoreChangeInDirection && shouldChangeDirection {
+        if !ignoreChangeInDirection, shouldChangeDirection {
             return true
         }
 

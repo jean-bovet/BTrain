@@ -24,24 +24,23 @@ enum SimulatorTrainError: Error {
 }
 
 extension SimulatorTrainError: LocalizedError {
-    
     var errorDescription: String? {
         switch self {
         case .missingBlockAndTurnout:
             return "Missing both block and turnout"
-        case .missingBlockLength(block: let block):
+        case let .missingBlockLength(block: block):
             return "Missing block length for \(block.name)"
-        case .missingTurnoutLength(turnout: let turnout):
+        case let .missingTurnoutLength(turnout: turnout):
             return "Missing turnout length for \(turnout.name)"
-        case .feedbackNotFound(feedbackId: let feedbackId):
+        case let .feedbackNotFound(feedbackId: feedbackId):
             return "Feedback \(feedbackId) not found"
-        case .missingFeedbackDistance(feedback: let feedback):
+        case let .missingFeedbackDistance(feedback: feedback):
             return "Feedback distance missing for \(feedback.feedbackId)"
-        case .transitionNotFoundFromSocket(socket: let socket):
+        case let .transitionNotFoundFromSocket(socket: socket):
             return "No transition found out of socket \(socket)"
-        case .missingSocketId(socket: let socket):
+        case let .missingSocketId(socket: socket):
             return "Missing socket ID for \(socket)"
-        case .socketIdNotFoundInTurnout(turnout: let turnout, socketId: let socketId, state: let state):
+        case let .socketIdNotFoundInTurnout(turnout: turnout, socketId: socketId, state: state):
             return "Socket ID not found in turnout \(turnout.name) from socket \(socketId) for \(state)"
         }
     }

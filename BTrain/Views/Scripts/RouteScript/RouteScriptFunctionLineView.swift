@@ -16,11 +16,11 @@ struct RouteScriptFunctionLineView: View {
     let doc: LayoutDocument
     let catalog: LocomotiveFunctionsCatalog
     @Binding var function: RouteItemFunction
-    
+
     var loc: Locomotive? {
         doc.layout.locomotives[function.locomotive]
     }
-    
+
     var body: some View {
         HStack {
             LocPicker(doc: doc, emptyLabel: "Any Locomotive", selectedLoc: $function.locomotive)
@@ -91,7 +91,7 @@ struct RouteScriptFunctionLineView: View {
 
 struct RouteScriptFunctionLineView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: Layout())
-    
+
     static let catalog = {
         let catalog = LocomotiveFunctionsCatalog(interface: MarklinInterface())
         catalog.add(attributes: .preview(type: 1, name: "Light"))

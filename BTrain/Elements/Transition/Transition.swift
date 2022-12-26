@@ -51,7 +51,7 @@ class Transition: Element, Codable, CustomStringConvertible {
     func description(_ layout: Layout) -> String {
         "\(a.description(layout)) -> \(b.description(layout))"
     }
-    
+
     required init(id: Identifier<Transition>, a: Socket, b: Socket) {
         self.id = id
         self.a = a

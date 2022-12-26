@@ -14,13 +14,12 @@
 import XCTest
 
 final class TrainFunctionsControllerTests: XCTestCase {
-
     let mock = MockCommandInterface()
 
     var loc: Locomotive!
     var train: Train!
     var controller: TrainFunctionsController!
-    
+
     override func setUp() {
         let catalog = LocomotiveFunctionsCatalog(interface: mock)
         controller = TrainFunctionsController(catalog: catalog, interface: mock)
@@ -29,17 +28,17 @@ final class TrainFunctionsControllerTests: XCTestCase {
         train = Train()
         train.locomotive = loc
     }
-    
+
     func testGenericFunction() {
         // Type 10 is present twice in the locomotive functions but because we only use the type, only the first occurrence found for nr==1 is used.
         assert(function: RouteItemFunction(type: 10), index: 1)
         assert(function: RouteItemFunction(type: 7), index: 3)
     }
-    
+
     func testLocomotiveSpecificFunction() {
-        assert(function: RouteItemFunction(locFunction:loc.functions.definitions[0], type: 0), index: 1)
-        assert(function: RouteItemFunction(locFunction:loc.functions.definitions[1], type: 0), index: 3)
-        assert(function: RouteItemFunction(locFunction:loc.functions.definitions[2], type: 0), index: 7)
+        assert(function: RouteItemFunction(locFunction: loc.functions.definitions[0], type: 0), index: 1)
+        assert(function: RouteItemFunction(locFunction: loc.functions.definitions[1], type: 0), index: 3)
+        assert(function: RouteItemFunction(locFunction: loc.functions.definitions[2], type: 0), index: 7)
     }
 
     func assert(function: RouteItemFunction, index: UInt8) {

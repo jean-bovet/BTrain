@@ -35,7 +35,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
-    
+
     /// The interval of time between the simulation
     let timerInterval: TimeInterval = 0.250
 
@@ -122,7 +122,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         objectWillChange.send()
     }
-    
+
     private func updateListOfTrains() {
         guard let layout = layout else {
             return
@@ -142,11 +142,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func trainPositionChangedManually(train: Train) {
         updateTrain(train: train)
     }
-    
+
     func trainAutomaticRouteStarted(train: Train) {
         updateTrain(train: train)
     }
-    
+
     private func updateTrain(train: Train) {
         guard let layout = layout else {
             return
@@ -159,7 +159,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         guard let block = train.block else {
             return
         }
-        
+
         guard let direction = block.trainInstance?.direction else {
             return
         }
@@ -168,7 +168,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             simTrain.loc.speed = loc.speed.actualSteps
             simTrain.loc.directionForward = loc.directionForward
             simTrain.loc.block = .init(block: block, direction: direction, directionForward: loc.directionForward)
-            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \((loc.directionForward ? "forward":"backward"))")
+            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \(loc.directionForward ? "forward" : "backward")")
         } else {
             guard let simLoc = locomotives.first(where: { $0.id == loc.id }) else {
                 return
@@ -178,11 +178,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             simTrain.loc.speed = loc.speed.actualSteps
             simTrain.loc.directionForward = loc.directionForward
             simTrain.loc.block = .init(block: block, direction: direction, directionForward: loc.directionForward)
-            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \((loc.directionForward ? "forward":"backward"))")
+            BTLogger.simulator.debug("Updated train \(train.name) with direction in block \(direction), moving \(loc.directionForward ? "forward" : "backward")")
             trains.append(simTrain)
         }
     }
-    
+
     func start(_ port: UInt16 = 8080) {
         try? cs3Server.start(port)
 
@@ -211,7 +211,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             onCompletionBlock()
         }
     }
-    
+
     func scheduleTimer() {
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: timerInterval * BaseTimeFactor, repeats: true) { [weak self] timer in
@@ -219,10 +219,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
     }
 
-    func timerFired(timer: Timer) {
+    func timerFired(timer _: Timer) {
         simulateLayout(duration: timerInterval)
     }
-    
+
     func register(with connection: ServerConnection) {
         connection.receiveMessageCallback = { [weak self] message in
             if let self = self {
@@ -366,7 +366,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             connection.send(data: message.data)
         }
     }
-    
+
     func toggleTrainDirectionInBlock(locomotive: SimulatorLocomotive) {
         if let block = locomotive.block, locomotive.directionForward != block.directionForward {
             let newDirection = block.direction.opposite
@@ -396,7 +396,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard let loc = train.locomotive else {
                 continue
             }
-            
+
             guard loc.speed.actualKph > 0 else {
                 return
             }
@@ -406,10 +406,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             } catch {
                 BTLogger.simulator.error("\(train.name): \(error.localizedDescription)")
             }
-            
         }
     }
-            
+
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
         Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { _ in
@@ -423,8 +422,8 @@ extension MarklinCommandSimulator: SimulatorTrainDelegate {
         switch event {
         case .distanceUpdated:
             break
-            
-        case .movedToNextBlock(let block):
+
+        case let .movedToNextBlock(block):
             // Ensure all the feedbacks of the current block is turned off, otherwise there will be
             // an unexpected feedback error in the layout. This happens when there is less than 250ms
             // between the time the feedback was triggered (because the feedback gets reset after 250ms)
@@ -434,14 +433,13 @@ extension MarklinCommandSimulator: SimulatorTrainDelegate {
                 }
             }
 
-        case .movedToNextTurnout(_):
+        case .movedToNextTurnout:
             break
-            
-        case .triggerFeedback(let feedback):
+
+        case let .triggerFeedback(feedback):
             triggerFeedback(feedback: feedback)
         }
     }
-    
 }
 
 private extension Locomotive {

@@ -288,8 +288,8 @@ extension Train: Restorable {
 }
 
 extension Train: Comparable {
-    static func <(lhs: Train, rhs: Train) -> Bool {
-        return lhs.name < rhs.name
+    static func < (lhs: Train, rhs: Train) -> Bool {
+        lhs.name < rhs.name
     }
 }
 

@@ -38,7 +38,7 @@ struct LayoutSpeed {
 
         // The braking distance is respected if it is shorter or equal to the leading distance available.
         let respected = result.distance <= leadingDistance
-        
+
         // Debug message
         var message: String
         if respected {
@@ -53,7 +53,7 @@ struct LayoutSpeed {
         message += " The leading distance is \(leadingDistance.distanceString) with blocks \(train.leading.blocks.toStrings())"
         message += " and \(distanceLeftInBlock.distanceString) left in block."
         BTLogger.router.debug("\(train.description(layout), privacy: .public): \(message, privacy: .public)")
-        
+
         return respected
     }
 

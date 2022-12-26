@@ -20,7 +20,7 @@ struct SimulatorTrainControlView: View {
     var body: some View {
         HStack {
             LocomotiveIconView(locomotiveIconManager: iconManager, loc: simLoc.loc, size: .small, hideIfNotDefined: true)
-            
+
             VStack(alignment: .leading) {
                 Text(simLoc.loc.name)
                 HStack {

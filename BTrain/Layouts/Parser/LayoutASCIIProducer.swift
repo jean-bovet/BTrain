@@ -230,7 +230,7 @@ final class LayoutASCIIProducer {
             case .locomotive:
                 return stringFrom(train)
             case .wagon:
-                if let tail = train.positions.tail, tail.index == position && tail.blockId == block.id {
+                if let tail = train.positions.tail, tail.index == position, tail.blockId == block.id {
                     return "􀼰\(train.id)"
                 } else {
                     return "􀼯\(train.id)"

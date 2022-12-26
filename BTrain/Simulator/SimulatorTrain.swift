@@ -27,14 +27,13 @@ protocol SimulatorTrainDelegate: AnyObject {
 /// This class simulates a train in the layout by moving it from block to block
 /// using the actual speed of the train.
 final class SimulatorTrain: ObservableObject, Element {
-    
     let name: String
     let id: Identifier<Train>
     let loc: SimulatorLocomotive
     let layout: Layout
-    
+
     weak var delegate: SimulatorTrainDelegate?
-        
+
     internal init(id: Identifier<Train>, name: String, loc: SimulatorLocomotive, layout: Layout, delegate: SimulatorTrainDelegate?) {
         self.id = id
         self.name = name
@@ -42,7 +41,7 @@ final class SimulatorTrain: ObservableObject, Element {
         self.layout = layout
         self.delegate = delegate
     }
-    
+
     /// Invoke this method to update the train position given the speed and duration of the speed.
     ///
     /// - Parameters:
@@ -56,7 +55,7 @@ final class SimulatorTrain: ObservableObject, Element {
             try moveToNextElement()
         }
     }
-    
+
     private func updateDistance(speed: SpeedKph, duration: TimeInterval) throws {
         let delta = LayoutSpeed.distance(atSpeed: speed, forDuration: duration)
         if let block = loc.block {
@@ -70,11 +69,11 @@ final class SimulatorTrain: ObservableObject, Element {
         } else {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
-                
+
         debug("updated distance to \(loc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed.speedString).")
         delegate?.trainDidChange(event: .distanceUpdated)
     }
-    
+
     private func isInsideElement() throws -> Bool {
         let inside: Bool
         if let block = loc.block {
@@ -98,20 +97,20 @@ final class SimulatorTrain: ObservableObject, Element {
 
         return inside
     }
-    
+
     /// Keep track of the last triggered feedback in order to only trigger it once,
     /// after the train has moved past it.
     private var lastTriggeredFeedbackId: Identifier<Feedback>?
-    
+
     private func triggerBlockFeedback() throws {
         guard let block = loc.block else {
             return
         }
-        
+
         guard let blockFeedback = try currentBlockFeedback() else {
             return
         }
-        
+
         if let feedback = layout.feedbacks[blockFeedback.feedbackId] {
             // Only trigger the feedback if it hasn't yet been triggered
             if lastTriggeredFeedbackId != feedback.id {
@@ -123,14 +122,14 @@ final class SimulatorTrain: ObservableObject, Element {
             throw SimulatorTrainError.feedbackNotFound(feedbackId: blockFeedback.feedbackId)
         }
     }
-    
+
     /// Returns the feedback that is just before the train's position
     /// - Returns: the feedback or nil if no feedback found
     private func currentBlockFeedback() throws -> Block.BlockFeedback? {
         guard let block = loc.block else {
             return nil
         }
-        
+
         let feedbacks = block.block.feedbacks
         if block.direction == .next {
             for f in feedbacks.reversed() {
@@ -153,10 +152,10 @@ final class SimulatorTrain: ObservableObject, Element {
                 }
             }
         }
-        
+
         return nil
     }
-    
+
     private func moveToNextElement() throws {
         lastTriggeredFeedbackId = nil
 
@@ -184,7 +183,7 @@ final class SimulatorTrain: ObservableObject, Element {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
     }
-    
+
     private func moveToNextElement(transition: Transition) throws {
         let toSocket = transition.b
         guard let toSocketId = toSocket.socketId else {
@@ -217,14 +216,13 @@ final class SimulatorTrain: ObservableObject, Element {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
     }
-    
+
     private func debug(_ msg: String) {
         BTLogger.simulator.debug("\(self.name, privacy: .public) [\(self.loc.locationString, privacy: .public)]: \(msg, privacy: .public)")
     }
 }
 
 private extension SimulatorLocomotive {
-    
     var locationString: String {
         if let block = block {
             return "\(block.block.name)"
@@ -237,7 +235,6 @@ private extension SimulatorLocomotive {
 }
 
 private extension Block.BlockFeedback {
-    
     var distanceString: String {
         if let distance = distance {
             return distance.distanceString

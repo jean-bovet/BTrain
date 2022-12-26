@@ -72,8 +72,8 @@ final class Locomotive: Element, ObservableObject {
 }
 
 extension Locomotive: Comparable {
-    static func <(lhs: Locomotive, rhs: Locomotive) -> Bool {
-        return lhs.name < rhs.name
+    static func < (lhs: Locomotive, rhs: Locomotive) -> Bool {
+        lhs.name < rhs.name
     }
 }
 
