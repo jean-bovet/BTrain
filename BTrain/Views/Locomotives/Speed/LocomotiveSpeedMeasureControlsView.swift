@@ -44,6 +44,8 @@ struct LocomotiveSpeedMeasureControlsView: View {
         HStack {
             if let progressInfo = progressInfo {
                 Text(progressInfo)
+            } else if !document.connected {
+                Text("BTrain must be connected to a Digital Controller before continuing.")
             } else {
                 Text("􀁟 Position locomotive \"\(loc.name)\" before feedback \(feedbackAName) with its travel direction towards \(feedbackAName) 􀄫 \(feedbackBName) 􀄫 \(feedbackCName).")
             }
@@ -59,9 +61,11 @@ struct LocomotiveSpeedMeasureControlsView: View {
                 }
             } else {
                 Button("Measure") {
-                    running = true
-                    measure()
-                }
+                    document.layoutController.go {
+                        running = true
+                        measure()
+                    }
+                }.disabled(!document.connected)
             }
         }
     }
