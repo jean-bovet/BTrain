@@ -184,11 +184,9 @@ final class LayoutController: ObservableObject, LayoutControlling {
                            trainEvent: event.trainEvent(layoutController: self),
                            trains: layout.trains.elements.compactMap { train in trainController(forTrain: train) },
                            handledTrainEvents: &events)
-            #if DEBUG
-                if let events = events {
-                    BTLogger.debug("Handled events: \(events)")
-                }
-            #endif
+            if let events = events {
+                BTLogger.router.debug("Handled events: \(events, privacy: .public)")
+            }
 
             // Update and detect any unexpected feedbacks
             // Note: it is necessary to repeat this step after

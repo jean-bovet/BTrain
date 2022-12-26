@@ -126,6 +126,7 @@ class GraphTests: XCTestCase {
 
     func testFindPathUntilStation() throws {
         let layout = LayoutLoopWithStation().newLayout()
+        layout.automaticRouteRandom = false
 
         // Do not specify the destination block, so the algorithm will stop at the first station it finds
         let p = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!

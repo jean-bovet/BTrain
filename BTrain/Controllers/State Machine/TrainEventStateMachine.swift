@@ -56,14 +56,6 @@ struct TrainEventStateMachine {
                 train.routeWillStart()
 
                 if try train.updateReservedBlocks() {
-                    // Note: change the train direction needs to happen after the necessary blocks
-                    // have been reserved because updateReservedBlocks() updates also the automatic route
-                    // which will give indication if the train needs to change its direction or not.
-                    // Changing the direction will unblock the train which is going to be started automatically.
-                    if train.shouldChangeDirection {
-                        try train.changeDirection()
-                    }
-
                     return .reservedBlocksChanged(train)
                 }
             } else {
@@ -108,15 +100,19 @@ struct TrainEventStateMachine {
             // - Ignore any change in direction because such a request will be honored right below
             if try !train.shouldStopInBlock(ignoreReservedBlocks: true, ignoreChangeInDirection: true) {
                 if try train.updateReservedBlocks() {
-                    if train.shouldChangeDirection {
-                        try train.changeDirection()
-                    }
-
                     return .reservedBlocksChanged(train)
                 }
             }
 
         case .reservedBlocksChanged(_), .reservedBlocksSettledLengthChanged:
+            if train.state == .stopped, train.mode == .managed, train.shouldChangeDirection {
+                // Trigger a change in direction for the train when it is stopped. That request is asynchronous;
+                // when the direction change acknowledge comes back from the Digital Controller,
+                // the LayoutEventStateMachine is going to handle it (.direction event) by
+                // updating the reserved blocks again.
+                try train.changeDirection()
+            }
+
             if try tsm.handleTrainState(train: train) {
                 try adjustSpeed(ofTrain: train, stateChanged: true)
                 return .stateChanged(train)

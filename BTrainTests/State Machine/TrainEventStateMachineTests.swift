@@ -125,6 +125,8 @@ class TrainEventStateMachineTests: XCTestCase {
         train.state = .stopped
         train.onUpdateReservedBlocks = { true }
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .reservedBlocksChanged(train))
+        train.onReservedBlocksLengthEnough = { _ in true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
         XCTAssertEqual(train.changeDirectionCount, 1)
         XCTAssertFalse(train.shouldChangeDirection)
     }
@@ -135,6 +137,8 @@ class TrainEventStateMachineTests: XCTestCase {
         train.state = .stopped
         train.onUpdateReservedBlocks = { true }
         XCTAssertEqual(try tsm.handle(trainEvent: .restartTimerFired(train), train: train), .reservedBlocksChanged(train))
+        train.onReservedBlocksLengthEnough = { _ in true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
         XCTAssertEqual(train.changeDirectionCount, 1)
         XCTAssertFalse(train.shouldChangeDirection)
     }

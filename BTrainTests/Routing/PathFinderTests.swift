@@ -16,6 +16,7 @@ import XCTest
 class PathFinderTests: BTTestCase {
     func testSimplePath() throws {
         let layout = LayoutComplexLoop().newLayout()
+        layout.automaticRouteRandom = false
 
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -24,6 +25,7 @@ class PathFinderTests: BTTestCase {
 
     func testSimplePathAvoidingFirstReservedBlock() throws {
         let layout = LayoutComplexLoop().newLayout()
+        layout.automaticRouteRandom = false
 
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -32,6 +34,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathWithReservedTurnout() throws {
         let layout = LayoutComplexLoop().newLayout()
+        layout.automaticRouteRandom = false
 
         let t6 = layout.turnout("t6")
         t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
@@ -42,6 +45,8 @@ class PathFinderTests: BTTestCase {
 
     func testPathLookAhead() throws {
         let layout = LayoutComplexLoop().newLayout()
+        layout.automaticRouteRandom = false
+
         let b2 = layout.block("b2")
         b2.reservation = Reservation("other", .next)
 
@@ -59,6 +64,8 @@ class PathFinderTests: BTTestCase {
 
     func testPathWithReservedBlock() throws {
         let layout = LayoutLoopWithStation().newLayout()
+        layout.automaticRouteRandom = false
+
         let b1 = layout.block(named: "b1")
         b1.reservation = Reservation("other", .next)
 
@@ -74,6 +81,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathBlockDisabled() throws {
         let layout = LayoutLoopWithStation().newLayout()
+        layout.automaticRouteRandom = false
 
         var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
@@ -87,6 +95,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathTurnoutDisabled() throws {
         let layout = LayoutLoopWithStation().newLayout()
+        layout.automaticRouteRandom = false
 
         var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
@@ -100,6 +109,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathBetweenStations() throws {
         let layout = LayoutComplex().newLayout().removeTrains()
+        layout.automaticRouteRandom = false
 
         layout.reserve("NE1", with: "1", direction: .next)
 
@@ -128,6 +138,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathBetweenStations2() throws {
         let layout = LayoutComplexLoop().newLayout()
+        layout.automaticRouteRandom = false
 
         layout.reserve("s1", with: "1", direction: .next)
 
@@ -137,6 +148,7 @@ class PathFinderTests: BTTestCase {
 
     func testPathBetweenTwoBlocksWithMultipleTurnouts() throws {
         let layout = LayoutComplexWithHiddenStation().newLayout()
+        layout.automaticRouteRandom = false
 
         let path = try layout.bestPath(from: "S3", fromDirection: .previous, toReachBlock: "IL_3", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["S3:previous", "IL_3:next"])

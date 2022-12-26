@@ -60,7 +60,25 @@ final class MockCommandInterface: CommandInterface {
             executeImmediate(command: command, onCompletion: completion)
         }
     }
-
+    
+    /// True to pause the acknowledgement for the change in direction command (.direction)
+    var pauseChangeInDirection = false {
+        didSet {
+            if !pauseChangeInDirection {
+                for command in pendingDirectionCommands {
+                    if case .direction(let address, let decoderType, let direction, _, _) = command {
+                        for directionChangeCallback in callbacks.directionChanges.all {
+                            directionChangeCallback(address, decoderType, direction)
+                        }
+                    }
+                }
+                pendingDirectionCommands.removeAll()
+            }
+        }
+    }
+    
+    var pendingDirectionCommands = [Command]()
+    
     private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {
         // First the completion of sending the command needs to happen
         onCompletion?()
@@ -74,8 +92,12 @@ final class MockCommandInterface: CommandInterface {
             }
 
         case let .direction(address, decoderType, direction, _, _):
-            for directionChangeCallback in callbacks.directionChanges.all {
-                directionChangeCallback(address, decoderType, direction)
+            if pauseChangeInDirection {
+                pendingDirectionCommands.append(command)
+            } else {
+                for directionChangeCallback in callbacks.directionChanges.all {
+                    directionChangeCallback(address, decoderType, direction)
+                }
             }
 
         case let .turnout(address, state, power, _, _):
