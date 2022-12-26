@@ -7,7 +7,7 @@ BTrain is my attempt at automating a model railway layout. It is open-source and
 
 This [YouTube video](https://youtu.be/XyPod8v5tRU) shows BTrain in action with my still-in-progress layout.
 
-[![BTrain in Action](https://img.youtube.com/vi/XyPod8v5tRU/0.jpg)](https://youtu.be/XyPod8v5tRU)
+[![BTrain in Action](Assets/video.jpg)](https://youtu.be/XyPod8v5tRU)
 
 BTrain allows the layout to be created quickly with just a few clicks. Each block is connected to another block using curves that can be dragged and dropped.
 
