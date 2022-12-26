@@ -278,9 +278,6 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     func moveInsideBlocks() throws -> Bool {
         let currentPositions = train.positions
 
-        // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
-        // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
-        // in order to avoid re-activating them each time unnecessarily.
         for feedback in try layout.allActiveFeedbackPositions(train: train) {
             guard let direction = try train.reservation.directionInBlock(for: feedback.blockId) else {
                 // Note: this should not happen because all the feedback are in occupied block

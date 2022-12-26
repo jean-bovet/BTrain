@@ -385,10 +385,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
 
         for train in layout.trains.elements {
-            guard train.scheduling != .unmanaged else {
-                continue
-            }
-
             guard let simTrain = trains.first(where: { $0.id == train.id }) else {
                 continue
             }
@@ -398,7 +394,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
 
             guard loc.speed.actualKph > 0 else {
-                return
+                continue
             }
 
             do {

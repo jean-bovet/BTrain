@@ -25,10 +25,10 @@ extension TrainPositions {
             //                 Block Positions:  0  1  2    0  1  2                      0  1  2    2  1  0
             //
             //       Train (direction forward):   ■■■■■■■■■■■■■▶                          ■■■■■■■■■■■■■▶
-            //               Occupied: [b2, b1]   b            f                          b            f
+            //               Occupied: [b2, b1]   t            h                          t            h
             //
             //       Train (direction forward):   ◀■■■■■■■■■■■■■                          ◀■■■■■■■■■■■■■
-            //               Occupied: [b1, b2]   f            b                          f            b
+            //               Occupied: [b1, b2]   h            t                          h            t
             newLocation.tail = nil
             if let head = head {
                 if try detectedPosition.isAfter(head, reservation: reservation) {
@@ -46,10 +46,10 @@ extension TrainPositions {
             //                 Block Positions:  0  1  2    0  1  2                      0  1  2    2  1  0
             //
             //      Train (direction backward):   ▶■■■■■■■■■■■■■                          ▶■■■■■■■■■■■■■
-            //               Occupied: [b2, b1]   f            b                          f            b
+            //               Occupied: [b2, b1]   h            t                         h            t
             //
             //      Train (direction backward):   ■■■■■■■■■■■■■◀                          ■■■■■■■■■■■■■◀
-            //               Occupied: [b1, b2]   b            f                          b            f
+            //               Occupied: [b1, b2]   t            h                          t            h
             newLocation.head = nil
             if let tail = tail {
                 if try detectedPosition.isAfter(tail, reservation: reservation) {
