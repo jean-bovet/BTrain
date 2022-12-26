@@ -20,8 +20,20 @@ struct SimulatorTrainControlView: View {
     var body: some View {
         HStack {
             LocomotiveIconView(locomotiveIconManager: iconManager, loc: simLoc.loc, size: .small, hideIfNotDefined: true)
-            Text(simLoc.loc.name)
             
+            VStack(alignment: .leading) {
+                Text(simLoc.loc.name)
+                HStack {
+                    if let block = simLoc.block {
+                        Text("\(block.block.name)")
+                    } else if let turnout = simLoc.turnout {
+                        Text("\(turnout.turnout.name)")
+                    } else {
+                        Text("?")
+                    }
+                    Text("\(simLoc.distance.distanceString)")
+                }.font(.caption)
+            }
 
             Group {
                 Button {

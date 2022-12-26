@@ -71,6 +71,12 @@ final class Locomotive: Element, ObservableObject {
     }
 }
 
+extension Locomotive: Comparable {
+    static func <(lhs: Locomotive, rhs: Locomotive) -> Bool {
+        return lhs.name < rhs.name
+    }
+}
+
 extension Locomotive: Codable {
     enum CodingKeys: CodingKey {
         case id, enabled, name, address, lenght, speed, decoder, direction, allowedDirections, functions

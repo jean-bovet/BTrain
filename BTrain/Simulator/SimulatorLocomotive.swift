@@ -55,3 +55,8 @@ final class SimulatorLocomotive: ObservableObject, Element {
     
 }
 
+extension SimulatorLocomotive: Comparable {
+    static func <(lhs: SimulatorLocomotive, rhs: SimulatorLocomotive) -> Bool {
+        return lhs.loc < rhs.loc
+    }
+}

@@ -24,7 +24,7 @@ class SimulatorViewTests: RootViewTests {
         let trains = doc.layout.trains
         XCTAssertFalse(trains.elements.isEmpty)
 
-        let t1 = trains[0]
+        let t1 = trains.elements.sorted()[0]
         t1.speed!.accelerationProfile = .none
         let b1 = doc.layout.blocks[0]
 
@@ -38,7 +38,7 @@ class SimulatorViewTests: RootViewTests {
             disconnectFromSimulator(doc: doc)
         }
 
-        let simulatorTrain1 = doc.simulator.locomotives[0]
+        let simulatorTrain1 = doc.simulator.locomotives.sorted()[0]
 
         // Ensure all the names of the train match.
         let sut = DocumentView(document: doc)
@@ -48,7 +48,7 @@ class SimulatorViewTests: RootViewTests {
 
         let simulatorTrainControl = try forEachView.view(SimulatorTrainControlView.self, 0)
 
-        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().text(1).string())
+        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().vStack(1).text(0).string())
 
         // Now tap on the direction of the first train and see if it is reflected in the train list
         let toggleButton = try simulatorTrainControl.hStack().group(2).button(0)

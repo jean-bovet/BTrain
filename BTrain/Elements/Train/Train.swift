@@ -287,6 +287,12 @@ extension Train: Restorable {
     }
 }
 
+extension Train: Comparable {
+    static func <(lhs: Train, rhs: Train) -> Bool {
+        return lhs.name < rhs.name
+    }
+}
+
 extension Train: Codable {
     enum CodingKeys: CodingKey {
         case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
