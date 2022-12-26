@@ -5,6 +5,10 @@ BTrain is my attempt at automating a model railway layout. It is open-source and
 
 ![Automatic Routing](Assets/switchboard.png)
 
+This [YouTube video](https://youtu.be/XyPod8v5tRU) shows BTrain in action with my still-in-progress layout.
+
+[![BTrain in Action](https://img.youtube.com/vi/XyPod8v5tRU/0.jpg)](https://youtu.be/XyPod8v5tRU)
+
 BTrain allows the layout to be created quickly with just a few clicks. Each block is connected to another block using curves that can be dragged and dropped.
 
 ![Layout Builder](Assets/layout-builder.gif)
@@ -88,7 +92,6 @@ Clone this repository and open the `BTrain.xcodeproj` in Xcode. Hit Command-R an
 **Copyrights**
 
 - [Application icon](https://thenounproject.com/icon/train-3130173/) (c) Manaqib S from NounProject.com
-- [GzipSwift](https://github.com/1024jp/GzipSwift) (c) 2014-2020 1024jp
 - [Undo Provider](https://github.com/LostMoa/UndoProviderExample) (c) 2020 by Matthaus Woolard
 - [Custom Slider](https://betterprogramming.pub/reusable-components-in-swiftui-custom-sliders-8c115914b856) (c) 2020 Aubree Quiroz
 - [GraphicsRenderer](https://github.com/shaps80/GraphicsRenderer) (c) 2016 by [Shaps Benkau](mailto:shapsuk@me.com)
