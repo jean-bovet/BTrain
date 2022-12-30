@@ -19,7 +19,7 @@ final class TrainSpreader {
         // True if this is the block at the front of the train (in the direction of travel)
         let frontBlock: Bool
 
-        // True if the is the block at the tail of the train (in the direction of travel)
+        // True if the is the block at the back of the train (in the direction of travel)
         let backBlock: Bool
 
         // Direction of travel of the train inside the block

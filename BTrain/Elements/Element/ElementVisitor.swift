@@ -30,7 +30,7 @@ final class ElementVisitor {
     struct BlockInfo {
         let block: Block
 
-        // Direction in which the visitor algorithm is traversing the block
+        /// Direction in which the visitor algorithm is traversing the block
         let direction: Direction
     }
 

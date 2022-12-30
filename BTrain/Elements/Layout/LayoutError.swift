@@ -139,19 +139,19 @@ extension LayoutError: LocalizedError {
             return "Socket \(socket) must have either its block or turnout defined"
 
         case let .frontPositionBlockNotSpecified(position: position):
-            return "Front position block not specified: \(position)"
+            return "Head position block not specified: \(position)"
         case let .backPositionBlockNotSpecified(position: position):
-            return "Back position block not specified: \(position)"
+            return "Tail position block not specified: \(position)"
 
         case let .frontPositionNotSpecified(position: position):
-            return "Front position not specified: \(position)"
+            return "Head position not specified: \(position)"
         case let .backPositionNotSpecified(position: position):
-            return "Back position not specified: \(position)"
+            return "Tail position not specified: \(position)"
 
         case let .frontPositionBlockIdMismatch(expected: expected, got: got):
-            return "Front position block mismatch: expected \(expected) but got \(got)"
+            return "Head position block mismatch: expected \(expected) but got \(got)"
         case let .backPositionBlockIdMismatch(expected: expected, got: got):
-            return "Back position block mismatch: expected \(expected) but got \(got)"
+            return "Tail position block mismatch: expected \(expected) but got \(got)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.block is nil)"
