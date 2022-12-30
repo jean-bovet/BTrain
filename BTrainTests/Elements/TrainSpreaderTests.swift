@@ -123,8 +123,8 @@ final class TrainSpreaderTests: XCTestCase {
 
         let b3 = Block(name: "b3")
         b3.length = 100
-        b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 20))
-        b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 80))
+        b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 30))
+        b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 70))
         layout.blocks.add(b3)
 
         let t23 = Turnout(name: "t23")
@@ -134,7 +134,7 @@ final class TrainSpreaderTests: XCTestCase {
         layout.link(from: b0.next, to: b1.previous)
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: t23.socket0)
-        layout.link(from: t23.socket1, to: b3.previous)
+        layout.link(from: t23.socket1, to: b3.next)
 
         try assert(tv: tv, block: b0, distance: 50, direction: .next, lengthOfTrain: 50, expected: [[(0, true, 100)]])
 
@@ -153,18 +153,20 @@ final class TrainSpreaderTests: XCTestCase {
         try assert(tv: tv, block: b2, distance: 100, direction: .previous, lengthOfTrain: 20, expected: [[(2, true, 80)]])
         try assert(tv: tv, block: b2, distance: 20, direction: .previous, lengthOfTrain: 20, expected: [[(0, true, 0)]])
         
-        try assert(tv: tv, block: b2, distance: 60, direction: .next, lengthOfTrain: 60, expected: [[(1, false, 80), (2, false, 100)], [(0, true, 10)]])
+        try assert(tv: tv, block: b2, distance: 60, direction: .next, lengthOfTrain: 60, expected: [[(1, false, 80), (2, false, 100)], [(2, true, 90)]])
+        try assert(tv: tv, block: b3, distance: 60, direction: .previous, lengthOfTrain: 80, success: false, expected: [[(1, false, 30), (0, false, 0)]])
     }
 
     struct SpreadResults {
         var transitions = [Transition]()
         var turnouts = [ElementVisitor.TurnoutInfo]()
         var blocks = [TrainSpreader.SpreadBlockInfo]()
+        var success = true
     }
     
     private func spread(tv: TrainSpreader, block: Block, distance: Double, direction: Direction, lengthOfTrain: Double) throws -> SpreadResults {
         var results = SpreadResults()
-        try tv.spread(block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
+        results.success = try tv.spread(block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             results.transitions.append(transition)
         }, turnoutCallback: { turnoutInfo in
             results.turnouts.append(turnoutInfo)
@@ -174,10 +176,10 @@ final class TrainSpreaderTests: XCTestCase {
         return results
     }
     
-    private func assert(tv: TrainSpreader, block: Block, distance: Double, direction: Direction, lengthOfTrain: Double, expected: [[(Int, Bool, Double)]]) throws {
+    private func assert(tv: TrainSpreader, block: Block, distance: Double, direction: Direction, lengthOfTrain: Double, success: Bool = true, expected: [[(Int, Bool, Double)]]) throws {
         let results = try spread(tv: tv, block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain)
-        XCTAssertEqual(results.blocks.count, expected.count)
-        
+        XCTAssertEqual(results.success, success)
+
         for (index, block) in results.blocks.enumerated() {
             let parts = block.parts
             XCTAssertEqual(parts.count, expected[index].count, "Mismatch in the number of parts")
