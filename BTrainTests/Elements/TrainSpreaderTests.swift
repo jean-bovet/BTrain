@@ -121,8 +121,20 @@ final class TrainSpreaderTests: XCTestCase {
         b2.feedbacks.append(.init(id: "f2.2", feedbackId: .init(uuid: "f2.2"), distance: 80))
         layout.blocks.add(b2)
 
+        let b3 = Block(name: "b3")
+        b3.length = 100
+        b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 20))
+        b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 80))
+        layout.blocks.add(b3)
+
+        let t23 = Turnout(name: "t23")
+        t23.length = 10
+        layout.turnouts.add(t23)
+        
         layout.link(from: b0.next, to: b1.previous)
         layout.link(from: b1.next, to: b2.previous)
+        layout.link(from: b2.next, to: t23.socket0)
+        layout.link(from: t23.socket1, to: b3.previous)
 
         try assert(tv: tv, block: b0, distance: 50, direction: .next, lengthOfTrain: 50, expected: [[(0, true, 100)]])
 
@@ -137,9 +149,11 @@ final class TrainSpreaderTests: XCTestCase {
         try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 20, expected: [[(1, true, 80)]])
         try assert(tv: tv, block: b1, distance: 100, direction: .next, lengthOfTrain: 20, expected: [[], [(0, true, 20)]])
         
-        try assert(tv: tv, block: b2, distance: 50, direction: .previous, lengthOfTrain: 50, expected: [[(1, false, 20), (0, true, 100)]])
+        try assert(tv: tv, block: b2, distance: 50, direction: .previous, lengthOfTrain: 50, expected: [[(1, false, 20), (0, true, 0)]])
         try assert(tv: tv, block: b2, distance: 100, direction: .previous, lengthOfTrain: 20, expected: [[(2, true, 80)]])
         try assert(tv: tv, block: b2, distance: 20, direction: .previous, lengthOfTrain: 20, expected: [[(0, true, 0)]])
+        
+        try assert(tv: tv, block: b2, distance: 60, direction: .next, lengthOfTrain: 60, expected: [[(1, false, 80), (2, false, 100)], [(0, true, 10)]])
     }
 
     struct SpreadResults {

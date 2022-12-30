@@ -234,7 +234,7 @@ final class TrainSpreader {
                         let u = cursor - 0
                         assert(u >= 0)
                         remainingTrainLength -= u
-                        parts.append(SpreadBlockPartInfo.info(partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength))
+                        parts.append(SpreadBlockPartInfo.info(partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0))
                     }
                     
                     try blockCallback(.init(block: info, parts: parts))
