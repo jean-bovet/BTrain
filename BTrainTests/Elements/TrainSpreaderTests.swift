@@ -29,13 +29,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, positions: position, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, position: position.head!, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
 
         // <      ]
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, positions: position, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, position: position.head!, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
 
         // Note: now test with the train runnings backward. In that case, the back position is used instead of the front
         position = .tail(blockId: block.id, index: 2, distance: 20)
@@ -44,13 +44,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ----<
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, positions: position, frontBlock: true, directionOfSpread: .previous, trainForward: false), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, position: position.tail!, frontBlock: true, directionOfSpread: .previous, trainForward: false), 20)
 
         // [      >
         //  ----< (train)
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, positions: position, frontBlock: true, directionOfSpread: .next, trainForward: false), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, position: position.tail!, frontBlock: true, directionOfSpread: .next, trainForward: false), 80)
     }
 
     func testOccupationFrontBlockOnly() throws {
@@ -71,13 +71,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
 
         //    <      ]
         //  ---->
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
     }
 
     func testOccupationNonFrontBlock() throws {
@@ -96,12 +96,86 @@ final class TrainSpreaderTests: XCTestCase {
 
         // Note: doesn't matter where the train is located, if it is not the front block, the entire length of the block will be used because this method does not
         // take into account the length of the train (remaining).
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: false, directionOfSpread: .previous, trainForward: true), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: false, directionOfSpread: .next, trainForward: true), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: false, directionOfSpread: .previous, trainForward: false), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, positions: position, frontBlock: false, directionOfSpread: .next, trainForward: false), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: false, directionOfSpread: .previous, trainForward: true), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: false, directionOfSpread: .next, trainForward: true), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: false, directionOfSpread: .previous, trainForward: false), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, position: position.head!, frontBlock: false, directionOfSpread: .next, trainForward: false), 100)
     }
 
+    func testSpread() throws {
+        let layout = Layout()
+        let tv = TrainSpreader(layout: layout)
+
+        let b0 = Block(name: "b0")
+        b0.length = 100
+        layout.blocks.add(b0)
+
+        let b1 = Block(name: "b1")
+        b1.length = 100
+        b1.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 50))
+        layout.blocks.add(b1)
+
+        let b2 = Block(name: "b2")
+        b2.length = 100
+        b2.feedbacks.append(.init(id: "f2.1", feedbackId: .init(uuid: "f2.1"), distance: 20))
+        b2.feedbacks.append(.init(id: "f2.2", feedbackId: .init(uuid: "f2.2"), distance: 80))
+        layout.blocks.add(b2)
+
+        layout.link(from: b0.next, to: b1.previous)
+        layout.link(from: b1.next, to: b2.previous)
+
+        try assert(tv: tv, block: b0, distance: 50, direction: .next, lengthOfTrain: 50, expected: [[(0, true, 100)]])
+
+        try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 10, expected: [[(0, true, 10)]])
+        try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 50, expected: [[(0, true, 50)]])
+        try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 51, expected: [[(0, false, 50), (1, true, 51)]])
+        try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 50, expected: [[(0, false, 50), (1, true, 70)]])
+        try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 30, expected: [[(0, true, 50)]])
+        try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 20, expected: [[(0, true, 40)]])
+        try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 50, expected: [[(1, false, 100)], [(0, true, 10)]])
+        try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 40, expected: [[(1, true, 100)]])
+        try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 20, expected: [[(1, true, 80)]])
+        try assert(tv: tv, block: b1, distance: 100, direction: .next, lengthOfTrain: 20, expected: [[], [(0, true, 20)]])
+        
+        try assert(tv: tv, block: b2, distance: 50, direction: .previous, lengthOfTrain: 50, expected: [[(1, false, 20), (0, true, 100)]])
+        try assert(tv: tv, block: b2, distance: 100, direction: .previous, lengthOfTrain: 20, expected: [[(2, true, 80)]])
+        try assert(tv: tv, block: b2, distance: 20, direction: .previous, lengthOfTrain: 20, expected: [[(0, true, 0)]])
+    }
+
+    struct SpreadResults {
+        var transitions = [Transition]()
+        var turnouts = [ElementVisitor.TurnoutInfo]()
+        var blocks = [TrainSpreader.SpreadBlockInfo]()
+    }
+    
+    private func spread(tv: TrainSpreader, block: Block, distance: Double, direction: Direction, lengthOfTrain: Double) throws -> SpreadResults {
+        var results = SpreadResults()
+        try tv.spread(block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
+            results.transitions.append(transition)
+        }, turnoutCallback: { turnoutInfo in
+            results.turnouts.append(turnoutInfo)
+        }, blockCallback: { spreadBlockInfo in
+            results.blocks.append(spreadBlockInfo)
+        })
+        return results
+    }
+    
+    private func assert(tv: TrainSpreader, block: Block, distance: Double, direction: Direction, lengthOfTrain: Double, expected: [[(Int, Bool, Double)]]) throws {
+        let results = try spread(tv: tv, block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain)
+        XCTAssertEqual(results.blocks.count, expected.count)
+        
+        for (index, block) in results.blocks.enumerated() {
+            let parts = block.parts
+            XCTAssertEqual(parts.count, expected[index].count, "Mismatch in the number of parts")
+            
+            for (pindex, part) in parts.enumerated() {
+                XCTAssertEqual(part.partIndex, expected[index][pindex].0)
+                XCTAssertEqual(part.lastPart, expected[index][pindex].1)
+                XCTAssertEqual(part.distance, expected[index][pindex].2)
+            }
+        }
+    }
+    
     // MARK: Spreading
 
     func testSpreadSingleBlock() throws {

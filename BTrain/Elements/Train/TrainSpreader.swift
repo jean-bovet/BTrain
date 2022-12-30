@@ -68,12 +68,29 @@ final class TrainSpreader {
             return 0
         }
 
+        guard let locomotive = train.locomotive else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+        }
+
         // Keep track of the remaining train length as we visit the various elements.
         // This method returns when no more train length remains to be visited.
         var remainingTrainLength = trainLength
 
         // Always visit the train in the opposite direction of travel (by definition).
         let directionOfVisit = trainInstance.direction.opposite
+
+        let position: TrainPosition
+        if locomotive.directionForward {
+            guard let head = train.positions.head else {
+                throw LayoutError.frontPositionNotSpecified(position: train.positions)
+            }
+            position = head
+        } else {
+            guard let tail = train.positions.tail else {
+                throw LayoutError.backPositionNotSpecified(position: train.positions)
+            }
+            position = tail
+        }
 
         try visitor.visit(fromBlockId: frontBlock.id, direction: directionOfVisit, callback: { info in
             switch info {
@@ -88,7 +105,7 @@ final class TrainSpreader {
                 try turnoutCallback(info)
                 
             case .block(index: let index, info: let info):
-                try visitBlock(blockInfo: info, index: index, train: train, remainingTrainLength: &remainingTrainLength, blockCallback: blockCallback)
+                try visitBlock(blockInfo: info, index: index, train: train, directionForward: locomotive.directionForward, position: position, remainingTrainLength: &remainingTrainLength, blockCallback: blockCallback)
             }
 
             if remainingTrainLength > 0 {
@@ -101,11 +118,138 @@ final class TrainSpreader {
         return remainingTrainLength
     }
 
-    private func visitBlock(blockInfo: ElementVisitor.BlockInfo, index: Int, train: Train, remainingTrainLength: inout Double, blockCallback: BlockCallbackBlock) throws {
-        guard let locomotive = train.locomotive else {
-            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+    struct SpreadBlockPartInfo {
+        let partIndex: Int
+        let distance: Double
+        let lastPart: Bool
+        
+        static func info(partIndex: Int, remainingTrainLength: Double, feedbackDistance: Double) -> SpreadBlockPartInfo {
+            let distance: Double
+            if remainingTrainLength >= 0 {
+                distance = feedbackDistance
+            } else {
+                distance = feedbackDistance - abs(remainingTrainLength)
+            }
+            return .init(partIndex: partIndex, distance: distance, lastPart: remainingTrainLength <= 0)
         }
 
+    }
+    
+    struct SpreadBlockInfo {
+        let block: ElementVisitor.BlockInfo
+        let parts: [SpreadBlockPartInfo]
+    }
+    
+    func spread(block: Block, distance: Double, direction: Direction, lengthOfTrain: Double,
+                transitionCallback: TransitionCallbackBlock,
+                turnoutCallback: TurnoutCallbackBlock,
+                blockCallback: BlockCallbackBlock) throws {
+        try spread(block: block, distance: distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: transitionCallback, turnoutCallback: turnoutCallback) { spreadInfo in
+            for part in spreadInfo.parts {
+                spreadInfo.block.block.trainInstance?.parts[part.partIndex] = .wagon
+            }
+        }
+    }
+    
+    typealias BlockPartCallbackBlock = (SpreadBlockInfo) throws -> Void
+
+    func spread(block: Block, distance: Double, direction: Direction, lengthOfTrain: Double,
+                transitionCallback: TransitionCallbackBlock,
+                turnoutCallback: TurnoutCallbackBlock,
+                blockCallback: BlockPartCallbackBlock) throws {
+        var remainingTrainLength = lengthOfTrain
+        try visitor.visit(fromBlockId: block.id, direction: direction, callback: { info in
+            switch info {
+            case .transition(index: _, transition: let transition):
+                // Transition is just a virtual connection between two elements, no physical length exists.
+                try transitionCallback(transition)
+                
+            case .turnout(index: _, info: let info):
+                if let length = info.turnout.length {
+                    remainingTrainLength -= length
+                }
+                try turnoutCallback(info)
+                
+            case .block(index: let index, info: let info):
+                guard let blockLength = info.block.length else {
+                    throw LayoutError.blockLengthNotDefined(block: info.block)
+                }
+                if info.direction == .next {
+                    var cursor: Double
+                    if index == 0 {
+                        cursor = distance
+                    } else {
+                        cursor = 0
+                    }
+                    
+                    var parts = [SpreadBlockPartInfo]()
+
+                    let feedbacks = info.block.feedbacks
+                    for (findex, fb) in feedbacks.enumerated() {
+                        guard let fbDistance = fb.distance else {
+                            throw LayoutError.feedbackDistanceNotSet(feedback: fb)
+                        }
+                        if cursor < fbDistance, remainingTrainLength > 0 {
+                            let u = fbDistance - cursor
+                            assert(u >= 0)
+                            remainingTrainLength -= u
+                            cursor = fbDistance
+                            parts.append(SpreadBlockPartInfo.info(partIndex: findex, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance))
+                        }
+                    }
+
+                    if cursor < blockLength, remainingTrainLength > 0 {
+                        let u = blockLength - cursor
+                        assert(u >= 0)
+                        remainingTrainLength -= u
+                        parts.append(SpreadBlockPartInfo.info(partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength))
+                    }
+                    
+                    try blockCallback(.init(block: info, parts: parts))
+                } else {
+                    var cursor: Double
+                    if index == 0 {
+                        cursor = distance
+                    } else {
+                        cursor = blockLength
+                    }
+                    
+                    var parts = [SpreadBlockPartInfo]()
+
+                    let feedbacks = info.block.feedbacks
+                    for (findex, fb) in feedbacks.enumerated().reversed() {
+                        guard let fbDistance = fb.distance else {
+                            throw LayoutError.feedbackDistanceNotSet(feedback: fb)
+                        }
+                        if cursor > fbDistance, remainingTrainLength > 0 {
+                            let u = cursor - fbDistance
+                            assert(u >= 0)
+                            remainingTrainLength -= u
+                            cursor = fbDistance
+                            parts.append(SpreadBlockPartInfo.info(partIndex: findex+1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance))
+                        }
+                    }
+
+                    if cursor > 0, remainingTrainLength > 0 {
+                        let u = cursor - 0
+                        assert(u >= 0)
+                        remainingTrainLength -= u
+                        parts.append(SpreadBlockPartInfo.info(partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength))
+                    }
+                    
+                    try blockCallback(.init(block: info, parts: parts))
+                }
+            }
+
+            if remainingTrainLength > 0 {
+                return .continue
+            } else {
+                return .stop
+            }
+        })
+    }
+    
+    private func visitBlock(blockInfo: ElementVisitor.BlockInfo, index: Int, train: Train, directionForward: Bool, position: TrainPosition, remainingTrainLength: inout Double, blockCallback: BlockCallbackBlock) throws {
         // true if this block is the first one to be visited which, by definition, is the block at the "front"
         // of the train in the direction of travel of the train.
         let frontBlock = index == 0
@@ -116,10 +260,10 @@ final class TrainSpreader {
 
         // Compute the length that the train occupies in the block
         let occupiedLength = try occupiedLengthOfTrainInBlock(block: blockInfo.block,
-                                                              positions: train.positions,
+                                                              position: position,
                                                               frontBlock: frontBlock,
                                                               directionOfSpread: directionOfSpread,
-                                                              trainForward: locomotive.directionForward)
+                                                              trainForward: directionForward)
 
         // Subtract it from the remaining train length
         remainingTrainLength -= occupiedLength
@@ -138,9 +282,9 @@ final class TrainSpreader {
             let pos = try backPositionIn(block: blockInfo.block,
                                          spaceLeftInBlock: abs(remainingTrainLength),
                                          directionOfSpread: directionOfSpread,
-                                         directionForward: locomotive.directionForward)
+                                         directionForward: directionForward)
 
-            if locomotive.directionForward {
+            if directionForward {
                 // Moving forward, the back position is the tail
                 train.positions.tail = pos
             } else {
@@ -150,7 +294,7 @@ final class TrainSpreader {
         }
 
         // Update the parts of the train
-        fillParts(train: train, trainForward: train.directionForward, directionOfSpread: directionOfSpread, block: blockInfo.block, bv: bv)
+        fillParts(train: train, trainForward: directionForward, directionOfSpread: directionOfSpread, block: blockInfo.block, bv: bv)
     }
 
     /// Fill out the parts of the train in the given block
@@ -352,42 +496,19 @@ final class TrainSpreader {
     ///
     /// - Parameters:
     ///   - block: the block
-    ///   - positions: the train positions
+    ///   - position: the position of the train
     ///   - frontBlock: true if the block is the front block
     ///   - directionOfSpread: the direction of the spread in the block
     ///   - trainForward: true if the train moves forward, false if it moves backward
     /// - Returns: the occupied length of the train in the block
-    func occupiedLengthOfTrainInBlock(block: Block, positions: TrainPositions, frontBlock: Bool, directionOfSpread: Direction, trainForward: Bool) throws -> Double {
+    func occupiedLengthOfTrainInBlock(block: Block, position: TrainPosition, frontBlock: Bool, directionOfSpread: Direction, trainForward: Bool) throws -> Double {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
         }
 
-        // directionOfVisit: always in the opposite direction of travel of the train
         let lengthOfTrainInBlock: Double
         if frontBlock {
-            let frontDistance: Double
-            if trainForward {
-                guard let head = positions.head else {
-                    throw LayoutError.frontPositionNotSpecified(position: positions)
-                }
-
-                guard head.blockId == block.id else {
-                    throw LayoutError.frontPositionBlockIdMismatch(expected: head.blockId, got: block.id)
-                }
-
-                frontDistance = head.distance
-            } else {
-                guard let tail = positions.tail else {
-                    throw LayoutError.backPositionNotSpecified(position: positions)
-                }
-
-                guard tail.blockId == block.id else {
-                    throw LayoutError.backPositionBlockIdMismatch(expected: tail.blockId, got: block.id)
-                }
-
-                frontDistance = tail.distance
-            }
-
+            let frontDistance = position.distance
             if directionOfSpread == .next {
                 if trainForward {
                     // [     >
