@@ -76,16 +76,19 @@ final class TrainSpreader {
         let directionOfVisit = trainInstance.direction.opposite
 
         try visitor.visit(fromBlockId: frontBlock.id, direction: directionOfVisit, callback: { info in
-            if let transition = info.transition {
+            switch info {
+            case .transition(index: _, transition: let transition):
                 // Transition is just a virtual connection between two elements, no physical length exists.
                 try transitionCallback(transition)
-            } else if let turnoutInfo = info.turnout {
-                if let length = turnoutInfo.turnout.length {
+                
+            case .turnout(index: _, info: let info):
+                if let length = info.turnout.length {
                     remainingTrainLength -= length
                 }
-                try turnoutCallback(turnoutInfo)
-            } else if let blockInfo = info.block {
-                try visitBlock(info: info, blockInfo: blockInfo, train: train, remainingTrainLength: &remainingTrainLength, blockCallback: blockCallback)
+                try turnoutCallback(info)
+                
+            case .block(index: let index, info: let info):
+                try visitBlock(blockInfo: info, index: index, train: train, remainingTrainLength: &remainingTrainLength, blockCallback: blockCallback)
             }
 
             if remainingTrainLength > 0 {
@@ -98,14 +101,14 @@ final class TrainSpreader {
         return remainingTrainLength
     }
 
-    private func visitBlock(info: ElementVisitor.ElementInfo, blockInfo: ElementVisitor.BlockInfo, train: Train, remainingTrainLength: inout Double, blockCallback: BlockCallbackBlock) throws {
+    private func visitBlock(blockInfo: ElementVisitor.BlockInfo, index: Int, train: Train, remainingTrainLength: inout Double, blockCallback: BlockCallbackBlock) throws {
         guard let locomotive = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
 
         // true if this block is the first one to be visited which, by definition, is the block at the "front"
         // of the train in the direction of travel of the train.
-        let frontBlock = info.index == 0
+        let frontBlock = index == 0
 
         // The direction of visit for each block can change, depending on the block orientation. Always
         // rely on the direction parameter from the block information.

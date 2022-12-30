@@ -33,25 +33,23 @@ final class ElementVisitor {
         /// Direction in which the visitor algorithm is traversing the block
         let direction: Direction
     }
-
-    struct ElementInfo {
-        let transition: Transition?
-        let turnout: TurnoutInfo?
-        let block: BlockInfo?
-
+    
+    enum Element {
         // Index of the element the visitor algorithm is visiting
-        let index: Int
+        case transition(index: Int, transition: Transition)
+        case turnout(index: Int, info: TurnoutInfo)
+        case block(index: Int, info: BlockInfo)
 
-        static func block(_ block: Block, direction: Direction, index: Int) -> ElementInfo {
-            .init(transition: nil, turnout: nil, block: .init(block: block, direction: direction), index: index)
+        static func block(_ block: Block, direction: Direction, index: Int) -> Element {
+            .block(index: index, info: .init(block: block, direction: direction))
         }
 
-        static func transition(_ transition: Transition, index: Int) -> ElementInfo {
-            .init(transition: transition, turnout: nil, block: nil, index: index)
+        static func transition(_ transition: Transition, index: Int) -> Element {
+            .transition(index: index, transition: transition)
         }
 
-        static func turnout(_ turnout: Turnout, sockets: Turnout.Reservation.Sockets?, index: Int) -> ElementInfo {
-            .init(transition: nil, turnout: .init(turnout: turnout, sockets: sockets), block: nil, index: index)
+        static func turnout(_ turnout: Turnout, sockets: Turnout.Reservation.Sockets?, index: Int) -> Element {
+            .turnout(index: index, info: .init(turnout: turnout, sockets: sockets))
         }
     }
 
@@ -60,14 +58,14 @@ final class ElementVisitor {
         case `continue`
     }
 
-    typealias VisitorCallback = (ElementInfo) throws -> VisitorCallbackResult
+    typealias VisitorCallback = (Element) throws -> VisitorCallbackResult
 
     static func blockAfter(block: Block, direction: Direction, layout: Layout) throws -> Block? {
         var nextBlock: Block?
         let visitor = ElementVisitor(layout: layout)
         try visitor.visit(fromBlockId: block.id, toBlockId: nil, direction: direction) { info in
-            if let block = info.block, info.index > 0 {
-                nextBlock = block.block
+            if case let .block(index, blockInfo) = info, index > 0 {
+                nextBlock = blockInfo.block
                 return .stop
             } else {
                 return .continue
@@ -82,7 +80,7 @@ final class ElementVisitor {
         guard let block = layout.blocks[fromBlockId] else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        guard try callback(ElementInfo.block(block, direction: direction, index: 0)) == .continue else {
+        guard try callback(Element.block(block, direction: direction, index: 0)) == .continue else {
             return
         }
         let toBlock = layout.blocks[toBlockId]
@@ -95,7 +93,7 @@ final class ElementVisitor {
             return
         }
 
-        guard try callback(ElementInfo.transition(transition, index: index)) == .continue else {
+        guard try callback(Element.transition(transition, index: index)) == .continue else {
             return
         }
 
@@ -111,7 +109,7 @@ final class ElementVisitor {
             }
 
             let direction: Direction = toSocketId == block.previous.socketId ? .next : .previous
-            guard try callback(ElementInfo.block(block, direction: direction, index: index)) == .continue else {
+            guard try callback(Element.block(block, direction: direction, index: index)) == .continue else {
                 return
             }
 
@@ -147,7 +145,7 @@ final class ElementVisitor {
                 }
             }
 
-            guard try callback(ElementInfo.turnout(turnout, sockets: sockets, index: index)) == .continue else {
+            guard try callback(Element.turnout(turnout, sockets: sockets, index: index)) == .continue else {
                 return
             }
 
