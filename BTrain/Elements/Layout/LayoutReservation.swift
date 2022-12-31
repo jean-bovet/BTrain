@@ -411,6 +411,127 @@ final class LayoutReservation {
         }
     }
 
+    struct Options {
+        var lengthOfTrain: Double = 0
+        var markLastPartAsLocomotive = false
+        var markFirstPartAsLocomotive = false
+    }
+    
+    func occupyBlocksWith2(train: Train) throws {
+        guard let frontBlock = train.block else {
+            throw LayoutError.trainNotAssignedToABlock(train: train)
+        }
+        
+        guard let trainInstance = frontBlock.trainInstance else {
+            throw LayoutError.trainNotFoundInBlock(blockId: frontBlock.id)
+        }
+        
+        guard let trainLength = train.length else {
+            // TODO: throw
+            fatalError()
+        }
+        
+        var forwardOptions = Options()
+        var backwardOptions = Options()
+
+        let position: TrainPosition
+        
+        if train.directionForward {
+            if let head = train.positions.head {
+                position = head
+                forwardOptions.lengthOfTrain = 0
+                backwardOptions.lengthOfTrain = trainLength
+                backwardOptions.markFirstPartAsLocomotive = true
+            } else {
+                // TODO: throw
+                fatalError()
+            }
+        } else {
+            if let tail = train.positions.tail {
+                position = tail
+                forwardOptions.lengthOfTrain = trainLength
+                backwardOptions.lengthOfTrain = 0
+                forwardOptions.markLastPartAsLocomotive = true
+            } else if let head = train.positions.head {
+                // There is no magnet at the rear of the train, use the magnet at the front of the train.
+                position = head
+                forwardOptions.lengthOfTrain = 0
+                backwardOptions.lengthOfTrain = trainLength
+                backwardOptions.markFirstPartAsLocomotive = true
+            } else {
+                // TODO: throw
+                fatalError()
+            }
+        }
+        
+        // When moving forward, the frontBlock is the block where the locomotive is located.
+        // When moving backward, the frontBlock is the block where the last wagon is located.
+        // --> now when moving backward, the frontBlock can be the block where the locomotive is located
+        // if there are no magnet at the tail of the train!
+
+        assert(frontBlock.id == position.blockId)
+        
+        let occupation = train.occupied
+        occupation.clear()
+        
+        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, lengthOfTrain: forwardOptions.lengthOfTrain, occupation: occupation)
+        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, lengthOfTrain: backwardOptions.lengthOfTrain, occupation: occupation)
+    }
+    
+    func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, lengthOfTrain: Double, occupation: TrainOccupiedReservation) throws {
+        let spreader = TrainSpreader(layout: layout)
+        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
+            guard transition.reserved == nil else {
+                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
+            }
+            transition.reserved = train.id
+            transition.train = train.id
+            occupation.append(transition)
+        }, turnoutCallback: { turnoutInfo in
+            let turnout = turnoutInfo.turnout
+
+            guard turnout.reserved == nil else {
+                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
+            }
+            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
+            turnout.train = train.id
+            occupation.append(turnout)
+        }, blockCallback: { spreadBlockInfo in
+            let blockInfo = spreadBlockInfo.block
+            let block = blockInfo.block
+            guard block.reservation == nil || block == train.block else {
+                throw LayoutError.blockAlreadyReserved(block: block)
+            }
+
+            let directionOfTravel: Direction
+            if directionOfTravelSameAsDirection {
+                directionOfTravel = blockInfo.direction
+            } else {
+                directionOfTravel = blockInfo.direction.opposite
+            }
+            
+            let trainInstance = TrainInstance(train.id, directionOfTravel)
+            for part in spreadBlockInfo.parts {
+                // TODO: position
+                if part.lastPart && options.markLastPartAsLocomotive {
+                    trainInstance.parts[part.partIndex] = .locomotive
+                } else if part.firstPart && options.markFirstPartAsLocomotive {
+                    trainInstance.parts[part.partIndex] = .locomotive
+                } else {
+                    trainInstance.parts[part.partIndex] = .wagon
+                }
+            }
+            
+            block.trainInstance = trainInstance
+            block.reservation = Reservation(trainId: train.id, direction: directionOfTravel)
+            occupation.append(block)
+        })
+        
+        if success == false {
+            throw LayoutError.cannotReserveAllElements(train: train)
+        }
+    }
+
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
         train.leading.clear()

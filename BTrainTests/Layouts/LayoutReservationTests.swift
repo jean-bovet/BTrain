@@ -91,4 +91,60 @@ final class LayoutReservationTests: XCTestCase {
         XCTAssertTrue(r.removeOccupation(train: train, removeFrontBlock: true))
         XCTAssertNil(train.block?.trainInstance)
     }
+    
+    func testOccupyBlocks() throws {
+        let layout = Layout()
+
+        let b0 = Block(name: "b0")
+        b0.length = 100
+        layout.blocks.add(b0)
+
+        let b1 = Block(name: "b1")
+        b1.length = 100
+        b1.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 50))
+        layout.blocks.add(b1)
+
+        let b2 = Block(name: "b2")
+        b2.length = 100
+        b2.feedbacks.append(.init(id: "f2.1", feedbackId: .init(uuid: "f2.1"), distance: 20))
+        b2.feedbacks.append(.init(id: "f2.2", feedbackId: .init(uuid: "f2.2"), distance: 80))
+        layout.blocks.add(b2)
+
+        let b3 = Block(name: "b3")
+        b3.length = 100
+        b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 30))
+        b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 70))
+        layout.blocks.add(b3)
+
+        let t23 = Turnout(name: "t23")
+        t23.length = 10
+        layout.turnouts.add(t23)
+        
+        layout.link(from: b0.next, to: b1.previous)
+        layout.link(from: b1.next, to: b2.previous)
+        layout.link(from: b2.next, to: t23.socket0)
+        layout.link(from: t23.socket1, to: b3.next)
+
+        let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
+
+        let loc = Locomotive()
+        loc.length = 20
+        let train = Train()
+        train.locomotive = loc
+        
+        loc.directionForward = true
+        train.block = b0
+        b0.trainInstance = .init(train.id, .next)
+        
+        train.positions = .head(blockId: b0.id, index: 0, distance: 50)
+        
+        try r.occupyBlocksWith2(train: train)
+        
+        XCTAssertEqual(b0.trainInstance?.trainId, train.id)
+        XCTAssertEqual(b0.trainInstance?.direction, .next)
+        XCTAssertEqual(b0.trainInstance?.parts.count, 1)
+        XCTAssertEqual(b0.trainInstance?.parts[0], .locomotive)
+//        XCTAssertEqual(train.positions.tail, .init(blockId: b0.id, index: 0, distance: 70))
+    }
+    
 }

@@ -21,8 +21,7 @@ struct TrainPosition: Equatable, Codable {
         case occupiedBlockNotFound(blockId: Identifier<Block>)
     }
 
-    /// The index of the block in which that position is located.
-    /// Note: the index is increasing in the direction of travel of the train
+    /// The block in which this position is located
     var blockId: Identifier<Block>
 
     /// The index of the position within the block.
