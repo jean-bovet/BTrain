@@ -522,8 +522,9 @@ final class LayoutReservation {
             }
             
             let trainInstance = TrainInstance(train.id, directionOfTravel)
+            
+            // Update the parts
             for part in spreadBlockInfo.parts {
-                // TODO: position
                 if part.lastPart && options.markLastPartAsLocomotive {
                     trainInstance.parts[part.partIndex] = .locomotive
                 } else if part.firstPart && options.markFirstPartAsLocomotive {
@@ -533,6 +534,7 @@ final class LayoutReservation {
                 }
             }
             
+            // Update the position
             for part in spreadBlockInfo.parts {
                 if part.lastPart {
                     switch options.lastPartUpdatePosition {
@@ -548,7 +550,12 @@ final class LayoutReservation {
             
             block.trainInstance = trainInstance
             block.reservation = Reservation(trainId: train.id, direction: directionOfTravel)
-            occupation.append(block)
+            
+            // Because our algorithm can occupy the same block twice (when going backward and then forward),
+            // we need to ensure we don't add the same block more than once.
+            if occupation.blocks.last != block {
+                occupation.append(block)
+            }
         })
         
         if success == false {
