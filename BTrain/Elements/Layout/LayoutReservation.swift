@@ -376,57 +376,6 @@ final class LayoutReservation {
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
     func occupyBlocksWith(train: Train) throws {
-        try occupyBlocksWith2(train: train)
-//        let occupation = train.occupied
-//        occupation.clear()
-//
-//        let spreader = TrainSpreader(layout: layout)
-//        let remainingTrainLength = try spreader.spread(train: train) { transition in
-//            guard transition.reserved == nil else {
-//                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
-//            }
-//            transition.reserved = train.id
-//            transition.train = train.id
-//            occupation.append(transition)
-//        } turnoutCallback: { turnoutInfo in
-//            let turnout = turnoutInfo.turnout
-//
-//            guard turnout.reserved == nil else {
-//                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
-//            }
-//            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
-//            turnout.train = train.id
-//            occupation.append(turnout)
-//        } blockCallback: { block, attributes in
-//            guard block.reservation == nil || attributes.frontBlock else {
-//                throw LayoutError.blockAlreadyReserved(block: block)
-//            }
-//
-//            let trainInstance = TrainInstance(train.id, attributes.trainDirection)
-//            block.trainInstance = trainInstance
-//            block.reservation = Reservation(trainId: train.id, direction: attributes.trainDirection)
-//            occupation.append(block)
-//        }
-//        if remainingTrainLength > 0 {
-//            throw LayoutError.cannotReserveAllElements(train: train)
-//        }
-    }
-
-    struct Options {
-        var lengthOfTrain: Double?
-        var markLastPartAsLocomotive = false
-        var markFirstPartAsLocomotive = false
-        
-        enum UpdatePosition {
-            case none
-            case tail
-            case head
-        }
-        
-        var lastPartUpdatePosition: UpdatePosition = .none
-    }
-    
-    func occupyBlocksWith2(train: Train) throws {
         guard let frontBlock = train.block else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
@@ -506,8 +455,22 @@ final class LayoutReservation {
         try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, occupation: occupation)
         try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, occupation: occupation)
     }
-    
-    func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, occupation: TrainOccupiedReservation) throws {
+
+    struct Options {
+        var lengthOfTrain: Double?
+        var markLastPartAsLocomotive = false
+        var markFirstPartAsLocomotive = false
+        
+        enum UpdatePosition {
+            case none
+            case tail
+            case head
+        }
+        
+        var lastPartUpdatePosition: UpdatePosition = .none
+    }
+        
+    private func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, occupation: TrainOccupiedReservation) throws {
         guard let lengthOfTrain = options.lengthOfTrain else {
             return
         }

@@ -156,7 +156,7 @@ final class LayoutReservationTests: XCTestCase {
             
             train.positions = positions
             
-            try r.occupyBlocksWith2(train: train)
+            try r.occupyBlocksWith(train: train)
         }
         
         func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [Int:TrainInstance.TrainPart]) {
