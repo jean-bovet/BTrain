@@ -389,17 +389,18 @@ final class LayoutReservation {
             fatalError()
         }
         
-        var forwardOptions = Options()
-        var backwardOptions = Options()
+        var options = Options()
 
         let position: TrainPosition
         
         if train.directionForward {
             if let head = train.positions.head {
                 position = head
-                backwardOptions.lengthOfTrain = trainLength
-                backwardOptions.markFirstPartAsLocomotive = true
-                backwardOptions.lastPartUpdatePosition = .tail
+                options.lengthOfTrain = trainLength
+                options.markFirstPartAsLocomotive = true
+                options.lastPartUpdatePosition = .tail
+                options.directionOfTravelSameAsDirection = false
+                options.direction = trainInstance.direction.opposite
             } else {
                 throw LayoutError.frontPositionNotSpecified(position: train.positions)
             }
@@ -409,15 +410,19 @@ final class LayoutReservation {
                 if trainInstance.direction == .next {
                     // [ >------- ]>
                     //   h      t
-                    backwardOptions.lengthOfTrain = trainLength
-                    backwardOptions.markLastPartAsLocomotive = true
-                    backwardOptions.lastPartUpdatePosition = .head
+                    options.lengthOfTrain = trainLength
+                    options.markLastPartAsLocomotive = true
+                    options.lastPartUpdatePosition = .head
+                    options.directionOfTravelSameAsDirection = false
+                    options.direction = trainInstance.direction.opposite
                 } else {
                     // [ -------< ]>
                     //   t      h
-                    backwardOptions.lengthOfTrain = trainLength
-                    backwardOptions.markLastPartAsLocomotive = true
-                    backwardOptions.lastPartUpdatePosition = .head
+                    options.lengthOfTrain = trainLength
+                    options.markLastPartAsLocomotive = true
+                    options.lastPartUpdatePosition = .head
+                    options.directionOfTravelSameAsDirection = false
+                    options.direction = trainInstance.direction.opposite
                 }
             } else if let head = train.positions.head {
                 // There is no magnet at the rear of the train, use the magnet at the front of the train.
@@ -425,15 +430,19 @@ final class LayoutReservation {
                 if trainInstance.direction == .next {
                     // [ >------- ]>
                     //   h      t
-                    forwardOptions.lengthOfTrain = trainLength
-                    forwardOptions.markFirstPartAsLocomotive = true
-                    forwardOptions.lastPartUpdatePosition = .tail
+                    options.lengthOfTrain = trainLength
+                    options.markFirstPartAsLocomotive = true
+                    options.lastPartUpdatePosition = .tail
+                    options.directionOfTravelSameAsDirection = true
+                    options.direction = trainInstance.direction
                 } else {
                     // [ -------< ]>
                     //   t      h
-                    forwardOptions.lengthOfTrain = trainLength
-                    forwardOptions.markFirstPartAsLocomotive = true
-                    forwardOptions.lastPartUpdatePosition = .tail
+                    options.lengthOfTrain = trainLength
+                    options.markFirstPartAsLocomotive = true
+                    options.lastPartUpdatePosition = .tail
+                    options.directionOfTravelSameAsDirection = true
+                    options.direction = trainInstance.direction
                 }
             } else {
                 // TODO: throw
@@ -451,15 +460,15 @@ final class LayoutReservation {
         let occupation = train.occupied
         occupation.clear()
         
-        // TODO: only do one pass instead of two
-        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, occupation: occupation)
-        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, occupation: occupation)
+        try occupyBlocksWith(train: train, position: position, options: options, occupation: occupation)
     }
 
     struct Options {
         var lengthOfTrain: Double?
         var markLastPartAsLocomotive = false
         var markFirstPartAsLocomotive = false
+        var directionOfTravelSameAsDirection = false
+        var direction = Direction.next
         
         enum UpdatePosition {
             case none
@@ -470,12 +479,12 @@ final class LayoutReservation {
         var lastPartUpdatePosition: UpdatePosition = .none
     }
         
-    private func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, occupation: TrainOccupiedReservation) throws {
+    private func occupyBlocksWith(train: Train, position: TrainPosition, options: Options, occupation: TrainOccupiedReservation) throws {
         guard let lengthOfTrain = options.lengthOfTrain else {
             return
         }
         let spreader = TrainSpreader(layout: layout)
-        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
+        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: options.direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
             }
@@ -499,7 +508,7 @@ final class LayoutReservation {
             }
 
             let directionOfTravel: Direction
-            if directionOfTravelSameAsDirection {
+            if options.directionOfTravelSameAsDirection {
                 directionOfTravel = blockInfo.direction
             } else {
                 directionOfTravel = blockInfo.direction.opposite
