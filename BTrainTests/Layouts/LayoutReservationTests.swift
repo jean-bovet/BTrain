@@ -163,19 +163,32 @@ final class LayoutReservationTests: XCTestCase {
     
     let ls = LayoutSample()
     
+    // blocks:    b0[   ]>
+    // indexes:       0
+    // distances:    100
+    // train:        -->    (length=20)
     func testOccupySingleBlockNext() throws {
         try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .next)
         ls.assert(ls.b0.trainInstance, .next, expectedParts: [.locomotive])
         XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 30))
     }
-    
+
+    // blocks:    b0[   ]>
+    // indexes:       0
+    // distances:    100
+    // train:         <--    (length=20)
     func testOccupySingleBlockPrevious() throws {
         try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .previous)
         ls.assert(ls.b0.trainInstance, .previous, expectedParts: [.locomotive])
         XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 70))
     }
 
+    // blocks:    b0[   ]> b1[   f0   ]>
+    // indexes:       0        0    1
+    // distances:    100      50   50
+    // train:         ------------->    (length=120)
     func testOccupyTwoBlocksNext() throws {
+        ls.loc.length = 20
         ls.train.wagonsLength = 100
         try ls.reserve(block: ls.b1, positions: .head(blockId: ls.b1.id, index: 1, distance: 50), direction: .next)
 
@@ -185,7 +198,12 @@ final class LayoutReservationTests: XCTestCase {
                                                           tail: .init(blockId: ls.b0.id, index: 0, distance: 30)))
     }
 
+    // blocks:    b0[   ]> b1[   f0   ]>
+    // indexes:       0        0    1
+    // distances:    100      50   50
+    // train:         >-------------    (length=120)
     func testOccupyTwoBlocksPreviousBackward() throws {
+        ls.loc.length = 20
         ls.train.wagonsLength = 100
         ls.loc.directionForward = false
         try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .previous)
