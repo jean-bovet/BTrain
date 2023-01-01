@@ -376,43 +376,44 @@ final class LayoutReservation {
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
     func occupyBlocksWith(train: Train) throws {
-        let occupation = train.occupied
-        occupation.clear()
-
-        let spreader = TrainSpreader(layout: layout)
-        let remainingTrainLength = try spreader.spread(train: train) { transition in
-            guard transition.reserved == nil else {
-                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
-            }
-            transition.reserved = train.id
-            transition.train = train.id
-            occupation.append(transition)
-        } turnoutCallback: { turnoutInfo in
-            let turnout = turnoutInfo.turnout
-
-            guard turnout.reserved == nil else {
-                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
-            }
-            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
-            turnout.train = train.id
-            occupation.append(turnout)
-        } blockCallback: { block, attributes in
-            guard block.reservation == nil || attributes.frontBlock else {
-                throw LayoutError.blockAlreadyReserved(block: block)
-            }
-
-            let trainInstance = TrainInstance(train.id, attributes.trainDirection)
-            block.trainInstance = trainInstance
-            block.reservation = Reservation(trainId: train.id, direction: attributes.trainDirection)
-            occupation.append(block)
-        }
-        if remainingTrainLength > 0 {
-            throw LayoutError.cannotReserveAllElements(train: train)
-        }
+        try occupyBlocksWith2(train: train)
+//        let occupation = train.occupied
+//        occupation.clear()
+//
+//        let spreader = TrainSpreader(layout: layout)
+//        let remainingTrainLength = try spreader.spread(train: train) { transition in
+//            guard transition.reserved == nil else {
+//                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
+//            }
+//            transition.reserved = train.id
+//            transition.train = train.id
+//            occupation.append(transition)
+//        } turnoutCallback: { turnoutInfo in
+//            let turnout = turnoutInfo.turnout
+//
+//            guard turnout.reserved == nil else {
+//                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
+//            }
+//            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
+//            turnout.train = train.id
+//            occupation.append(turnout)
+//        } blockCallback: { block, attributes in
+//            guard block.reservation == nil || attributes.frontBlock else {
+//                throw LayoutError.blockAlreadyReserved(block: block)
+//            }
+//
+//            let trainInstance = TrainInstance(train.id, attributes.trainDirection)
+//            block.trainInstance = trainInstance
+//            block.reservation = Reservation(trainId: train.id, direction: attributes.trainDirection)
+//            occupation.append(block)
+//        }
+//        if remainingTrainLength > 0 {
+//            throw LayoutError.cannotReserveAllElements(train: train)
+//        }
     }
 
     struct Options {
-        var lengthOfTrain: Double = 0
+        var lengthOfTrain: Double?
         var markLastPartAsLocomotive = false
         var markFirstPartAsLocomotive = false
         
@@ -447,7 +448,6 @@ final class LayoutReservation {
         if train.directionForward {
             if let head = train.positions.head {
                 position = head
-                forwardOptions.lengthOfTrain = 0
                 backwardOptions.lengthOfTrain = trainLength
                 backwardOptions.markFirstPartAsLocomotive = true
                 backwardOptions.lastPartUpdatePosition = .tail
@@ -458,17 +458,35 @@ final class LayoutReservation {
         } else {
             if let tail = train.positions.tail {
                 position = tail
-                forwardOptions.lengthOfTrain = trainLength
-                forwardOptions.markLastPartAsLocomotive = true
-                forwardOptions.lastPartUpdatePosition = .head
-                backwardOptions.lengthOfTrain = 0
+                if trainInstance.direction == .next {
+                    // [ >------- ]>
+                    //   h      t
+                    backwardOptions.lengthOfTrain = trainLength
+                    backwardOptions.markLastPartAsLocomotive = true
+                    backwardOptions.lastPartUpdatePosition = .head
+                } else {
+                    // [ -------< ]>
+                    //   t      h
+                    backwardOptions.lengthOfTrain = trainLength
+                    backwardOptions.markLastPartAsLocomotive = true
+                    backwardOptions.lastPartUpdatePosition = .head
+                }
             } else if let head = train.positions.head {
                 // There is no magnet at the rear of the train, use the magnet at the front of the train.
                 position = head
-                forwardOptions.lengthOfTrain = 0
-                backwardOptions.lengthOfTrain = trainLength
-                backwardOptions.markFirstPartAsLocomotive = true
-                backwardOptions.lastPartUpdatePosition = .tail
+                if trainInstance.direction == .next {
+                    // [ >------- ]>
+                    //   h      t
+                    forwardOptions.lengthOfTrain = trainLength
+                    forwardOptions.markFirstPartAsLocomotive = true
+                    forwardOptions.lastPartUpdatePosition = .tail
+                } else {
+                    // [ -------< ]>
+                    //   t      h
+                    forwardOptions.lengthOfTrain = trainLength
+                    forwardOptions.markFirstPartAsLocomotive = true
+                    forwardOptions.lastPartUpdatePosition = .tail
+                }
             } else {
                 // TODO: throw
                 fatalError()
@@ -485,13 +503,17 @@ final class LayoutReservation {
         let occupation = train.occupied
         occupation.clear()
         
+        // TODO: only do one pass instead of two
         try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, occupation: occupation)
         try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, occupation: occupation)
     }
     
     func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, occupation: TrainOccupiedReservation) throws {
+        guard let lengthOfTrain = options.lengthOfTrain else {
+            return
+        }
         let spreader = TrainSpreader(layout: layout)
-        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: options.lengthOfTrain, transitionCallback: { transition in
+        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
             }

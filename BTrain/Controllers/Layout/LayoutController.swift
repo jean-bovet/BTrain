@@ -633,42 +633,46 @@ extension LayoutController {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
 
-        // Note: we set only the front position because the back position will be computed automatically
-        // when the occupied blocks are filled (see TrainVisitor).
-        if naturalDirectionInBlock == .next {
-            guard let blockFeedback = toBlock.feedbacks.last else {
-                throw LayoutError.blockContainsNoFeedback(block: toBlock)
-            }
-            guard let fd = blockFeedback.distance else {
-                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
-            }
-            train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd.after)
-        } else {
-            guard let blockFeedback = toBlock.feedbacks.first else {
-                throw LayoutError.blockContainsNoFeedback(block: toBlock)
-            }
-            guard let fd = blockFeedback.distance else {
-                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
-            }
-            train.positions = .head(blockId: toBlockId, index: 0, distance: fd.before)
+        guard let lastBlockFeedback = toBlock.feedbacks.last else {
+            throw LayoutError.blockContainsNoFeedback(block: toBlock)
+        }
+        guard let lastFd = lastBlockFeedback.distance else {
+            throw LayoutError.feedbackDistanceNotSet(feedback: lastBlockFeedback)
         }
 
-        // If the train is moving backwards, always setup the train as if it was moving
-        // forward and then toggle its direction. This is because the front position is always
-        // at the front of the train when moving forward and the back position is determined
-        // after visiting the blocks that the train occupies.
-        let previousDirectionForward = train.directionForward
-        if !train.directionForward {
-            try train.locomotiveOrThrow().directionForward = true
+        guard let firstBlockFeedback = toBlock.feedbacks.first else {
+            throw LayoutError.blockContainsNoFeedback(block: toBlock)
         }
+        guard let firstFd = firstBlockFeedback.distance else {
+            throw LayoutError.feedbackDistanceNotSet(feedback: firstBlockFeedback)
+        }
+
+        if naturalDirectionInBlock == .next {
+            if train.directionForward {
+                // [ ----> ]>
+                //   t   h
+                train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: lastFd.after)
+            } else {
+                // [ >---- ]>
+                //   h   t
+                train.positions = .tail(blockId: toBlockId, index: toBlock.feedbacks.count, distance: lastFd.after)
+            }
+        } else {
+            if train.directionForward {
+                // [ <---- ]>
+                //   h   t
+                train.positions = .head(blockId: toBlockId, index: 0, distance: firstFd.before)
+            } else {
+                // [ ----< ]>
+                //   t   h
+                train.positions = .tail(blockId: toBlockId, index: 0, distance: firstFd.before)
+            }
+        }
+
         try layout.setTrainToBlock(train, toBlockId, positions: train.positions, directionOfTravelInBlock: naturalDirectionInBlock)
 
         try reservation.freeElements(train: train)
         try reservation.occupyBlocksWith(train: train)
-
-        if previousDirectionForward == false {
-            try toggleTrainDirection(train)
-        }
     }
 }
 

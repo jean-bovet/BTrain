@@ -57,7 +57,7 @@ import Foundation
 ///      │       Feedback     │
 ///      │ ──────Distance────▶│
 /// ```
-final class Block: Element, ObservableObject {
+final class Block: Element, ObservableObject, CustomStringConvertible {
     /// The category of the block
     enum Category: String, Codable, CaseIterable {
         /// A station block where the train stops
@@ -177,6 +177,10 @@ final class Block: Element, ObservableObject {
     /// Speed limit for this block, defaults to unlimited
     @Published var speedLimit: SpeedLimit = .unlimited
 
+    var description: String {
+        description(nil)
+    }
+    
     init(id: Identifier<Block>, name: String = "") {
         self.id = id
         self.name = name
@@ -186,19 +190,21 @@ final class Block: Element, ObservableObject {
         self.init(id: Identifier<Block>(uuid: name), name: name)
     }
 
-    func description(_ layout: Layout) -> String {
+    func description(_ layout: Layout?) -> String {
         var info = "\(name)-[\(id)]"
-        if let reserved = reservation, let train = layout.trains[reserved.trainId] {
-            info += ", reserved for '\(train.name)'-\(reserved.direction)"
-        }
-        if let trainInstance = trainInstance {
-            if let train = layout.trains[trainInstance.trainId] {
-                info += ", \(train.description(layout))"
+        if let layout = layout {
+            if let reserved = reservation, let train = layout.trains[reserved.trainId] {
+                info += ", reserved for '\(train.name)'-\(reserved.direction)"
             }
-            if trainInstance.direction == .next {
-                info += ", direction forward"
-            } else {
-                info += ", direction backward"
+            if let trainInstance = trainInstance {
+                if let train = layout.trains[trainInstance.trainId] {
+                    info += ", \(train.description(layout))"
+                }
+                if trainInstance.direction == .next {
+                    info += ", direction forward"
+                } else {
+                    info += ", direction backward"
+                }
             }
         }
         return info
