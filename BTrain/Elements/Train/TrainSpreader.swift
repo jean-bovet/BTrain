@@ -183,7 +183,7 @@ final class TrainSpreader {
                         guard let fbDistance = fb.distance else {
                             throw LayoutError.feedbackDistanceNotSet(feedback: fb)
                         }
-                        if cursor < fbDistance, remainingTrainLength > 0 {
+                        if cursor < fbDistance, remainingTrainLength >= 0 {
                             let u = fbDistance - cursor
                             assert(u >= 0)
                             remainingTrainLength -= u
@@ -192,7 +192,7 @@ final class TrainSpreader {
                         }
                     }
 
-                    if cursor <= blockLength, remainingTrainLength > 0 {
+                    if cursor <= blockLength, remainingTrainLength >= 0 {
                         let u = blockLength - cursor
                         assert(u >= 0)
                         remainingTrainLength -= u
@@ -215,7 +215,7 @@ final class TrainSpreader {
                         guard let fbDistance = fb.distance else {
                             throw LayoutError.feedbackDistanceNotSet(feedback: fb)
                         }
-                        if cursor > fbDistance, remainingTrainLength > 0 {
+                        if cursor > fbDistance, remainingTrainLength >= 0 {
                             let u = cursor - fbDistance
                             assert(u >= 0)
                             remainingTrainLength -= u
@@ -224,13 +224,13 @@ final class TrainSpreader {
                         }
                     }
 
-                    if cursor >= 0, remainingTrainLength > 0 {
+                    if cursor >= 0, remainingTrainLength >= 0 {
                         let u = cursor - 0
                         assert(u >= 0)
                         remainingTrainLength -= u
                         parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
                     }
-                    
+
                     try blockCallback(.init(block: info, parts: parts))
                 }
             }

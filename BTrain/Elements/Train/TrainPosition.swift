@@ -16,7 +16,7 @@ import Foundation
 /// and the feedbacks inside the block) and finally the direction of travel of the train within the block.
 ///
 /// Note: the direction of travel of the train is used to determine if a position is before (or after) another position in the same block.
-struct TrainPosition: Equatable, Codable {
+struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     enum TrainPositionError: Error {
         case occupiedBlockNotFound(blockId: Identifier<Block>)
     }
@@ -31,6 +31,10 @@ struct TrainPosition: Equatable, Codable {
     /// Distance, in cm, from the beginning of the block in the direction of travel of the train
     var distance: Double
 
+    var description: String {
+        description(nil)
+    }
+
     /// When comparing to position, the distance is only compared up to a thousandth because with
     /// double operations, there will be rouding errors.
     /// - Parameters:
@@ -44,11 +48,12 @@ struct TrainPosition: Equatable, Codable {
             && delta < 0.0001
     }
 
-    func description(_ layout: Layout) -> String {
-        if let block = layout.blocks[blockId] {
+    func description(_ layout: Layout?) -> String {
+        if let block = layout?.blocks[blockId] {
             return "\(block.name):\(index):\(String(format: "%.3f", distance))"
         } else {
             return "\(blockId.uuid):\(index):\(String(format: "%.3f", distance))"
         }
     }
+    
 }

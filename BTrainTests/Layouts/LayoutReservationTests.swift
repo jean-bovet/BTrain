@@ -163,7 +163,7 @@ final class LayoutReservationTests: XCTestCase {
         func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [Int:TrainInstance.TrainPart]) {
             XCTAssertEqual(ti?.trainId, train.id)
             XCTAssertEqual(ti?.direction, direction)
-            XCTAssertEqual(ti?.parts, expectedParts)
+            XCTAssertEqual(ti?.parts, expectedParts, "Mismatching parts")
         }
         
     }
@@ -178,6 +178,14 @@ final class LayoutReservationTests: XCTestCase {
         try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .next)
         ls.assert(ls.b0.trainInstance, .next, expectedParts: [0: .locomotive])
         XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 30))
+    }
+
+    func testOccupySingleBlockNextWithZeroLengthTrain() throws {
+        ls.loc.length = 0
+        ls.train.wagonsLength = 0
+        try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .next)
+        ls.assert(ls.b0.trainInstance, .next, expectedParts: [0: .locomotive])
+        XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 50))
     }
 
     // blocks:    b0[   ]>
@@ -203,6 +211,27 @@ final class LayoutReservationTests: XCTestCase {
         ls.assert(ls.b1.trainInstance, .next, expectedParts: [0: .locomotive])
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b1.id, index: 1, distance: 50),
                                                           tail: .init(blockId: ls.b0.id, index: 0, distance: 30)))
+    }
+
+    func testOccupyBlockWithTwoFeedbacksAndZeroLengthTrain() throws {
+        ls.loc.length = 0
+        ls.train.wagonsLength = 0
+        try ls.reserve(block: ls.b2, positions: .head(blockId: ls.b2.id, index: 1, distance: 50), direction: .next)
+
+        ls.assert(ls.b2.trainInstance, .next, expectedParts: [1: .locomotive])
+        XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b2.id, index: 1, distance: 50),
+                                                          tail: .init(blockId: ls.b2.id, index: 1, distance: 50)))
+    }
+
+    func testOccupyBlockBackwardsWithTwoFeedbacksAndZeroLengthTrain() throws {
+        ls.loc.length = 0
+        ls.train.wagonsLength = 0
+        ls.loc.directionForward = false
+        try ls.reserve(block: ls.b2, positions: .head(blockId: ls.b2.id, index: 1, distance: 50), direction: .previous)
+
+        ls.assert(ls.b2.trainInstance, .previous, expectedParts: [1: .locomotive])
+        XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b2.id, index: 1, distance: 50),
+                                                          tail: .init(blockId: ls.b2.id, index: 1, distance: 50)))
     }
 
     // blocks:    b0[   ]> b1[   f0   ]>
@@ -231,9 +260,9 @@ final class LayoutReservationTests: XCTestCase {
         try ls.reserve(block: ls.b3, positions: .head(blockId: ls.b3.id, index: 0, distance: 10), direction: .previous)
 
         ls.assert(ls.b3.trainInstance, .previous, expectedParts: [2: .wagon, 1: .wagon, 0: .locomotive]) // Note: b3 has its direction backwards!
-        ls.assert(ls.b2.trainInstance, .next, expectedParts: [2: .wagon])
+        ls.assert(ls.b2.trainInstance, .next, expectedParts: [1: .wagon, 2: .wagon])
 
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b3.id, index: 0, distance: 10),
-                                                          tail: .init(blockId: ls.b2.id, index: 2, distance: 80)))
+                                                          tail: .init(blockId: ls.b2.id, index: 1, distance: 80)))
     }
 }

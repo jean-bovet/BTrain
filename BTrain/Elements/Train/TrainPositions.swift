@@ -18,14 +18,18 @@ import Foundation
 /// - Each of these positions correspond to a magnet that triggers a feedback in the layout.
 /// - A train that only moves forward needs only one magnet at the front of the train.
 /// - A train that moves forward and backward needs a magnet at the front and the back of the train
-struct TrainPositions: Equatable, Codable {
+struct TrainPositions: Equatable, Codable, CustomStringConvertible {
     /// The position at the head of the train (where the locomotive is located)
     var head: TrainPosition?
 
     /// The position at the tail of the train (where the last car is located)
     var tail: TrainPosition?
 
-    func description(_ layout: Layout) -> String {
+    var description: String {
+        description(nil)
+    }
+    
+    func description(_ layout: Layout?) -> String {
         if let head = head, let tail = tail {
             return "􀼯\(tail.description(layout))-\(head.description(layout))􀼮"
         } else if let head = head {

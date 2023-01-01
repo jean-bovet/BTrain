@@ -459,9 +459,9 @@ final class LayoutReservation {
             if let tail = train.positions.tail {
                 position = tail
                 forwardOptions.lengthOfTrain = trainLength
-                backwardOptions.lengthOfTrain = 0
                 forwardOptions.markLastPartAsLocomotive = true
                 forwardOptions.lastPartUpdatePosition = .head
+                backwardOptions.lengthOfTrain = 0
             } else if let head = train.positions.head {
                 // There is no magnet at the rear of the train, use the magnet at the front of the train.
                 position = head
@@ -485,13 +485,13 @@ final class LayoutReservation {
         let occupation = train.occupied
         occupation.clear()
         
-        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, lengthOfTrain: forwardOptions.lengthOfTrain, occupation: occupation)
-        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, lengthOfTrain: backwardOptions.lengthOfTrain, occupation: occupation)
+        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction, directionOfTravelSameAsDirection: true, options: forwardOptions, occupation: occupation)
+        try occupyBlocksWith(train: train, position: position, direction: trainInstance.direction.opposite, directionOfTravelSameAsDirection: false, options: backwardOptions, occupation: occupation)
     }
     
-    func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, lengthOfTrain: Double, occupation: TrainOccupiedReservation) throws {
+    func occupyBlocksWith(train: Train, position: TrainPosition, direction: Direction, directionOfTravelSameAsDirection: Bool, options: Options, occupation: TrainOccupiedReservation) throws {
         let spreader = TrainSpreader(layout: layout)
-        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
+        let success = try spreader.spread(blockId: position.blockId, distance: position.distance, direction: direction, lengthOfTrain: options.lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
             }
