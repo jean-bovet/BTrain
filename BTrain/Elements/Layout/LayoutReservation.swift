@@ -452,8 +452,7 @@ final class LayoutReservation {
                 backwardOptions.markFirstPartAsLocomotive = true
                 backwardOptions.lastPartUpdatePosition = .tail
             } else {
-                // TODO: throw
-                fatalError()
+                throw LayoutError.frontPositionNotSpecified(position: train.positions)
             }
         } else {
             if let tail = train.positions.tail {

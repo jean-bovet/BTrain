@@ -122,7 +122,7 @@ final class TrainSpreader {
         let partIndex: Int
         let distance: Double
         let firstPart: Bool
-        let lastPart: Bool
+        var lastPart: Bool = false
         
         static func info(firstPart: Bool, partIndex: Int, remainingTrainLength: Double, feedbackDistance: Double, direction: Direction) -> SpreadBlockPartInfo {
             let distance: Double
@@ -135,7 +135,7 @@ final class TrainSpreader {
                     distance = feedbackDistance + abs(remainingTrainLength)
                 }
             }
-            return .init(partIndex: partIndex, distance: distance, firstPart: firstPart, lastPart: remainingTrainLength <= 0)
+            return .init(partIndex: partIndex, distance: distance, firstPart: firstPart)
         }
 
     }
@@ -199,6 +199,10 @@ final class TrainSpreader {
                         parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
                     }
                     
+                    if parts.count > 0 {
+                        parts[parts.count - 1].lastPart = remainingTrainLength <= 0
+                    }
+                    
                     try blockCallback(.init(block: info, parts: parts))
                 } else {
                     var cursor: Double
@@ -229,6 +233,10 @@ final class TrainSpreader {
                         assert(u >= 0)
                         remainingTrainLength -= u
                         parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
+                    }
+
+                    if parts.count > 0 {
+                        parts[parts.count - 1].lastPart = remainingTrainLength <= 0
                     }
 
                     try blockCallback(.init(block: info, parts: parts))

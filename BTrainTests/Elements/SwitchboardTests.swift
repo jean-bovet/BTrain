@@ -89,11 +89,12 @@ class SwitchboardTests: XCTestCase {
         let loc = Locomotive()
         train.locomotive = loc
         b1.block.length = 100
-        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
+        b1.block.feedbacks[0].distance = 20
+        b1.block.feedbacks[1].distance = 80
 
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.block, b1.block)
-        XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, headIndex: b1.block.feedbacks.count, headDistance: 10.after, tailIndex: b1.block.feedbacks.count, tailDistance: 10.after))
+        XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, headIndex: b1.block.feedbacks.count, headDistance: 80.after, tailIndex: b1.block.feedbacks.count, tailDistance: 80.after))
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b1.trainCellPath(at: 1).boundingBox.center
@@ -111,12 +112,14 @@ class SwitchboardTests: XCTestCase {
         state.editing = false
 
         let b1 = provider.blockShapes[0]
-        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
         b1.block.length = 100
+        b1.block.feedbacks[0].distance = 20
+        b1.block.feedbacks[1].distance = 80
 
         let b2 = provider.blockShapes[1]
-        b2.block.feedbacks.append(.init(id: "ff", feedbackId: .init(uuid: "f2"), distance: 10))
         b2.block.length = 100
+        b2.block.feedbacks[0].distance = 20
+        b2.block.feedbacks[1].distance = 80
 
         let train = layout.trains[0]
         let loc = Locomotive()

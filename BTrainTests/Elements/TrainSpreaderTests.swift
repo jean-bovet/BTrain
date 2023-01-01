@@ -139,20 +139,20 @@ final class TrainSpreaderTests: XCTestCase {
         try assert(tv: tv, block: b0, distance: 50, direction: .next, lengthOfTrain: 50, expected: [[(0, true, true, 100)]])
 
         try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 10, expected: [[(0, true, true, 10)]])
-        try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 50, expected: [[(0, true, true, 50)]])
+        try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 50, expected: [[(0, true, false, 50), (1, false, true, 50)]])
         try assert(tv: tv, block: b1, distance: 0, direction: .next, lengthOfTrain: 51, expected: [[(0, true, false, 50), (1, false, true, 51)]])
         try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 50, expected: [[(0, true, false, 50), (1, false, true, 70)]])
-        try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 30, expected: [[(0, true, true, 50)]])
+        try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 30, expected: [[(0, true, false, 50), (1, false, true, 50)]])
         try assert(tv: tv, block: b1, distance: 20, direction: .next, lengthOfTrain: 20, expected: [[(0, true, true, 40)]])
         try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 50, expected: [[(1, true, false, 100)], [(0, false, true, 10)]])
         try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 40, expected: [[(1, true, true, 100)]])
         try assert(tv: tv, block: b1, distance: 60, direction: .next, lengthOfTrain: 20, expected: [[(1, true, true, 80)]])
-        try assert(tv: tv, block: b1, distance: 100, direction: .next, lengthOfTrain: 20, expected: [[(1, true, false, 100)], [(0, false, true, 20)]])
-        
+        try assert(tv: tv, block: b1, distance: 100, direction: .next, lengthOfTrain: 20, expected: [[(1, true, false, 100)], [(0, false, false, 20), (1, false, true, 20) ]])
+
         try assert(tv: tv, block: b2, distance: 50, direction: .previous, lengthOfTrain: 50, expected: [[(1, true, false, 20), (0, false, true, 0)]])
-        try assert(tv: tv, block: b2, distance: 100, direction: .previous, lengthOfTrain: 20, expected: [[(2, true, true, 80)]])
+        try assert(tv: tv, block: b2, distance: 100, direction: .previous, lengthOfTrain: 20, expected: [[(2, true, false, 80), (1, false, true, 80)]])
         try assert(tv: tv, block: b2, distance: 20, direction: .previous, lengthOfTrain: 20, expected: [[(0, true, true, 0)]])
-        
+
         try assert(tv: tv, block: b2, distance: 60, direction: .next, lengthOfTrain: 60, expected: [[(1, true, false, 80), (2, false, false, 100)], [(2, false, true, 90)]])
         try assert(tv: tv, block: b3, distance: 60, direction: .previous, lengthOfTrain: 80, success: false, expected: [[(1, true, false, 30), (0, false, false, 0)]])
     }
@@ -185,10 +185,10 @@ final class TrainSpreaderTests: XCTestCase {
             XCTAssertEqual(parts.count, expected[index].count, "Mismatch in the number of parts")
             
             for (pindex, part) in parts.enumerated() {
-                XCTAssertEqual(part.partIndex, expected[index][pindex].0)
-                XCTAssertEqual(part.firstPart, expected[index][pindex].1)
-                XCTAssertEqual(part.lastPart, expected[index][pindex].2)
-                XCTAssertEqual(part.distance, expected[index][pindex].3)
+                XCTAssertEqual(part.partIndex, expected[index][pindex].0, "Mismatching part index at part \(pindex)")
+                XCTAssertEqual(part.firstPart, expected[index][pindex].1, "Mismatching first part flag at part \(pindex)")
+                XCTAssertEqual(part.lastPart, expected[index][pindex].2, "Mismatching last part flag at part \(pindex)")
+                XCTAssertEqual(part.distance, expected[index][pindex].3, "Mismatching distance at part \(pindex)")
             }
         }
     }

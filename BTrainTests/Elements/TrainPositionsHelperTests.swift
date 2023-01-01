@@ -156,14 +156,13 @@ final class TrainPositionsHelperTests: XCTestCase {
         XCTAssertEqual(train.occupied.blocks.count, 1)
     }
 
-    func testSetupTrainToBlockAndChangeDirection() throws {
+    func testSetupTrain() throws {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
         let layout = doc.layout
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
 
         // A: [ f0 f1 ] (length 200)
-        // B: [ f0 f1 ] (length 100)
         // Train: length 120
 
         // Allowed direction: .forward / .any
@@ -191,22 +190,20 @@ final class TrainPositionsHelperTests: XCTestCase {
 
         // Block: [ ---> ]
         // Train: -------<
-        //        b      f
-        // Note: the train is setup first with its directionForward=true, and then it is toggled
-        try assert(doc, train, blockA, false, .next, .both(blockId: blockA.id,
-                                                           headIndex: lastIndex,
-                                                           headDistance: 180.after,
-                                                           tailIndex: 1,
-                                                           tailDistance: (180 - 120).after))
+        //        t      h
+        try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
+                                                               headIndex: lastIndex - 1,
+                                                               headDistance: (20 + 120).before,
+                                                               tailIndex: 0,
+                                                               tailDistance: 20.before))
         // Block: [ ---> ]
         // Train: >-------
-        //        f      b
-        // Note: the train is setup first with its directionForward=true, and then it is toggled
-        try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
-                                                               headIndex: 0,
-                                                               headDistance: 20.before,
-                                                               tailIndex: lastIndex - 1,
-                                                               tailDistance: (20 + 120).before))
+        //        h      t
+        try assert(doc, train, blockA, false, .next, .both(blockId: blockA.id,
+                                                           headIndex: 1,
+                                                           headDistance: (180 - 120).after,
+                                                           tailIndex: lastIndex,
+                                                           tailDistance: 180.after))
     }
 
     // MARK: - End of Block
@@ -233,10 +230,8 @@ final class TrainPositionsHelperTests: XCTestCase {
 
         train.locomotive!.directionForward = false
 
-        // Not at the end of the block because the train is too short and spans only position 2 and 1 (because the train
-        // is setup first as moving forward before being toggle backward).
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
-        assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
+        assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
         try doc.layout.setTrainToBlock(train, blockB.id, positions: .both(blockId: blockB.id, headIndex: blockB.feedbacks.count, headDistance: 0, tailIndex: 1, tailDistance: 0), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
