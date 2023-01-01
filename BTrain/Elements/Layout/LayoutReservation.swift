@@ -415,6 +415,14 @@ final class LayoutReservation {
         var lengthOfTrain: Double = 0
         var markLastPartAsLocomotive = false
         var markFirstPartAsLocomotive = false
+        
+        enum UpdatePosition {
+            case none
+            case tail
+            case head
+        }
+        
+        var lastPartUpdatePosition: UpdatePosition = .none
     }
     
     func occupyBlocksWith2(train: Train) throws {
@@ -442,6 +450,7 @@ final class LayoutReservation {
                 forwardOptions.lengthOfTrain = 0
                 backwardOptions.lengthOfTrain = trainLength
                 backwardOptions.markFirstPartAsLocomotive = true
+                backwardOptions.lastPartUpdatePosition = .tail
             } else {
                 // TODO: throw
                 fatalError()
@@ -452,12 +461,14 @@ final class LayoutReservation {
                 forwardOptions.lengthOfTrain = trainLength
                 backwardOptions.lengthOfTrain = 0
                 forwardOptions.markLastPartAsLocomotive = true
+                forwardOptions.lastPartUpdatePosition = .head
             } else if let head = train.positions.head {
                 // There is no magnet at the rear of the train, use the magnet at the front of the train.
                 position = head
                 forwardOptions.lengthOfTrain = 0
                 backwardOptions.lengthOfTrain = trainLength
                 backwardOptions.markFirstPartAsLocomotive = true
+                backwardOptions.lastPartUpdatePosition = .tail
             } else {
                 // TODO: throw
                 fatalError()
@@ -519,6 +530,19 @@ final class LayoutReservation {
                     trainInstance.parts[part.partIndex] = .locomotive
                 } else {
                     trainInstance.parts[part.partIndex] = .wagon
+                }
+            }
+            
+            for part in spreadBlockInfo.parts {
+                if part.lastPart {
+                    switch options.lastPartUpdatePosition {
+                    case .none:
+                        break
+                    case .tail:
+                        train.positions.tail = .init(blockId: block.id, index: part.partIndex, distance: part.distance)
+                    case .head:
+                        train.positions.head = .init(blockId: block.id, index: part.partIndex, distance: part.distance)
+                    }
                 }
             }
             

@@ -92,59 +92,110 @@ final class LayoutReservationTests: XCTestCase {
         XCTAssertNil(train.block?.trainInstance)
     }
     
-    func testOccupyBlocks() throws {
-        let layout = Layout()
-
-        let b0 = Block(name: "b0")
-        b0.length = 100
-        layout.blocks.add(b0)
-
-        let b1 = Block(name: "b1")
-        b1.length = 100
-        b1.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 50))
-        layout.blocks.add(b1)
-
-        let b2 = Block(name: "b2")
-        b2.length = 100
-        b2.feedbacks.append(.init(id: "f2.1", feedbackId: .init(uuid: "f2.1"), distance: 20))
-        b2.feedbacks.append(.init(id: "f2.2", feedbackId: .init(uuid: "f2.2"), distance: 80))
-        layout.blocks.add(b2)
-
-        let b3 = Block(name: "b3")
-        b3.length = 100
-        b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 30))
-        b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 70))
-        layout.blocks.add(b3)
-
-        let t23 = Turnout(name: "t23")
-        t23.length = 10
-        layout.turnouts.add(t23)
+    struct LayoutSample {
+        let layout: Layout
+        let b0: Block
+        let b1: Block
+        let train: Train
+        let loc: Locomotive
         
-        layout.link(from: b0.next, to: b1.previous)
-        layout.link(from: b1.next, to: b2.previous)
-        layout.link(from: b2.next, to: t23.socket0)
-        layout.link(from: t23.socket1, to: b3.next)
+        internal init() {
+            layout = Layout()
 
-        let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
+            b0 = Block(name: "b0")
+            b0.length = 100
+            layout.blocks.add(b0)
 
-        let loc = Locomotive()
-        loc.length = 20
-        let train = Train()
-        train.locomotive = loc
+            b1 = Block(name: "b1")
+            b1.length = 100
+            b1.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 50))
+            layout.blocks.add(b1)
+
+            let b2 = Block(name: "b2")
+            b2.length = 100
+            b2.feedbacks.append(.init(id: "f2.1", feedbackId: .init(uuid: "f2.1"), distance: 20))
+            b2.feedbacks.append(.init(id: "f2.2", feedbackId: .init(uuid: "f2.2"), distance: 80))
+            layout.blocks.add(b2)
+
+            let b3 = Block(name: "b3")
+            b3.length = 100
+            b3.feedbacks.append(.init(id: "f3.1", feedbackId: .init(uuid: "f3.1"), distance: 30))
+            b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 70))
+            layout.blocks.add(b3)
+
+            let t23 = Turnout(name: "t23")
+            t23.length = 10
+            layout.turnouts.add(t23)
+            
+            layout.link(from: b0.next, to: b1.previous)
+            layout.link(from: b1.next, to: b2.previous)
+            layout.link(from: b2.next, to: t23.socket0)
+            layout.link(from: t23.socket1, to: b3.next)
+            
+            loc = Locomotive()
+            loc.length = 20
+            train = Train()
+            train.locomotive = loc
+        }
         
-        loc.directionForward = true
-        train.block = b0
-        b0.trainInstance = .init(train.id, .next)
+        func reserve(block: Block, positions: TrainPositions, direction: Direction) throws {
+            let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
+            
+            loc.directionForward = true
+            train.block = block
+            block.trainInstance = .init(train.id, direction)
+            
+            train.positions = positions
+            
+            try r.occupyBlocksWith2(train: train)
+        }
         
-        train.positions = .head(blockId: b0.id, index: 0, distance: 50)
+        func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [TrainInstance.TrainPart]) {
+            XCTAssertEqual(ti?.trainId, train.id)
+            XCTAssertEqual(ti?.direction, direction)
+            XCTAssertEqual(ti?.parts.count, expectedParts.count)
+            for (index, expectedPart) in expectedParts.enumerated() {
+                XCTAssertEqual(ti?.parts[index], expectedPart)
+            }
+        }
         
-        try r.occupyBlocksWith2(train: train)
-        
-        XCTAssertEqual(b0.trainInstance?.trainId, train.id)
-        XCTAssertEqual(b0.trainInstance?.direction, .next)
-        XCTAssertEqual(b0.trainInstance?.parts.count, 1)
-        XCTAssertEqual(b0.trainInstance?.parts[0], .locomotive)
-//        XCTAssertEqual(train.positions.tail, .init(blockId: b0.id, index: 0, distance: 70))
     }
+    
+    let ls = LayoutSample()
+    
+    func testOccupySingleBlockNext() throws {
+        try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .next)
+        ls.assert(ls.b0.trainInstance, .next, expectedParts: [.locomotive])
+        XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 30))
+    }
+    
+    func testOccupySingleBlockPrevious() throws {
+        try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .previous)
+        ls.assert(ls.b0.trainInstance, .previous, expectedParts: [.locomotive])
+        XCTAssertEqual(ls.train.positions, .both(blockId: ls.b0.id, headIndex: 0, headDistance: 50, tailIndex: 0, tailDistance: 70))
+    }
+
+    func testOccupyTwoBlocksNext() throws {
+        ls.train.wagonsLength = 100
+        try ls.reserve(block: ls.b1, positions: .head(blockId: ls.b1.id, index: 1, distance: 50), direction: .next)
+
+        ls.assert(ls.b0.trainInstance, .next, expectedParts: [.wagon])
+        ls.assert(ls.b1.trainInstance, .next, expectedParts: [.locomotive])
+        XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b1.id, index: 1, distance: 50),
+                                                          tail: .init(blockId: ls.b0.id, index: 0, distance: 30)))
+    }
+
+    func testOccupyTwoBlocksPreviousBackward() throws {
+        ls.train.wagonsLength = 100
+        ls.loc.directionForward = false
+        try ls.reserve(block: ls.b0, positions: .head(blockId: ls.b0.id, index: 0, distance: 50), direction: .previous)
+
+        ls.assert(ls.b0.trainInstance, .previous, expectedParts: [.locomotive])
+        ls.assert(ls.b1.trainInstance, .previous, expectedParts: [.wagon, .wagon])
+        
+        XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b0.id, index: 0, distance: 50),
+                                                          tail: .init(blockId: ls.b1.id, index: 1, distance: 70)))
+    }
+
     
 }
