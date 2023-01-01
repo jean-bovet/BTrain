@@ -619,7 +619,7 @@ extension LayoutController {
     /// - Parameters:
     ///   - train: the train
     ///   - toBlockId: the block
-    ///   - naturalDirectionInBlock: the natural direction of the train
+    ///   - naturalDirectionInBlock: the direction of travel of the train in the block
     func setupTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, naturalDirectionInBlock: Direction) throws {
         guard let toBlock = layout.blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
@@ -633,39 +633,39 @@ extension LayoutController {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
 
-        guard let lastBlockFeedback = toBlock.feedbacks.last else {
-            throw LayoutError.blockContainsNoFeedback(block: toBlock)
-        }
-        guard let lastFd = lastBlockFeedback.distance else {
-            throw LayoutError.feedbackDistanceNotSet(feedback: lastBlockFeedback)
-        }
-
-        guard let firstBlockFeedback = toBlock.feedbacks.first else {
-            throw LayoutError.blockContainsNoFeedback(block: toBlock)
-        }
-        guard let firstFd = firstBlockFeedback.distance else {
-            throw LayoutError.feedbackDistanceNotSet(feedback: firstBlockFeedback)
-        }
-
         if naturalDirectionInBlock == .next {
+            guard let blockFeedback = toBlock.feedbacks.last else {
+                throw LayoutError.blockContainsNoFeedback(block: toBlock)
+            }
+            guard let feedbackDistance = blockFeedback.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+            }
+
             if train.directionForward {
                 // [ ----> ]>
                 //   t   h
-                train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: lastFd.after)
+                train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after)
             } else {
                 // [ >---- ]>
                 //   h   t
-                train.positions = .tail(blockId: toBlockId, index: toBlock.feedbacks.count, distance: lastFd.after)
+                train.positions = .tail(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after)
             }
         } else {
+            guard let blockFeedback = toBlock.feedbacks.first else {
+                throw LayoutError.blockContainsNoFeedback(block: toBlock)
+            }
+            guard let feedbackDistance = blockFeedback.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+            }
+
             if train.directionForward {
                 // [ <---- ]>
                 //   h   t
-                train.positions = .head(blockId: toBlockId, index: 0, distance: firstFd.before)
+                train.positions = .head(blockId: toBlockId, index: 0, distance: feedbackDistance.before)
             } else {
                 // [ ----< ]>
                 //   t   h
-                train.positions = .tail(blockId: toBlockId, index: 0, distance: firstFd.before)
+                train.positions = .tail(blockId: toBlockId, index: 0, distance: feedbackDistance.before)
             }
         }
 
