@@ -54,8 +54,7 @@ struct LayoutOccupation {
         }
 
         guard let trainLength = train.length else {
-            // TODO: throw
-            fatalError()
+            throw LayoutError.trainLengthNotDefined(train: train)
         }
 
         if train.directionForward {
@@ -116,8 +115,7 @@ struct LayoutOccupation {
                     directionOfSpread = trainInstance.direction
                 }
             } else {
-                // TODO: throw
-                fatalError()
+                throw LayoutError.noPositionsSpecified(position: train.positions)
             }
         }
                 
@@ -175,7 +173,7 @@ struct LayoutOccupation {
             
             let trainInstance = TrainInstance(train.id, directionOfTravel)
             
-            // Update the parts
+            // Update the content of each part
             for part in spreadBlockInfo.parts {
                 if part.lastPart && markLastPartAsLocomotive {
                     trainInstance.parts[part.partIndex] = .locomotive

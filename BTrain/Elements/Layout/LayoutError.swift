@@ -18,6 +18,7 @@ enum LayoutError: Error {
     case trainNotFoundInBlock(blockId: Identifier<Block>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
+    case trainLengthNotDefined(train: Train)
 
     case locomotiveNotAssignedToTrain(train: Train)
 
@@ -40,9 +41,7 @@ enum LayoutError: Error {
 
     case frontPositionNotSpecified(position: TrainPositions)
     case backPositionNotSpecified(position: TrainPositions)
-
-    case frontPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
-    case backPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
+    case noPositionsSpecified(position: TrainPositions)
 
     case frontPositionBlockNotSpecified(position: TrainPositions)
     case backPositionBlockNotSpecified(position: TrainPositions)
@@ -147,11 +146,8 @@ extension LayoutError: LocalizedError {
             return "Head position not specified: \(position)"
         case let .backPositionNotSpecified(position: position):
             return "Tail position not specified: \(position)"
-
-        case let .frontPositionBlockIdMismatch(expected: expected, got: got):
-            return "Head position block mismatch: expected \(expected) but got \(got)"
-        case let .backPositionBlockIdMismatch(expected: expected, got: got):
-            return "Tail position block mismatch: expected \(expected) but got \(got)"
+        case .noPositionsSpecified(position: let position):
+            return "Head and tail positions not specified: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.block is nil)"
@@ -161,6 +157,8 @@ extension LayoutError: LocalizedError {
             return "Train \(train.name) not found in route \(route.name)"
         case let .trainNotAssignedToARoute(train: train):
             return "Train \(train.name) has no associated route"
+        case .trainLengthNotDefined(train: let train):
+            return "Train \(train.name) has no length defined"
 
         case let .headWagonNotFound(train: train):
             return "No head wagon found for train \(train.name)"
