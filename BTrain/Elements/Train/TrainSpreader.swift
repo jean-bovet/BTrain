@@ -15,24 +15,32 @@ import Foundation
 /// This class spreads the train from its front block (which is the block at the front of the train in its direction of travel) over
 /// all the elements (transitions, turnouts and blocks) until all the length of the train has been spread out.
 final class TrainSpreader {
-    typealias TransitionCallbackBlock = (Transition) throws -> Void
-    typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
-
-    let layout: Layout
-    let visitor: ElementVisitor
-
-    init(layout: Layout) {
-        self.layout = layout
-        visitor = ElementVisitor(layout: layout)
+    
+    /// Information about the spread in a specified block
+    struct BlockInfo {
+        /// The information about the block itself
+        let blockInfo: ElementVisitor.BlockInfo
+        
+        /// The parts that got occupied by the train
+        let parts: [BlockPartInfo]
     }
-
-    struct SpreadBlockPartInfo {
+    
+    /// Information about a specified block part
+    struct BlockPartInfo {
+        
+        /// The index of the part, starting at 0 and increasing in the natural direction of the block
         let partIndex: Int
+        
+        /// The distance that the train occupies in the part, starting at the beginning of the block.
         let distance: Double
+        
+        /// True if this part is the first part of the spread
         let firstPart: Bool
+        
+        /// True if this part is the last part of the spread
         var lastPart: Bool = false
         
-        static func info(firstPart: Bool, partIndex: Int, remainingTrainLength: Double, feedbackDistance: Double, direction: Direction) -> SpreadBlockPartInfo {
+        static func info(firstPart: Bool, partIndex: Int, remainingTrainLength: Double, feedbackDistance: Double, direction: Direction) -> BlockPartInfo {
             let distance: Double
             if remainingTrainLength >= 0 {
                 distance = feedbackDistance
@@ -48,26 +56,30 @@ final class TrainSpreader {
 
     }
     
-    struct SpreadBlockInfo {
-        let block: ElementVisitor.BlockInfo
-        let parts: [SpreadBlockPartInfo]
+    typealias TransitionCallbackBlock = (Transition) throws -> Void
+    typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
+    typealias BlockPartCallbackBlock = (BlockInfo) throws -> Void
+
+    let layout: Layout
+    let visitor: ElementVisitor
+
+    init(layout: Layout) {
+        self.layout = layout
+        visitor = ElementVisitor(layout: layout)
     }
-        
-    typealias BlockPartCallbackBlock = (SpreadBlockInfo) throws -> Void
-    
+
     /// Visit all the elements that a train occupies - transitions, turnouts and blocks - starting
-    /// with the front block (the block at the front of the train in its direction of travel) and going backwards.
-    /// Updates the parts of the train in each block as well as the "tail" position of the train.
+    /// at the specified block and distance within that block, in the specified direction.
     ///
     /// - Parameters:
-    ///   - blockId: <#blockId description#>
-    ///   - distance: <#distance description#>
-    ///   - direction: <#direction description#>
-    ///   - lengthOfTrain: <#lengthOfTrain description#>
-    ///   - transitionCallback: <#transitionCallback description#>
-    ///   - turnoutCallback: <#turnoutCallback description#>
-    ///   - blockCallback: <#blockCallback description#>
-    /// - Returns: <#description#>
+    ///   - blockId: the block in which to start spreading the train
+    ///   - distance: the distance, from the start of the block, from which to start the spread
+    ///   - direction: the direction of the spread
+    ///   - lengthOfTrain: the length of the train
+    ///   - transitionCallback: a callback invoked for each transition encountered
+    ///   - turnoutCallback: a callback invoked for each turnout encountered
+    ///   - blockCallback: a callback invoked for each block encountered
+    /// - Returns: true if the spread was able to spread all the train, false if the train is longer than the available elements length
     func spread(blockId: Identifier<Block>, distance: Double, direction: Direction, lengthOfTrain: Double,
                 transitionCallback: TransitionCallbackBlock,
                 turnoutCallback: TurnoutCallbackBlock,
@@ -86,6 +98,7 @@ final class TrainSpreader {
                 try turnoutCallback(info)
                 
             case .block(index: let index, info: let info):
+                // TODO: simplify code?
                 guard let blockLength = info.block.length else {
                     throw LayoutError.blockLengthNotDefined(block: info.block)
                 }
@@ -97,7 +110,7 @@ final class TrainSpreader {
                         cursor = 0
                     }
                     
-                    var parts = [SpreadBlockPartInfo]()
+                    var parts = [BlockPartInfo]()
 
                     let feedbacks = info.block.feedbacks
                     for (findex, fb) in feedbacks.enumerated() {
@@ -109,7 +122,7 @@ final class TrainSpreader {
                             assert(u >= 0)
                             remainingTrainLength -= u
                             cursor = fbDistance
-                            parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .next))
+                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .next))
                         }
                     }
 
@@ -117,14 +130,14 @@ final class TrainSpreader {
                         let u = blockLength - cursor
                         assert(u >= 0)
                         remainingTrainLength -= u
-                        parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
+                        parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
                     }
                     
                     if parts.count > 0 {
                         parts[parts.count - 1].lastPart = remainingTrainLength <= 0
                     }
                     
-                    try blockCallback(.init(block: info, parts: parts))
+                    try blockCallback(.init(blockInfo: info, parts: parts))
                 } else {
                     var cursor: Double
                     if index == 0 {
@@ -133,7 +146,7 @@ final class TrainSpreader {
                         cursor = blockLength
                     }
                     
-                    var parts = [SpreadBlockPartInfo]()
+                    var parts = [BlockPartInfo]()
 
                     let feedbacks = info.block.feedbacks
                     for (findex, fb) in feedbacks.enumerated().reversed() {
@@ -145,7 +158,7 @@ final class TrainSpreader {
                             assert(u >= 0)
                             remainingTrainLength -= u
                             cursor = fbDistance
-                            parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex+1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
+                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex+1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
                         }
                     }
 
@@ -153,14 +166,14 @@ final class TrainSpreader {
                         let u = cursor - 0
                         assert(u >= 0)
                         remainingTrainLength -= u
-                        parts.append(SpreadBlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
+                        parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
                     }
 
                     if parts.count > 0 {
                         parts[parts.count - 1].lastPart = remainingTrainLength <= 0
                     }
 
-                    try blockCallback(.init(block: info, parts: parts))
+                    try blockCallback(.init(blockInfo: info, parts: parts))
                 }
             }
 

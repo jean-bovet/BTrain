@@ -501,7 +501,7 @@ final class LayoutReservation {
             turnout.train = train.id
             occupation.append(turnout)
         }, blockCallback: { spreadBlockInfo in
-            let blockInfo = spreadBlockInfo.block
+            let blockInfo = spreadBlockInfo.blockInfo
             let block = blockInfo.block
             guard block.reservation == nil || block == train.block else {
                 throw LayoutError.blockAlreadyReserved(block: block)

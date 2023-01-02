@@ -83,7 +83,7 @@ final class TrainSpreaderTests: XCTestCase {
         for (index, block) in results.blocks.enumerated() {
             let parts = block.parts
             let expectedBlock = expected[index]
-            XCTAssertEqual(block.block.block, expectedBlock.block)
+            XCTAssertEqual(block.blockInfo.block, expectedBlock.block)
             XCTAssertEqual(parts.count, expectedBlock.parts.count, "Mismatch in the number of parts")
             
             let expectedParts = expectedBlock.parts
@@ -99,7 +99,7 @@ final class TrainSpreaderTests: XCTestCase {
     struct SpreadResults {
         var transitions = [Transition]()
         var turnouts = [ElementVisitor.TurnoutInfo]()
-        var blocks = [TrainSpreader.SpreadBlockInfo]()
+        var blocks = [TrainSpreader.BlockInfo]()
         var success = true
     }
     
