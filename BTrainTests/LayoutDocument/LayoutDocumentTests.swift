@@ -17,6 +17,15 @@ import XCTest
 @testable import BTrain
 
 class LayoutDocumentTests: XCTestCase {
+    func testReadVersion1() throws {
+        let url = Bundle(for: LayoutDocumentTests.self).url(forResource: "Layout_v1", withExtension: "btrain")!
+        
+        let fw = try FileWrapper(url: url, options: [])
+        
+        let doc = try LayoutDocument(contentType: LayoutDocument.packageType, file: fw)
+        XCTAssertNotNil(doc)
+    }
+        
     func testReadPackageFile() throws {
         let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
 
