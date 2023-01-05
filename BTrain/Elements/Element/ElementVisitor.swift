@@ -33,7 +33,7 @@ final class ElementVisitor {
         /// Direction in which the visitor algorithm is traversing the block
         let direction: Direction
     }
-    
+
     enum Element {
         // Index of the element the visitor algorithm is visiting
         case transition(index: Int, transition: Transition)

@@ -260,7 +260,7 @@ extension Train {
     var occupied: TrainOccupiedReservation {
         reservation.occupied
     }
-    
+
     /// Returns the block that is located at the front of the train.
     ///
     /// The front of the train is the portion of the train that is towards the direction of travel:
@@ -269,7 +269,7 @@ extension Train {
     var frontBlockId: Identifier<Block>? {
         frontPosition?.blockId
     }
-    
+
     var frontPosition: TrainPosition? {
         guard let locomotive = locomotive else {
             return nil
@@ -280,7 +280,7 @@ extension Train {
             return positions.tail
         }
     }
-    
+
     func locomotiveOrThrow() throws -> Locomotive {
         if let loc = locomotive {
             return loc

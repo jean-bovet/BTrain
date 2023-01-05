@@ -49,8 +49,8 @@ struct FeedbackPosition: CustomStringConvertible {
             return TrainPosition(blockId: block.id, index: feedbackIndex + 1, distance: distance.after, direction: direction)
         }
     }
-    
+
     var description: String {
-        return "\(block.name):\(feedback.name):\(distance.distanceString):\(direction)"
+        "\(block.name):\(feedback.name):\(distance.distanceString):\(direction)"
     }
 }

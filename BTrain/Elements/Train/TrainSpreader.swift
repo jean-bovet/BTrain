@@ -15,31 +15,29 @@ import Foundation
 /// This class spreads the train from its front block (which is the block at the front of the train in its direction of travel) over
 /// all the elements (transitions, turnouts and blocks) until all the length of the train has been spread out.
 final class TrainSpreader {
-    
     /// Information about the spread in a specified block
     struct BlockInfo {
         /// The information about the block itself
         let blockInfo: ElementVisitor.BlockInfo
-        
+
         /// The parts that got occupied by the train
         let parts: [BlockPartInfo]
     }
-    
+
     /// Information about a specified block part
     struct BlockPartInfo {
-        
         /// The index of the part, starting at 0 and increasing in the natural direction of the block
         let partIndex: Int
-        
+
         /// The distance that the train occupies in the part, starting at the beginning of the block.
         let distance: Double
-        
+
         /// True if this part is the first part of the spread
         let firstPart: Bool
-        
+
         /// True if this part is the last part of the spread
         var lastPart: Bool = false
-        
+
         static func info(firstPart: Bool, partIndex: Int, remainingTrainLength: Double, feedbackDistance: Double, direction: Direction) -> BlockPartInfo {
             let distance: Double
             if remainingTrainLength >= 0 {
@@ -53,9 +51,8 @@ final class TrainSpreader {
             }
             return .init(partIndex: partIndex, distance: distance, firstPart: firstPart)
         }
-
     }
-    
+
     typealias TransitionCallbackBlock = (Transition) throws -> Void
     typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
     typealias BlockPartCallbackBlock = (BlockInfo) throws -> Void
@@ -83,21 +80,22 @@ final class TrainSpreader {
     func spread(blockId: Identifier<Block>, distance: Double, direction: Direction, lengthOfTrain: Double,
                 transitionCallback: TransitionCallbackBlock,
                 turnoutCallback: TurnoutCallbackBlock,
-                blockCallback: BlockPartCallbackBlock) throws -> Bool {
+                blockCallback: BlockPartCallbackBlock) throws -> Bool
+    {
         var remainingTrainLength = lengthOfTrain
         try visitor.visit(fromBlockId: blockId, direction: direction, callback: { info in
             switch info {
             case .transition(index: _, transition: let transition):
                 // Transition is just a virtual connection between two elements, no physical length exists.
                 try transitionCallback(transition)
-                
+
             case .turnout(index: _, info: let info):
                 if let length = info.turnout.length {
                     remainingTrainLength -= length
                 }
                 try turnoutCallback(info)
-                
-            case .block(index: let index, info: let info):
+
+            case let .block(index: index, info: info):
                 // TODO: simplify code?
                 guard let blockLength = info.block.length else {
                     throw LayoutError.blockLengthNotDefined(block: info.block)
@@ -109,7 +107,7 @@ final class TrainSpreader {
                     } else {
                         cursor = 0
                     }
-                    
+
                     var parts = [BlockPartInfo]()
 
                     let feedbacks = info.block.feedbacks
@@ -132,11 +130,11 @@ final class TrainSpreader {
                         remainingTrainLength -= u
                         parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
                     }
-                    
+
                     if parts.count > 0 {
                         parts[parts.count - 1].lastPart = remainingTrainLength <= 0
                     }
-                    
+
                     try blockCallback(.init(blockInfo: info, parts: parts))
                 } else {
                     var cursor: Double
@@ -145,7 +143,7 @@ final class TrainSpreader {
                     } else {
                         cursor = blockLength
                     }
-                    
+
                     var parts = [BlockPartInfo]()
 
                     let feedbacks = info.block.feedbacks
@@ -158,7 +156,7 @@ final class TrainSpreader {
                             assert(u >= 0)
                             remainingTrainLength -= u
                             cursor = fbDistance
-                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex+1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
+                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex + 1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
                         }
                     }
 
@@ -185,5 +183,4 @@ final class TrainSpreader {
         })
         return remainingTrainLength <= 0
     }
-    
 }

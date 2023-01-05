@@ -17,43 +17,42 @@ import Foundation
 /// - Ensuring all the elements in the layout that the train occupies are reserved
 /// - Updating the tail (or head) position of the train after the spread is completed
 struct LayoutOccupation {
-    
     /// The layout
     let layout: Layout
-    
+
     /// The train
     let train: Train
-    
+
     /// The block in which to start the occupation of the train
     let blockId: Identifier<Block>
-    
+
     /// The distance in the block from which to start the occupation of the train
     let distance: Double
 
     /// The length of the train to spread and occupy
     let lengthOfTrain: Double
-    
+
     /// True to mark the last part as the locomotive (in the direction of the spread)
     let markLastPartAsLocomotive: Bool
-    
+
     /// True to mark the first part as the locomotive (in the direction of the spread)
     let markFirstPartAsLocomotive: Bool
-        
+
     /// The direction in which to spread the train
     let directionOfSpread: Direction
-    
+
     /// True if the direction in which the train moves is the same
     /// as the spread direction.
     let directionOfTrainSameAsSpread: Bool
-    
+
     enum UpdatePosition {
         case tail
         case head
     }
-    
+
     /// Specify which position, tail or head, of the train must be updated when the last part of the spread is reached
     let lastPartUpdatePosition: UpdatePosition
-    
+
     /// Occupy the blocks with the entire length of the train
     ///
     /// - Parameters:
@@ -71,7 +70,7 @@ struct LayoutOccupation {
 
         self.layout = layout
         self.train = train
-        
+
         if train.directionForward {
             if let head = train.positions.head {
                 // When moving forward, the head position is used
@@ -139,11 +138,11 @@ struct LayoutOccupation {
             }
         }
     }
-    
+
     private func occupyBlocks() throws {
         let occupation = train.occupied
         occupation.clear()
-        
+
         let spreader = TrainSpreader(layout: layout)
         let success = try spreader.spread(blockId: blockId, distance: distance, direction: directionOfSpread, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
@@ -154,7 +153,7 @@ struct LayoutOccupation {
             occupation.append(transition)
         }, turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
-            
+
             guard turnout.reserved == nil else {
                 throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
             }
@@ -167,7 +166,7 @@ struct LayoutOccupation {
             guard block.reservation == nil else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
-            
+
             // Determine the direction of travel of the train which depends on the direction of the spread
             // and the original direction of the train in the front block (the block in which the spread started)
             let directionOfTravel: Direction
@@ -176,20 +175,20 @@ struct LayoutOccupation {
             } else {
                 directionOfTravel = blockInfo.direction.opposite
             }
-            
+
             let trainInstance = TrainInstance(train.id, directionOfTravel)
-            
+
             // Update the content of each part
             for part in spreadBlockInfo.parts {
-                if part.lastPart && markLastPartAsLocomotive {
+                if part.lastPart, markLastPartAsLocomotive {
                     trainInstance.parts[part.partIndex] = .locomotive
-                } else if part.firstPart && markFirstPartAsLocomotive {
+                } else if part.firstPart, markFirstPartAsLocomotive {
                     trainInstance.parts[part.partIndex] = .locomotive
                 } else {
                     trainInstance.parts[part.partIndex] = .wagon
                 }
             }
-            
+
             // Update the position, tail or head, using the last part
             if let part = spreadBlockInfo.parts.first(where: { $0.lastPart }) {
                 switch lastPartUpdatePosition {
@@ -199,13 +198,13 @@ struct LayoutOccupation {
                     train.positions.head = .init(blockId: block.id, index: part.partIndex, distance: part.distance, direction: directionOfTravel)
                 }
             }
-            
+
             block.trainInstance = trainInstance
             block.reservation = Reservation(trainId: train.id, direction: directionOfTravel)
-            
+
             occupation.append(block)
         })
-        
+
         if success == false {
             throw LayoutError.cannotReserveAllElements(train: train)
         }

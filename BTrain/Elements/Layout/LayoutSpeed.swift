@@ -37,10 +37,10 @@ struct LayoutSpeed {
         // Special case if the speed is 0 and the leading distance is 0,
         // the train should not be allowed to move forward.
         // TODO: add unit test for this
-        if leadingDistance == 0 && speed == 0 {
+        if leadingDistance == 0, speed == 0 {
             return false
         }
-        
+
         // Compute the distance necessary to bring the train to a full stop
         let result = try distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: speed, toSpeed: 0)
 

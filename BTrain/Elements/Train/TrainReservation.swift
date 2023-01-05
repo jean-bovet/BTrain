@@ -67,7 +67,7 @@ class TrainReservation {
     func contains(_ block: Block) -> Bool {
         blocks.contains(where: { $0 == block })
     }
-    
+
     func clear() {
         items.removeAll()
     }

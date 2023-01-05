@@ -83,10 +83,9 @@ final class LayoutReservationTests: XCTestCase {
         XCTAssertTrue(train.leading.items.isEmpty)
 
         XCTAssertFalse(r.removeOccupation(train: train))
-        
+
         XCTAssertNil(blockA.trainInstance)
     }
-
 }
 
 extension Array where Element == Block {

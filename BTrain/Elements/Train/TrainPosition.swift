@@ -31,10 +31,10 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
 
     /// Distance, in cm, from the beginning of the block in the direction of travel of the train
     var distance: Double
-    
+
     /// Direction of travel of the train
     var direction: Direction
-    
+
     var description: String {
         description(nil)
     }
@@ -42,7 +42,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     mutating func toggleDirection() {
         direction = direction.opposite
     }
-    
+
     /// When comparing to position, the distance is only compared up to a thousandth because with
     /// double operations, there will be rounding errors.
     /// - Parameters:
@@ -63,5 +63,4 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
             return "\(blockId.uuid):\(index):\(String(format: "%.3f", distance)):\(direction)"
         }
     }
-    
 }

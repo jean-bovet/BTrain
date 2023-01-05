@@ -13,16 +13,15 @@
 import Foundation
 
 extension Layout {
-
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
     ///
     /// - Parameters:
     ///   - train: the train
     ///   - toBlockId: the block
     ///   - positions: the position
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, positions: TrainPositions) throws {
+    func setTrainToBlock(_ train: Train, _: Identifier<Block>, positions: TrainPositions) throws {
         train.positions = positions
-        
+
         try freeElements(train: train)
         try occupyBlocksWith(train: train)
     }
@@ -80,5 +79,4 @@ extension Layout {
 
         return positions
     }
-    
 }

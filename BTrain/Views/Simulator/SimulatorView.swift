@@ -87,7 +87,7 @@ extension MarklinCommandSimulator {
 struct SimulatorView_Previews: PreviewProvider {
     static let simulator: MarklinCommandSimulator = {
         let layout = LayoutLoop1().newLayout()
-        let simulator =  MarklinCommandSimulator(layout: layout, interface: MarklinInterface())
+        let simulator = MarklinCommandSimulator(layout: layout, interface: MarklinInterface())
         // Give some time to the run loop to run at least once
         // so the simulator can update the list of locomotives
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.001))

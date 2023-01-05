@@ -146,7 +146,7 @@ extension LayoutError: LocalizedError {
             return "Head position not specified: \(position)"
         case let .backPositionNotSpecified(position: position):
             return "Tail position not specified: \(position)"
-        case .noPositionsSpecified(position: let position):
+        case let .noPositionsSpecified(position: position):
             return "Head and tail positions not specified: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
@@ -157,7 +157,7 @@ extension LayoutError: LocalizedError {
             return "Train \(train.name) not found in route \(route.name)"
         case let .trainNotAssignedToARoute(train: train):
             return "Train \(train.name) has no associated route"
-        case .trainLengthNotDefined(train: let train):
+        case let .trainLengthNotDefined(train: train):
             return "Train \(train.name) has no length defined"
 
         case let .headWagonNotFound(train: train):

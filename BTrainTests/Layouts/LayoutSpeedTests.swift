@@ -78,7 +78,7 @@ final class LayoutSpeedTests: XCTestCase {
 
         train.occupied.clear()
         train.occupied.append(s1)
-        
+
         train.leading.clear()
         train.leading.append(t1)
         train.leading.append(t2)

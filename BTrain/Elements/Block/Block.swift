@@ -180,7 +180,7 @@ final class Block: Element, ObservableObject, CustomStringConvertible {
     var description: String {
         description(nil)
     }
-    
+
     init(id: Identifier<Block>, name: String = "") {
         self.id = id
         self.name = name

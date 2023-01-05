@@ -16,7 +16,7 @@ import XCTest
 // b0[ ]> b1[ f1 ]> b2[ f2.1 f2.2 ]> <t23> b3<[ f3.2 f3.1 ]
 struct LayoutSample {
     let layout: Layout
-    
+
     let b0: Block
     let b1: Block
     let b2: Block
@@ -24,7 +24,7 @@ struct LayoutSample {
 
     let train: Train
     let loc: Locomotive
-    
+
     internal init() {
         layout = Layout()
 
@@ -52,31 +52,30 @@ struct LayoutSample {
         let t23 = Turnout(name: "t23")
         t23.length = 10
         layout.turnouts.add(t23)
-        
+
         layout.link(from: b0.next, to: b1.previous)
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: t23.socket0)
         layout.link(from: t23.socket1, to: b3.next)
-        
+
         loc = Locomotive()
         loc.length = 20
         train = Train()
         train.locomotive = loc
     }
-    
+
     /// Reserve the necessary elements for the train at the specified positions and direction in the block
     /// - Parameters:
     ///   - block: the block in which the positions is defined (head or tail depending on the direction of travel and detection)
     ///   - positions: the positions
-    func reserve(block: Block, positions: TrainPositions) throws {
+    func reserve(block _: Block, positions: TrainPositions) throws {
         train.positions = positions
         try layout.occupyBlocksWith(train: train)
     }
-    
-    func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [Int:TrainInstance.TrainPart]) {
+
+    func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [Int: TrainInstance.TrainPart]) {
         XCTAssertEqual(ti?.trainId, train.id)
         XCTAssertEqual(ti?.direction, direction)
         XCTAssertEqual(ti?.parts, expectedParts, "Mismatching parts")
     }
-    
 }

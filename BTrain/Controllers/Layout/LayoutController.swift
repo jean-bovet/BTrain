@@ -139,7 +139,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
     /// This is necessary because the ``Train.Reservation`` is not persisted to disk (it cannot be serialized). When
     /// opening a document, we need to ensure that each train has all its elements properly assigned to it which this function will do.
     private func spreadAllTrains() {
-        for train in layout.trains.elements.filter({ $0.positions.defined }) {
+        for train in layout.trains.elements.filter(\.positions.defined) {
             do {
                 try layout.freeElements(train: train)
                 try layout.occupyBlocksWith(train: train)
@@ -565,7 +565,7 @@ extension LayoutController {
         }
 
         train.positions.toggleDirection()
-        
+
         try layout.freeElements(train: train)
         try layout.occupyBlocksWith(train: train)
     }

@@ -66,11 +66,11 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         guard let frontBlock = frontBlock else {
             return false
         }
-        
+
         guard let trainInstance = frontBlock.trainInstance else {
             return false
         }
-        
+
         guard let brakeFeedback = frontBlock.brakeFeedback(for: trainInstance.direction) else {
             return false
         }
@@ -175,7 +175,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         if train.leading.settledDistance == 0 {
             return false
         }
-        
+
         return try layoutSpeed.isBrakingDistanceRespected(train: train, block: frontBlock, speed: speed)
     }
 
@@ -219,7 +219,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             guard let frontBlock = frontBlock else {
                 return
             }
-            
+
             if train.hasReachedStationOrDestination(route, frontBlock) {
                 return
             }
@@ -325,7 +325,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         if let nextBlockFeedback = try layout.entryFeedback(for: train), nextBlockFeedback.feedback.detected {
             allFeedbacks.append(nextBlockFeedback)
         }
-        
+
         for feedback in allFeedbacks {
             let detectedPosition = feedback.trainPosition
             train.positions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
@@ -337,37 +337,37 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // Remember the previous occupied blocks to detect all the new blocks
         // that the train is now occupying.
         let previousOccupiedBlocks = train.occupied.blocks
-        
+
         // Update the reserved block
         _ = try reservation.updateReservedBlocks(train: train)
-        
+
         // Determine any new block(s) that the train is now occpuying
         var newBlocks = [Block]()
         for occupiedBlock in train.occupied.blocks {
-            if !previousOccupiedBlocks.contains(where: {$0.id == occupiedBlock.id}) {
+            if !previousOccupiedBlocks.contains(where: { $0.id == occupiedBlock.id }) {
                 newBlocks.append(occupiedBlock)
             }
         }
-        
+
         BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): occupying new blocks \(newBlocks.description)")
-        
+
         if !newBlocks.isEmpty {
             // For each new block that the train occupies, ensure the route index is updated
             // and execute any actions related to entering a new block
             for newBlock in newBlocks {
                 BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): update route index and execute functions for new block \(newBlock.description(self.layout))")
-                
+
                 // Update the current route step index
                 train.routeStepIndex += 1
-                
+
                 // Execute the functions of the new block
                 executeFunctions()
             }
         }
-        
+
         return train.positions != currentPositions
     }
-    
+
     func reschedule() {
         reschedule(train: train, delay: waitingTime)
     }

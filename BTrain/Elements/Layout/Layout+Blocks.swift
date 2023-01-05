@@ -55,7 +55,7 @@ extension Layout {
         blocks.remove(blockID)
 
         trains.elements.forEach { train in
-            if train.occupied.blocks.first(where: {$0.id == blockID}) != nil {
+            if train.occupied.blocks.first(where: { $0.id == blockID }) != nil {
                 try? remove(trainId: train.id)
             }
         }
@@ -71,5 +71,4 @@ extension Layout {
             self.feedbacks.add(feedback)
         }
     }
-
 }

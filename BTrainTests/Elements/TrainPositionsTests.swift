@@ -15,16 +15,15 @@ import XCTest
 @testable import BTrain
 
 final class TrainPositionsTests: XCTestCase {
-    
     func testIsNotDefined() {
         let p1 = TrainPositions()
         XCTAssertFalse(p1.defined)
     }
-    
+
     func testIsDefined() {
         let p1 = TrainPositions.head(blockId: .init(uuid: "b1"), index: 0, distance: 0, direction: .next)
         XCTAssertTrue(p1.defined)
-        
+
         let p2 = TrainPositions.tail(blockId: .init(uuid: "b1"), index: 0, distance: 0, direction: .next)
         XCTAssertTrue(p2.defined)
     }

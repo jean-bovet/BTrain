@@ -15,9 +15,8 @@ import XCTest
 @testable import BTrain
 
 final class LayoutOccupationTests: XCTestCase {
-
     let ls = LayoutSample()
-    
+
     // blocks:    b0[   ]>
     // indexes:       0
     // distances:    100
@@ -96,7 +95,7 @@ final class LayoutOccupationTests: XCTestCase {
 
         ls.assert(ls.b0.trainInstance, .next, expectedParts: [0: .locomotive])
         ls.assert(ls.b1.trainInstance, .next, expectedParts: [0: .wagon, 1: .wagon])
-        
+
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b0.id, index: 0, distance: 50, direction: .next),
                                                           tail: .init(blockId: ls.b1.id, index: 1, distance: 70, direction: .next)))
     }
@@ -113,7 +112,7 @@ final class LayoutOccupationTests: XCTestCase {
 
         ls.assert(ls.b0.trainInstance, .next, expectedParts: [0: .locomotive])
         ls.assert(ls.b1.trainInstance, .next, expectedParts: [0: .wagon, 1: .wagon])
-        
+
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b0.id, index: 0, distance: 50, direction: .next),
                                                           tail: .init(blockId: ls.b1.id, index: 1, distance: 70, direction: .next)))
     }
@@ -130,7 +129,7 @@ final class LayoutOccupationTests: XCTestCase {
 
         ls.assert(ls.b1.trainInstance, .previous, expectedParts: [0: .wagon, 1: .locomotive])
         ls.assert(ls.b0.trainInstance, .previous, expectedParts: [0: .wagon])
-        
+
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b1.id, index: 1, distance: 60, direction: .previous),
                                                           tail: .init(blockId: ls.b0.id, index: 0, distance: 40, direction: .previous)))
     }
@@ -147,7 +146,7 @@ final class LayoutOccupationTests: XCTestCase {
 
         ls.assert(ls.b1.trainInstance, .previous, expectedParts: [0: .wagon, 1: .locomotive])
         ls.assert(ls.b0.trainInstance, .previous, expectedParts: [0: .wagon])
-        
+
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b1.id, index: 1, distance: 60, direction: .previous),
                                                           tail: .init(blockId: ls.b0.id, index: 0, distance: 40, direction: .previous)))
     }
