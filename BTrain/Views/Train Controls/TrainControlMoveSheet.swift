@@ -50,7 +50,7 @@ struct TrainControlMoveSheet: View {
                         if let trainDragInfo = trainDragInfo {
                             blockId = trainDragInfo.blockId
                         } else {
-                            blockId = train.block?.id
+                            blockId = train.frontBlockId
                         }
                     }
 
@@ -62,7 +62,7 @@ struct TrainControlMoveSheet: View {
                 .help("This is the direction of travel of the train relative to \(selectedBlockName)")
                 .fixedSize()
                 .onAppear {
-                    evaluateBestRoute(fromBlockId: trainDragInfo?.blockId ?? train.block?.id, forDirection: nil)
+                    evaluateBestRoute(fromBlockId: trainDragInfo?.blockId ?? train.frontBlockId, forDirection: nil)
                 }
 
                 Spacer()

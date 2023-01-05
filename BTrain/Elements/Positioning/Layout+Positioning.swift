@@ -13,34 +13,39 @@
 import Foundation
 
 extension Layout {
+
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
     ///
     /// - Parameters:
     ///   - train: the train
     ///   - toBlockId: the block
     ///   - positions: the position
-    ///   - directionOfTravelInBlock: the direction of travel
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, positions: TrainPositions, directionOfTravelInBlock: Direction) throws {
-        guard let toBlock = blocks[toBlockId] else {
-            throw LayoutError.blockNotFound(blockId: toBlockId)
-        }
-
-        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
-            throw LayoutError.blockNotEmpty(blockId: toBlockId)
-        }
-
-        guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
-            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
-        }
-
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, positions: TrainPositions) throws {
         train.positions = positions
+        
+        try freeElements(train: train)
+        try occupyBlocksWith(train: train)
+    }
 
-        // Reserve the block
-        toBlock.reservation = Reservation(trainId: train.id, direction: directionOfTravelInBlock)
-        toBlock.trainInstance = TrainInstance(train.id, directionOfTravelInBlock)
+    // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
+    // the specified train with all its length, taking into account the length of each block.
+    func occupyBlocksWith(train: Train) throws {
+        try LayoutOccupation.occupyBlocksWith(train: train, layout: self)
+    }
 
-        // Assign the block to the train
-        train.block = toBlock
+    // This methods frees all the reserved elements
+    func freeElements(train: Train) throws {
+        train.leading.clear()
+        train.occupied.clear()
+
+        blocks.elements
+            .filter { $0.reservation?.trainId == train.id }
+            .forEach { block in
+                block.reservation = nil
+                block.trainInstance = nil
+            }
+        turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
 
     /// Returns all the feedbacks that are currently detected in any of the occupied blocks by the train.
@@ -49,7 +54,7 @@ extension Layout {
     /// we need to take into consideration all the feedback triggers within all the occupied blocks.
     ///
     /// - Returns: array of detected feedback and their position
-    func allActiveFeedbackPositions(train: Train) throws -> [FeedbackPosition] {
+    func allOccupiedBlocksActiveFeedbackPositions(train: Train) throws -> [FeedbackPosition] {
         var positions = [FeedbackPosition]()
 
         for block in train.occupied.blocks {
@@ -62,10 +67,18 @@ extension Layout {
                     throw LayoutError.feedbackDistanceNotSet(feedback: feedback)
                 }
 
-                positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex, distance: fd))
+                guard let direction = block.trainInstance?.direction else {
+                    // Note: this should not happen because all the feedback are in occupied block
+                    // which, by definition, have a train (and a direction) in them.
+                    throw LayoutError.directionNotFound(blockId: block.id)
+                }
+
+                let fp = FeedbackPosition(block: block, feedback: f, feedbackIndex: feedbackIndex, distance: fd, direction: direction)
+                positions.append(fp)
             }
         }
 
         return positions
     }
+    
 }

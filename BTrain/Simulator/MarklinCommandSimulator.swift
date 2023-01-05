@@ -132,7 +132,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             layout.trains[simTrain.id] == nil
         })
 
-        for train in layout.trains.elements.filter({ $0.block != nil }) {
+        for train in layout.trains.elements.filter({ $0.positions.defined }) {
             updateTrain(train: train)
         }
 
@@ -156,7 +156,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        guard let block = train.block else {
+        guard let block = layout.blocks[train.frontBlockId] else {
             return
         }
 

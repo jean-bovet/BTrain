@@ -139,10 +139,10 @@ final class LayoutController: ObservableObject, LayoutControlling {
     /// This is necessary because the ``Train.Reservation`` is not persisted to disk (it cannot be serialized). When
     /// opening a document, we need to ensure that each train has all its elements properly assigned to it which this function will do.
     private func spreadAllTrains() {
-        for train in layout.trains.elements.filter({ $0.block != nil }) {
+        for train in layout.trains.elements.filter({ $0.positions.defined }) {
             do {
-                try reservation.freeElements(train: train)
-                try reservation.occupyBlocksWith(train: train)
+                try layout.freeElements(train: train)
+                try layout.occupyBlocksWith(train: train)
             } catch {
                 BTLogger.error("Unable to spread \(train): \(error)")
             }
@@ -209,19 +209,11 @@ final class LayoutController: ObservableObject, LayoutControlling {
     }
 
     func trainController(forTrain train: Train) -> TrainController? {
-        guard let frontBlock = train.block else {
-            return nil
-        }
-
-        guard let trainInstance = frontBlock.trainInstance else {
-            return nil
-        }
-
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
             return nil
         }
 
-        return TrainController(train: train, route: route, layout: layout, frontBlock: frontBlock, frontBlockTrainInstance: trainInstance, layoutController: self, functionsController: functionsController, reservation: reservation)
+        return TrainController(train: train, route: route, layout: layout, layoutController: self, functionsController: functionsController, reservation: reservation)
     }
 
     private func updateExpectedFeedbacks() throws {
@@ -562,55 +554,20 @@ extension LayoutController {
     /// we do not enforce this here because in a real layout, a train can always be manually
     /// changed to run backwards. allowedDirections is only used in automatic routing
     /// to avoid moving the train backwards when it should not.
-
     /// - Parameter train: the train
     func toggleTrainDirection(_ train: Train) throws {
-        guard let blockId = train.block?.id else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-
-        guard let block = train.block else {
-            throw LayoutError.blockNotFound(blockId: blockId)
-        }
-
-        guard let ti = block.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
-        }
-
         let loc = try train.locomotiveOrThrow()
-
-        block.trainInstance = nil
 
         if train.directionForward {
             loc.directionForward = false
-
-            guard let tailBlockId = train.positions.tail?.blockId else {
-                throw LayoutError.backPositionBlockNotSpecified(position: train.positions)
-            }
-            guard let newBlock = layout.blocks[tailBlockId] else {
-                throw LayoutError.blockNotFound(blockId: tailBlockId)
-            }
-
-            train.block = newBlock
-            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         } else {
             loc.directionForward = true
-
-            guard let headBlockId = train.positions.head?.blockId else {
-                throw LayoutError.frontPositionBlockNotSpecified(position: train.positions)
-            }
-            guard let newBlock = layout.blocks[headBlockId] else {
-                throw LayoutError.blockNotFound(blockId: headBlockId)
-            }
-
-            train.block = newBlock
-            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         }
 
-        // The method below will spread again the train, starting with the "front" block
-        // of the train which has been updated here with "newBlock".
-        reservation.removeLeadingReservation(train: train)
-        try reservation.occupyBlocksWith(train: train)
+        train.positions.toggleDirection()
+        
+        try layout.freeElements(train: train)
+        try layout.occupyBlocksWith(train: train)
     }
 
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
@@ -644,11 +601,11 @@ extension LayoutController {
             if train.directionForward {
                 // [ ----> ]>
                 //   t   h
-                train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after)
+                train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after, direction: .next)
             } else {
                 // [ >---- ]>
                 //   h   t
-                train.positions = .tail(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after)
+                train.positions = .tail(blockId: toBlockId, index: toBlock.feedbacks.count, distance: feedbackDistance.after, direction: .next)
             }
         } else {
             guard let blockFeedback = toBlock.feedbacks.first else {
@@ -661,18 +618,15 @@ extension LayoutController {
             if train.directionForward {
                 // [ <---- ]>
                 //   h   t
-                train.positions = .head(blockId: toBlockId, index: 0, distance: feedbackDistance.before)
+                train.positions = .head(blockId: toBlockId, index: 0, distance: feedbackDistance.before, direction: .previous)
             } else {
                 // [ ----< ]>
                 //   t   h
-                train.positions = .tail(blockId: toBlockId, index: 0, distance: feedbackDistance.before)
+                train.positions = .tail(blockId: toBlockId, index: 0, distance: feedbackDistance.before, direction: .previous)
             }
         }
 
-        try layout.setTrainToBlock(train, toBlockId, positions: train.positions, directionOfTravelInBlock: naturalDirectionInBlock)
-
-        try reservation.freeElements(train: train)
-        try reservation.occupyBlocksWith(train: train)
+        try layout.setTrainToBlock(train, toBlockId, positions: train.positions)
     }
 }
 

@@ -378,11 +378,11 @@ final class LayoutRouteParser {
             let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: attributes.direction)
             if let parsedTrain = parsedTrain {
                 train = parsedTrain
-                train.positions.head = .init(blockId: block.id, index: position, distance: distance)
+                train.positions.head = .init(blockId: block.id, index: position, distance: distance, direction: attributes.direction)
                 self.parsedTrain = nil
             } else {
                 train = Train(uuid: attributes.uuid)
-                train.positions = .both(blockId: block.id, headIndex: position, headDistance: distance, tailIndex: position, tailDistance: distance)
+                train.positions = .both(blockId: block.id, headIndex: position, headDistance: distance, tailIndex: position, tailDistance: distance, direction: attributes.direction)
             }
 
             train.locomotive = loc
@@ -435,7 +435,7 @@ final class LayoutRouteParser {
         if let train = layout.trains.first(where: { $0.id.uuid == attributes.uuid }) {
             if attributes.last {
                 let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-                train.positions.tail = .init(blockId: block.id, index: position, distance: distance)
+                train.positions.tail = .init(blockId: block.id, index: position, distance: distance, direction: directionInBlock)
             }
         } else {
             // If a wagon is first detected, the train might not yet be created.
@@ -444,7 +444,7 @@ final class LayoutRouteParser {
                 parsedTrain = Train(uuid: attributes.uuid)
                 if attributes.last {
                     let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-                    parsedTrain?.positions.tail = .init(blockId: block.id, index: position, distance: distance)
+                    parsedTrain?.positions.tail = .init(blockId: block.id, index: position, distance: distance, direction: directionInBlock)
                 }
             }
         }

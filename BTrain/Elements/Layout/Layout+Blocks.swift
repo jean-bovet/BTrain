@@ -55,8 +55,8 @@ extension Layout {
         blocks.remove(blockID)
 
         trains.elements.forEach { train in
-            if train.block?.id == blockID {
-                train.block = nil
+            if train.occupied.blocks.first(where: {$0.id == blockID}) != nil {
+                try? remove(trainId: train.id)
             }
         }
     }
@@ -72,10 +72,4 @@ extension Layout {
         }
     }
 
-    func atEndOfBlock(train: Train) throws -> Bool {
-        guard let currentBlock = train.block else {
-            return false
-        }
-        return try train.atEndOfBlock(block: currentBlock)
-    }
 }

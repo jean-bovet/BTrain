@@ -22,10 +22,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     let layoutSpeed: LayoutSpeed
 
     /// The block at the front of the train in the direction of travel
-    var frontBlock: Block
-
-    /// The train instance of the front block
-    var frontBlockTrainInstance: TrainInstance
+    var frontBlock: Block? {
+        assert(train.frontBlockId != nil)
+        return layout.blocks[train.frontBlockId]
+    }
 
     var description: String {
         "TrainController(layout=\(layout.name), train=\(train))"
@@ -63,7 +63,15 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     var brakeFeedbackActivated: Bool {
-        guard let brakeFeedback = frontBlock.brakeFeedback(for: frontBlockTrainInstance.direction) else {
+        guard let frontBlock = frontBlock else {
+            return false
+        }
+        
+        guard let trainInstance = frontBlock.trainInstance else {
+            return false
+        }
+        
+        guard let brakeFeedback = frontBlock.brakeFeedback(for: trainInstance.direction) else {
             return false
         }
 
@@ -71,7 +79,15 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     var stopFeedbackActivated: Bool {
-        guard let stopFeedback = frontBlock.stopFeedback(for: frontBlockTrainInstance.direction) else {
+        guard let frontBlock = frontBlock else {
+            return false
+        }
+
+        guard let trainInstance = frontBlock.trainInstance else {
+            return false
+        }
+
+        guard let stopFeedback = frontBlock.stopFeedback(for: trainInstance.direction) else {
             return false
         }
 
@@ -100,10 +116,18 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     var atStationOrDestination: Bool {
-        train.hasReachedStationOrDestination(route, frontBlock)
+        guard let frontBlock = frontBlock else {
+            return false
+        }
+
+        return train.hasReachedStationOrDestination(route, frontBlock)
     }
 
     var shouldChangeDirection: Bool {
+        guard let frontBlock = frontBlock else {
+            return false
+        }
+
         guard let directionInBlock = frontBlock.trainInstance?.direction else {
             return false
         }
@@ -128,12 +152,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         train.leading.settling
     }
 
-    init(train: Train, route: Route, layout: Layout, frontBlock: Block, frontBlockTrainInstance: TrainInstance, layoutController: LayoutController, functionsController: TrainFunctionsController, reservation: LayoutReservation) {
+    init(train: Train, route: Route, layout: Layout, layoutController: LayoutController, functionsController: TrainFunctionsController, reservation: LayoutReservation) {
         self.train = train
         self.route = route
         self.layout = layout
-        self.frontBlock = frontBlock
-        self.frontBlockTrainInstance = frontBlockTrainInstance
         self.layoutController = layoutController
         self.functionsController = functionsController
         self.reservation = reservation
@@ -141,16 +163,24 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func reservedBlocksLengthEnough(forSpeed speed: SpeedKph) throws -> Bool {
-        try layoutSpeed.isBrakingDistanceRespected(train: train, speed: speed)
+        guard let frontBlock = frontBlock else {
+            return false
+        }
+        // Even if there is enough space in the front block, we need to stop
+        // the train if there are no leading distance available. Otherwise
+        // the train might never stop because it might pass over the brake
+        // feedback and then realize there is not enough distance. This is a limitation
+        // of the current algorithm that does not take into consideration
+        // the real location of the train (which has to be computed!).
+        if train.leading.settledDistance == 0 {
+            return false
+        }
+        
+        return try layoutSpeed.isBrakingDistanceRespected(train: train, block: frontBlock, speed: speed)
     }
 
     func updatePosition(with _: Feedback) throws -> Bool {
-        if try moveInsideBlocks() {
-            return true
-        } else if try moveToNextBlock() {
-            return true
-        }
-        return false
+        try moveTrain()
     }
 
     func updateReservedBlocksSettledLength(with _: Turnout) -> Bool {
@@ -167,7 +197,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
         if mode == .unmanaged {
             reservation.removeOccupation(train: train)
-            try reservation.occupyBlocksWith(train: train)
+            try layout.occupyBlocksWith(train: train)
         } else {
             try reserveLeadingBlocks()
         }
@@ -186,11 +216,15 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 return
             }
 
+            guard let frontBlock = frontBlock else {
+                return
+            }
+            
             if train.hasReachedStationOrDestination(route, frontBlock) {
                 return
             }
 
-            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): generating a new route at \(self.frontBlock.name, privacy: .public) because the leading blocks could not be reserved for route steps \(self.route.steps.description(self.layout), privacy: .public), occupied blocks \(self.train.occupied.blocks.toStrings(), privacy: .public)")
+            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): generating a new route at \(frontBlock.name, privacy: .public) because the leading blocks could not be reserved for route steps \(self.route.steps.description(self.layout), privacy: .public), occupied blocks \(self.train.occupied.blocks.toStrings(), privacy: .public)")
 
             // Update the automatic route
             if try updateAutomaticRoute(for: train, layout: layout) {
@@ -218,6 +252,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func adjustSpeed(stateChanged: Bool) throws {
+        guard let frontBlock = frontBlock else {
+            // TODO: throw
+            fatalError()
+        }
         let desiredKph: SpeedKph?
         if stateChanged {
             switch train.state {
@@ -239,7 +277,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
 
         if let desiredKph = desiredKph {
-            let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train))
+            let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train, frontBlock: frontBlock))
             let loc = try train.locomotiveOrThrow()
             if requestedKph != loc.speed.requestedKph {
                 BTLogger.speed.debug("\(self.train.description(self.layout), privacy: .public): controller adjusts speed to \(requestedKph)")
@@ -275,74 +313,61 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return false
     }
 
-    func moveInsideBlocks() throws -> Bool {
+    /// Use any activated feedback to update the position(s) of the train.
+    ///
+    /// Note:
+    /// - The updated positions of the train can span 1 or more blocks.
+    /// - Returns: true if the positions have been updated, false otherwise
+    func moveTrain() throws -> Bool {
         let currentPositions = train.positions
 
-        for feedback in try layout.allActiveFeedbackPositions(train: train) {
-            guard let direction = try train.reservation.directionInBlock(for: feedback.blockId) else {
-                // Note: this should not happen because all the feedback are in occupied block
-                // which, by definition, have a train (and a direction) in them.
-                throw LayoutError.directionNotFound(blockId: feedback.blockId)
-            }
-            let detectedPosition = feedback.trainPosition(direction: direction)
+        var allFeedbacks = try layout.allOccupiedBlocksActiveFeedbackPositions(train: train)
+        if let nextBlockFeedback = try layout.entryFeedback(for: train), nextBlockFeedback.feedback.detected {
+            allFeedbacks.append(nextBlockFeedback)
+        }
+        
+        for feedback in allFeedbacks {
+            let detectedPosition = feedback.trainPosition
             train.positions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
                                                                    detectedPosition: detectedPosition,
                                                                    reservation: train.reservation)
-            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): updated location \(self.train.positions.description(self.layout)) in \(self.frontBlock.name, privacy: .public), direction \(self.frontBlockTrainInstance.direction)")
+            BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): updated location \(self.train.positions.description(self.layout)) by feedback \(feedback.description, privacy: .public)")
         }
 
+        // Remember the previous occupied blocks to detect all the new blocks
+        // that the train is now occupying.
+        let previousOccupiedBlocks = train.occupied.blocks
+        
+        // Update the reserved block
+        _ = try reservation.updateReservedBlocks(train: train)
+        
+        // Determine any new block(s) that the train is now occpuying
+        var newBlocks = [Block]()
+        for occupiedBlock in train.occupied.blocks {
+            if !previousOccupiedBlocks.contains(where: {$0.id == occupiedBlock.id}) {
+                newBlocks.append(occupiedBlock)
+            }
+        }
+        
+        BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): occupying new blocks \(newBlocks.description)")
+        
+        if !newBlocks.isEmpty {
+            // For each new block that the train occupies, ensure the route index is updated
+            // and execute any actions related to entering a new block
+            for newBlock in newBlocks {
+                BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): update route index and execute functions for new block \(newBlock.description(self.layout))")
+                
+                // Update the current route step index
+                train.routeStepIndex += 1
+                
+                // Execute the functions of the new block
+                executeFunctions()
+            }
+        }
+        
         return train.positions != currentPositions
     }
-
-    func moveToNextBlock() throws -> Bool {
-        // Find out what is the entry feedback for the next block
-        let entryFeedback = try layout.entryFeedback(for: train)
-        guard let entryFeedback = entryFeedback, entryFeedback.feedback.detected else {
-            return false
-        }
-
-        guard let blockFeedback = entryFeedback.block.feedbacks.first(where: { $0.feedbackId == entryFeedback.feedback.id }) else {
-            throw LayoutError.feedbackNotFoundInBlock(feedbackId: entryFeedback.feedback.id, block: entryFeedback.block)
-        }
-
-        guard let fdistance = blockFeedback.distance else {
-            throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
-        }
-
-        let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, distance: fdistance)
-        let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
-
-        let newPositions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
-                                                                detectedPosition: detectedPosition,
-                                                                reservation: train.reservation)
-
-        BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): enters block \(entryFeedback.block.name, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
-
-        // Set the train position. Note that the occupied and leading blocks will be updated
-        // later on by the state machine in response to the change in position of the train.
-        try layout.setTrainToBlock(train, entryFeedback.block.id, positions: newPositions, directionOfTravelInBlock: entryFeedback.direction)
-
-        // Update the current route step index
-        train.routeStepIndex = train.routeStepIndex + 1
-
-        // Execute the functions of the new block
-        executeFunctions()
-
-        guard let newBlock = layout.blocks[entryFeedback.block.id] else {
-            throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
-        }
-
-        frontBlock = newBlock
-
-        guard let newTrainInstance = frontBlock.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: newBlock.id)
-        }
-
-        frontBlockTrainInstance = newTrainInstance
-
-        return true
-    }
-
+    
     func reschedule() {
         reschedule(train: train, delay: waitingTime)
     }
@@ -396,7 +421,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return time
         } else {
             // Use the block waiting time if the route itself has nothing specified
-            return frontBlock.waitingTime
+            return frontBlock?.waitingTime ?? 0
         }
     }
 

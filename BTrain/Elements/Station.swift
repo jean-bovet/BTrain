@@ -42,7 +42,7 @@ final class Station: Element, ObservableObject {
 
     func blockWith(train: Train, layout _: Layout) -> StationElement? {
         elements.first(where: { element in
-            element.blockId == train.block?.id
+            element.blockId == train.frontBlockId
         })
     }
 

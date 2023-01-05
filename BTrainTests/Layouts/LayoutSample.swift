@@ -68,16 +68,9 @@ struct LayoutSample {
     /// - Parameters:
     ///   - block: the block in which the positions is defined (head or tail depending on the direction of travel and detection)
     ///   - positions: the positions
-    ///   - direction: the direction in which the train travels within the block
-    func reserve(block: Block, positions: TrainPositions, direction: Direction) throws {
-        let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
-        
-        train.block = block
-        block.trainInstance = .init(train.id, direction)
-        
+    func reserve(block: Block, positions: TrainPositions) throws {
         train.positions = positions
-        
-        try r.occupyBlocksWith(train: train)
+        try layout.occupyBlocksWith(train: train)
     }
     
     func assert(_ ti: TrainInstance?, _ direction: Direction, expectedParts: [Int:TrainInstance.TrainPart]) {

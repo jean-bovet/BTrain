@@ -41,7 +41,7 @@ struct TrainControlSpeedView: View {
                         trainRuntimeError = error.localizedDescription
                     }
                 }
-            }.disabled(!document.connected || train.block == nil)
+            }.disabled(!document.connected || train.occupied.isEmpty)
         }
     }
 }

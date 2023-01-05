@@ -106,11 +106,11 @@ extension Layout {
                 continue
             }
 
-            guard train.block?.id == blockId else {
+            guard train.frontBlockId == blockId else {
                 continue
             }
 
-            guard let block = train.block else {
+            guard let block = blocks[blockId] else {
                 continue
             }
 

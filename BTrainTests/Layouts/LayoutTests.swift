@@ -18,15 +18,18 @@ class LayoutTests: BTTestCase {
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
 
+        let l1 = Locomotive()
         let t1 = layout.trains.add(Train(uuid: "t1", name: "t1"))
-        t1.locomotive = Locomotive()
+        t1.locomotive = l1
         let b1 = layout.newBlock(name: "b1", category: .free)
+        b1.length = 100
         let b2 = layout.newBlock(name: "b2", category: .free)
+        b2.length = 100
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
-        try layout.setTrainToBlock(t1, b1.id, positions: .both(blockId: b1.id, headIndex: 2, headDistance: 20, tailIndex: 0, tailDistance: 0), directionOfTravelInBlock: .next)
-        XCTAssertEqual(t1.block?.id, b1.id)
+        try layout.setTrainToBlock(t1, b1.id, positions: .both(blockId: b1.id, headIndex: 2, headDistance: 20, tailIndex: 0, tailDistance: 0, direction: .next))
+        XCTAssertEqual(t1.frontBlockId, b1.id)
         XCTAssertEqual(layout.transitions.elements.count, 2)
 
         let b11 = layout.blocks[b1.id]
@@ -34,7 +37,7 @@ class LayoutTests: BTTestCase {
 
         layout.remove(blockID: b1.id)
         XCTAssertNil(layout.blocks[b1.id])
-        XCTAssertNil(t1.block)
+        XCTAssertNil(t1.frontBlockId)
         XCTAssertEqual(layout.transitions.elements.count, 0)
     }
 
@@ -88,12 +91,6 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.directionForward, false)
         XCTAssertEqual(block1.trainInstance!.direction, .previous)
 
-        // Set the train inside a block with a specific direction which
-        // is opposite of the train direction itself
-        try doc.layout.setTrainToBlock(train1, block1.id, positions: .both(blockId: block1.id, headIndex: 1, headDistance: 10, tailIndex: 0, tailDistance: 0), directionOfTravelInBlock: .next)
-        XCTAssertEqual(block1.trainInstance!.direction, .next)
-        XCTAssertEqual(train1.directionForward, false)
-
         // Change the train direction
         doc.layoutController.setLocomotiveDirection(train1.locomotive!, forward: true)
         wait(for: {
@@ -101,7 +98,7 @@ class LayoutTests: BTTestCase {
         }, timeout: 1.0)
 
         XCTAssertEqual(train1.directionForward, true)
-        XCTAssertEqual(block1.trainInstance!.direction, .previous)
+        XCTAssertEqual(block1.trainInstance!.direction, .next)
     }
 
     func testTrainStopCompletely() throws {

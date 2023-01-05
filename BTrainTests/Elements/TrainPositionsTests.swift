@@ -15,6 +15,20 @@ import XCTest
 @testable import BTrain
 
 final class TrainPositionsTests: XCTestCase {
+    
+    func testIsNotDefined() {
+        let p1 = TrainPositions()
+        XCTAssertFalse(p1.defined)
+    }
+    
+    func testIsDefined() {
+        let p1 = TrainPositions.head(blockId: .init(uuid: "b1"), index: 0, distance: 0, direction: .next)
+        XCTAssertTrue(p1.defined)
+        
+        let p2 = TrainPositions.tail(blockId: .init(uuid: "b1"), index: 0, distance: 0, direction: .next)
+        XCTAssertTrue(p2.defined)
+    }
+
     // MARK: - Individual Functions -
 
     func testIsAfterFunction() throws {
@@ -22,20 +36,20 @@ final class TrainPositionsTests: XCTestCase {
         XCTAssertEqual(p.reservation.occupied.blocks, [p.b1])
         XCTAssertEqual(p.reservation.leading.blocks, [p.b2])
 
-        let nextBlockPosition = TrainPosition(blockId: p.b2.id, index: 1, distance: 0)
-        let currentBlockPosition = TrainPosition(blockId: p.b1.id, index: 1, distance: 0)
+        let nextBlockPosition = TrainPosition(blockId: p.b2.id, index: 1, distance: 0, direction: .next)
+        let currentBlockPosition = TrainPosition(blockId: p.b1.id, index: 1, distance: 0, direction: .next)
         XCTAssertTrue(try nextBlockPosition.isAfter(currentBlockPosition, reservation: p.reservation))
 
         p.moveToNextBlock(with: .next)
         XCTAssertEqual(p.reservation.occupied.blocks, [p.b2, p.b1])
         XCTAssertEqual(p.reservation.leading.blocks, [])
 
-        let p1 = TrainPosition(blockId: p.b2.id, index: 1, distance: 0)
-        let p2 = TrainPosition(blockId: p.b2.id, index: 1, distance: 50)
+        let p1 = TrainPosition(blockId: p.b2.id, index: 1, distance: 0, direction: .next)
+        let p2 = TrainPosition(blockId: p.b2.id, index: 1, distance: 50, direction: .next)
         XCTAssertTrue(try p2.isAfter(p1, reservation: p.reservation))
 
-        let p3 = TrainPosition(blockId: p.b2.id, index: 1, distance: 50)
-        let p4 = TrainPosition(blockId: p.b2.id, index: 1, distance: 0)
+        let p3 = TrainPosition(blockId: p.b2.id, index: 1, distance: 50, direction: .next)
+        let p4 = TrainPosition(blockId: p.b2.id, index: 1, distance: 0, direction: .next)
         XCTAssertFalse(try p4.isAfter(p3, reservation: p.reservation))
     }
 
@@ -536,13 +550,13 @@ final class TrainPositionsTests: XCTestCase {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
-            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2)
+            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2, direction: direction)
         } else {
-            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2)
+            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2, direction: direction)
         }
         let headPosition: TrainPosition?
         if let head = head {
-            headPosition = TrainPosition(blockId: head.0, index: head.1, distance: head.2)
+            headPosition = TrainPosition(blockId: head.0, index: head.1, distance: head.2, direction: direction)
         } else {
             headPosition = nil
         }
@@ -558,13 +572,13 @@ final class TrainPositionsTests: XCTestCase {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
-            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2)
+            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2, direction: direction)
         } else {
-            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2)
+            detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2, direction: direction)
         }
         let tailPosition: TrainPosition?
         if let tail = tail {
-            tailPosition = TrainPosition(blockId: tail.0, index: tail.1, distance: tail.2)
+            tailPosition = TrainPosition(blockId: tail.0, index: tail.1, distance: tail.2, direction: direction)
         } else {
             tailPosition = nil
         }

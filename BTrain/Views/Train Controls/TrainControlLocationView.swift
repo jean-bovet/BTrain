@@ -31,7 +31,7 @@ struct TrainControlLocationView: View {
                     Text("Location:")
                         .font(Font.body.weight(.medium))
 
-                    if let block = train.block {
+                    if let block = layout.blocks[train.frontBlockId] {
                         Text("\(block.name)")
 
                         Spacer()
@@ -84,14 +84,14 @@ struct TrainControlLocationView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let doc2: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-        doc.layout.trains[0].block = doc.layout.blocks[0]
+        doc.layout.trains[0].positions = .head(blockId: doc.layout.blocks[0].id, index: 0, distance: 0, direction: .next)
         return doc
     }()
 
     static var previews: some View {
-        Group {
-            TrainControlLocationView(controller: doc.layoutController, doc: doc, layout: doc.layout, train: doc.layout.trains[0])
-            TrainControlLocationView(controller: doc2.layoutController, doc: doc2, layout: doc2.layout, train: doc2.layout.trains[0])
-        }
+        TrainControlLocationView(controller: doc.layoutController, doc: doc, layout: doc.layout, train: doc.layout.trains[0])
+            .previewDisplayName("No Location")
+        TrainControlLocationView(controller: doc2.layoutController, doc: doc2, layout: doc2.layout, train: doc2.layout.trains[0])
+            .previewDisplayName("With Location")
     }
 }

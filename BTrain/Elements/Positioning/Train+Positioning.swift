@@ -52,50 +52,16 @@ extension Train {
         }
     }
 
-    /// Returns true if the train is located at the end of the specified block
-    /// - Parameters:
-    ///   - block: the block
-    ///   - train: the train
-    /// - Returns: true if train is at the end of block
-    func atEndOfBlock(block: Block) throws -> Bool {
-        guard let ti = block.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: block.id)
-        }
-        if ti.direction == .next {
-            if directionForward {
-                return positions.head?.index == block.feedbacks.count
-            } else {
-                return positions.tail?.index == block.feedbacks.count
-            }
-        } else {
-            if directionForward {
-                return positions.head?.index == 0
-            } else {
-                return positions.tail?.index == 0
-            }
-        }
-    }
-
     /// Returns the distance left in the front block in the direction of travel of the train.
     ///
-    /// If the train moves forward, the block will be the one where the locomotive is located.
-    /// If the train moves backward, the block will be the last occupied one, where the last wagon is located.
-    ///
-    /// - Parameter train: the train
+    /// - Parameter frontBlock: the block at the front of the train
     /// - Returns: the distance left
-    func distanceLeftInFrontBlock() -> Double {
-        // Note: use `train.block` and not `train.occupied.blocks.last` because
-        // when a train enters a new block, there is a period of time where
-        // the occupied blocks are not yet updated (between two loop cycle of the state machine).
-        guard let block = block else {
+    func distanceLeftInFrontBlock(frontBlock: Block) -> Double {
+        guard let ti = frontBlock.trainInstance else {
             return 0
         }
 
-        guard let ti = block.trainInstance else {
-            return 0
-        }
-
-        guard let length = block.length else {
+        guard let length = frontBlock.length else {
             return 0
         }
 
@@ -138,8 +104,8 @@ extension Train {
         case .next:
             if feedbackIndex < 0 {
                 return length
-            } else if feedbackIndex < block.feedbacks.count {
-                if let feedbackDistance = block.feedbacks[feedbackIndex].distance {
+            } else if feedbackIndex < frontBlock.feedbacks.count {
+                if let feedbackDistance = frontBlock.feedbacks[feedbackIndex].distance {
                     return length - feedbackDistance
                 } else {
                     return 0
@@ -151,8 +117,8 @@ extension Train {
         case .previous:
             if feedbackIndex < 0 {
                 return 0
-            } else if feedbackIndex < block.feedbacks.count {
-                return block.feedbacks[feedbackIndex].distance ?? 0
+            } else if feedbackIndex < frontBlock.feedbacks.count {
+                return frontBlock.feedbacks[feedbackIndex].distance ?? 0
             } else {
                 return length
             }

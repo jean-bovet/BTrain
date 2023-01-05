@@ -162,17 +162,10 @@ final class Train: Element, ObservableObject {
         case stopped
     }
 
-    // The state of the train
+    /// The state of the train
     @Published var state: State = .stopped
 
-    /// The block where the front of the train is located.
-    ///
-    /// The "front of the train" is the part of the train that is in the direction of travel of the train:
-    /// - If the train moves forward, it is the block where the locomotive is located
-    /// - If the train moves backward, it is the block where the last wagon is located
-    @ElementProperty var block: Block?
-
-    // The positions of the train.
+    /// The positions of the train
     @Published var positions = TrainPositions()
 
     struct BlockItem: Identifiable, Codable, Hashable {
@@ -229,9 +222,6 @@ extension Train {
     func description(_ layout: Layout) -> String {
         var text = "Train '\(name)' (\(id), \(state)"
         text += ", \(scheduling)"
-        if let block = block {
-            text += ", \(block.name)"
-        }
         text += ", \(positions.description(layout))"
         if locomotive != nil {
             text += ", \(directionForward ? "f" : "b")"
@@ -270,7 +260,27 @@ extension Train {
     var occupied: TrainOccupiedReservation {
         reservation.occupied
     }
-
+    
+    /// Returns the block that is located at the front of the train.
+    ///
+    /// The front of the train is the portion of the train that is towards the direction of travel:
+    /// - If the train moves forward, the front block is the block where the locomotive is located
+    /// - If the train moves backward, the front block is the block where the last wagon is located
+    var frontBlockId: Identifier<Block>? {
+        frontPosition?.blockId
+    }
+    
+    var frontPosition: TrainPosition? {
+        guard let locomotive = locomotive else {
+            return nil
+        }
+        if locomotive.directionForward {
+            return positions.head
+        } else {
+            return positions.tail
+        }
+    }
+    
     func locomotiveOrThrow() throws -> Locomotive {
         if let loc = locomotive {
             return loc
@@ -283,7 +293,6 @@ extension Train {
 extension Train: Restorable {
     func restore(layout: Layout) {
         _locomotive.restore(layout.locomotives)
-        _block.restore(layout.blocks)
     }
 }
 
@@ -295,7 +304,7 @@ extension Train: Comparable {
 
 extension Train: Codable {
     enum CodingKeys: CodingKey {
-        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -306,7 +315,6 @@ extension Train: Codable {
         self.init(id: id, name: name)
 
         _locomotive.elementId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
-        _block.elementId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
 
         enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
@@ -324,7 +332,6 @@ extension Train: Codable {
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(_locomotive.elementId, forKey: CodingKeys.locomotive)
-        try container.encode(_block.elementId, forKey: CodingKeys.block)
         try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)

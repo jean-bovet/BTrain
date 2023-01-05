@@ -18,6 +18,12 @@ import Foundation
 /// - Updating the tail (or head) position of the train after the spread is completed
 struct LayoutOccupation {
     
+    /// The layout
+    let layout: Layout
+    
+    /// The train
+    let train: Train
+    
     /// The block in which to start the occupation of the train
     let blockId: Identifier<Block>
     
@@ -36,6 +42,10 @@ struct LayoutOccupation {
     /// The direction in which to spread the train
     let directionOfSpread: Direction
     
+    /// True if the direction in which the train moves is the same
+    /// as the spread direction.
+    let directionOfTrainSameAsSpread: Bool
+    
     enum UpdatePosition {
         case tail
         case head
@@ -44,19 +54,24 @@ struct LayoutOccupation {
     /// Specify which position, tail or head, of the train must be updated when the last part of the spread is reached
     let lastPartUpdatePosition: UpdatePosition
     
-    init(train: Train) throws {
-        guard let frontBlock = train.block else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let trainInstance = frontBlock.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: frontBlock.id)
-        }
+    /// Occupy the blocks with the entire length of the train
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - layout: the layout
+    static func occupyBlocksWith(train: Train, layout: Layout) throws {
+        let helper = try LayoutOccupation(train: train, layout: layout)
+        try helper.occupyBlocks()
+    }
 
+    private init(train: Train, layout: Layout) throws {
         guard let trainLength = train.length else {
             throw LayoutError.trainLengthNotDefined(train: train)
         }
 
+        self.layout = layout
+        self.train = train
+        
         if train.directionForward {
             if let head = train.positions.head {
                 // When moving forward, the head position is used
@@ -66,7 +81,8 @@ struct LayoutOccupation {
                 markFirstPartAsLocomotive = true
                 markLastPartAsLocomotive = false
                 lastPartUpdatePosition = .tail
-                directionOfSpread = trainInstance.direction.opposite
+                directionOfSpread = head.direction.opposite
+                directionOfTrainSameAsSpread = false
             } else {
                 throw LayoutError.frontPositionNotSpecified(position: train.positions)
             }
@@ -75,7 +91,7 @@ struct LayoutOccupation {
                 // When moving backwards, prefer to use the tail position if available
                 blockId = tail.blockId
                 distance = tail.distance
-                if trainInstance.direction == .next {
+                if tail.direction == .next {
                     // [ >------- ]>
                     //   h      t
                     //   <------- (visit direction)
@@ -83,7 +99,8 @@ struct LayoutOccupation {
                     markFirstPartAsLocomotive = false
                     markLastPartAsLocomotive = true
                     lastPartUpdatePosition = .head
-                    directionOfSpread = trainInstance.direction.opposite
+                    directionOfSpread = tail.direction.opposite
+                    directionOfTrainSameAsSpread = false
                 } else {
                     // [ -------< ]>
                     //   t      h
@@ -91,20 +108,22 @@ struct LayoutOccupation {
                     markFirstPartAsLocomotive = false
                     markLastPartAsLocomotive = true
                     lastPartUpdatePosition = .head
-                    directionOfSpread = trainInstance.direction.opposite
+                    directionOfSpread = tail.direction.opposite
+                    directionOfTrainSameAsSpread = false
                 }
             } else if let head = train.positions.head {
                 // If the tail position is not available, the front position is used
                 blockId = head.blockId
                 distance = head.distance
-                if trainInstance.direction == .next {
+                if head.direction == .next {
                     // [ >------- ]>
                     //   h      t
                     lengthOfTrain = trainLength
                     markFirstPartAsLocomotive = true
                     markLastPartAsLocomotive = false
                     lastPartUpdatePosition = .tail
-                    directionOfSpread = trainInstance.direction
+                    directionOfSpread = head.direction
+                    directionOfTrainSameAsSpread = true
                 } else {
                     // [ -------< ]>
                     //   t      h
@@ -112,29 +131,16 @@ struct LayoutOccupation {
                     markFirstPartAsLocomotive = true
                     markLastPartAsLocomotive = false
                     lastPartUpdatePosition = .tail
-                    directionOfSpread = trainInstance.direction
+                    directionOfSpread = head.direction
+                    directionOfTrainSameAsSpread = true
                 }
             } else {
                 throw LayoutError.noPositionsSpecified(position: train.positions)
             }
         }
-                
-        assert(frontBlock.id == blockId)
     }
     
-    func occupyBlocksWith(train: Train, layout: Layout) throws {
-        guard let frontBlock = train.block else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let trainInstance = frontBlock.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: frontBlock.id)
-        }
-
-        // When moving forward, the frontBlock is the block where the locomotive is located.
-        // When moving backward, the frontBlock is the block where the last wagon is located.
-        // --> now when moving backward, the frontBlock can be the block where the locomotive is located
-        // if there are no magnet at the tail of the train!
+    private func occupyBlocks() throws {
         let occupation = train.occupied
         occupation.clear()
         
@@ -158,14 +164,14 @@ struct LayoutOccupation {
         }, blockCallback: { spreadBlockInfo in
             let blockInfo = spreadBlockInfo.blockInfo
             let block = blockInfo.block
-            guard block.reservation == nil || block == train.block else {
+            guard block.reservation == nil else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
             
             // Determine the direction of travel of the train which depends on the direction of the spread
             // and the original direction of the train in the front block (the block in which the spread started)
             let directionOfTravel: Direction
-            if trainInstance.direction == directionOfSpread {
+            if directionOfTrainSameAsSpread {
                 directionOfTravel = blockInfo.direction
             } else {
                 directionOfTravel = blockInfo.direction.opposite
@@ -188,9 +194,9 @@ struct LayoutOccupation {
             if let part = spreadBlockInfo.parts.first(where: { $0.lastPart }) {
                 switch lastPartUpdatePosition {
                 case .tail:
-                    train.positions.tail = .init(blockId: block.id, index: part.partIndex, distance: part.distance)
+                    train.positions.tail = .init(blockId: block.id, index: part.partIndex, distance: part.distance, direction: directionOfTravel)
                 case .head:
-                    train.positions.head = .init(blockId: block.id, index: part.partIndex, distance: part.distance)
+                    train.positions.head = .init(blockId: block.id, index: part.partIndex, distance: part.distance, direction: directionOfTravel)
                 }
             }
             

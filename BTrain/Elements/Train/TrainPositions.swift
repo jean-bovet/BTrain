@@ -29,6 +29,22 @@ struct TrainPositions: Equatable, Codable, CustomStringConvertible {
         description(nil)
     }
     
+    /// Returns true if the positions are defined, meaning the train is located in the layout
+    var defined: Bool {
+        head != nil || tail != nil
+    }
+        
+    /// Removes the train by clearing both the ``head`` and ``tail`` positions.
+    mutating func clear() {
+        head = nil
+        tail = nil
+    }
+    
+    mutating func toggleDirection() {
+        head?.toggleDirection()
+        tail?.toggleDirection()
+    }
+    
     func description(_ layout: Layout?) -> String {
         if let head = head, let tail = tail {
             return "􀼯\(tail.description(layout))-\(head.description(layout))􀼮"
@@ -40,17 +56,17 @@ struct TrainPositions: Equatable, Codable, CustomStringConvertible {
             return "􀼯?-?􀼮"
         }
     }
-
-    static func head(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
-        TrainPositions(head: .init(blockId: blockId, index: index, distance: distance), tail: nil)
+    
+    static func head(blockId: Identifier<Block>, index: Int, distance: Double, direction: Direction) -> TrainPositions {
+        TrainPositions(head: .init(blockId: blockId, index: index, distance: distance, direction: direction), tail: nil)
     }
 
-    static func tail(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
-        TrainPositions(head: nil, tail: .init(blockId: blockId, index: index, distance: distance))
+    static func tail(blockId: Identifier<Block>, index: Int, distance: Double, direction: Direction) -> TrainPositions {
+        TrainPositions(head: nil, tail: .init(blockId: blockId, index: index, distance: distance, direction: direction))
     }
 
-    static func both(blockId: Identifier<Block>, headIndex: Int, headDistance: Double, tailIndex: Int, tailDistance: Double) -> TrainPositions {
-        TrainPositions(head: .init(blockId: blockId, index: headIndex, distance: headDistance),
-                       tail: .init(blockId: blockId, index: tailIndex, distance: tailDistance))
+    static func both(blockId: Identifier<Block>, headIndex: Int, headDistance: Double, tailIndex: Int, tailDistance: Double, direction: Direction) -> TrainPositions {
+        TrainPositions(head: .init(blockId: blockId, index: headIndex, distance: headDistance, direction: direction),
+                       tail: .init(blockId: blockId, index: tailIndex, distance: tailDistance, direction: direction))
     }
 }

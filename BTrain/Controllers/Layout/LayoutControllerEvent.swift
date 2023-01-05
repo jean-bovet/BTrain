@@ -46,8 +46,8 @@ enum LayoutControllerEvent: CustomStringConvertible {
 
     var description: String {
         switch self {
-        case .feedbackTriggered:
-            return "Feedback Triggered"
+        case let .feedbackTriggered(feedback):
+            return "Feedback Triggered \(feedback.name)"
         case .schedulingChanged:
             return "Scheduling Changed"
         case let .restartTimerExpired(train):

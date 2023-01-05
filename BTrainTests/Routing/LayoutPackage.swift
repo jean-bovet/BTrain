@@ -67,16 +67,16 @@ final class Package {
         train.routeId = route.id
         switch position {
         case .start:
-            let location = TrainPositions.head(blockId: block.id, index: 0, distance: 0.after)
-            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+            let location = TrainPositions.head(blockId: block.id, index: 0, distance: 0.after, direction: direction)
+            try setTrainInBlock(train: train, block: block, positions: location)
         case .end:
             let distance = block.feedbacks.last!.distance!
-            let location = TrainPositions.head(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
-            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+            let location = TrainPositions.head(blockId: block.id, index: block.feedbacks.count, distance: distance.after, direction: direction)
+            try setTrainInBlock(train: train, block: block, positions: location)
         case let .custom(index):
             let distance = block.feedbacks[index - 1].distance!
-            let location = TrainPositions.head(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
-            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+            let location = TrainPositions.head(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before, direction: direction)
+            try setTrainInBlock(train: train, block: block, positions: location)
         case .automatic:
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
         }
@@ -92,10 +92,8 @@ final class Package {
         routes.append(route)
     }
 
-    func setTrainInBlock(train: Train, block: Block, positions: TrainPositions, direction: Direction) throws {
-        try layout.setTrainToBlock(train, block.id, positions: positions, directionOfTravelInBlock: direction)
-        try layoutController.reservation.freeElements(train: train)
-        try layoutController.reservation.occupyBlocksWith(train: train)
+    func setTrainInBlock(train: Train, block: Block, positions: TrainPositions) throws {
+        try layout.setTrainToBlock(train, block.id, positions: positions)
     }
 
     func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {

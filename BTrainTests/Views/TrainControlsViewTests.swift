@@ -27,7 +27,7 @@ extension RoutePicker: Inspectable {}
 class TrainControlsViewTests: RootViewTests {
     func testControlList() throws {
         let doc = newDocument()
-        doc.layout.trains[0].block = doc.layout.blocks[0]
+        doc.layout.trains[0].positions = .head(blockId: doc.layout.blocks[0].id, index: 0, distance: 0, direction: .next)
 
         let sut = TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
 

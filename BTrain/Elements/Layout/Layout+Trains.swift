@@ -36,53 +36,6 @@ extension Layout {
         trains.remove(trainId)
     }
 
-    func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = blocks[fromBlock] else {
-            throw LayoutError.blockNotFound(blockId: fromBlock)
-        }
-
-        guard let b2 = blocks[toBlockNotIncluded] else {
-            throw LayoutError.blockNotFound(blockId: toBlockNotIncluded)
-        }
-
-        let transitions = try self.transitions(from: LayoutVector(block: b1, direction: direction), to: LayoutVector(block: b2, direction: nil))
-        if transitions.count > 0 {
-            for transition in transitions {
-                transition.reserved = nil
-                if let turnoutId = transition.b.turnout {
-                    guard let turnout = turnouts[turnoutId] else {
-                        throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-                    }
-                    turnout.reserved = nil
-                }
-            }
-        } else {
-            BTLogger.debug("No transition found between \(b1) and \(b2), direction \(direction)")
-        }
-
-        try free(block: b1.id)
-    }
-
-    func free(block: Identifier<Block>) throws {
-        guard let b1 = blocks[block] else {
-            throw LayoutError.blockNotFound(blockId: block)
-        }
-
-        BTLogger.debug("Freeing block \(b1.name)")
-
-        b1.reservation = nil
-        if let blockTrain = b1.trainInstance {
-            guard let train = trains[blockTrain.trainId] else {
-                throw LayoutError.trainNotFound(trainId: blockTrain.trainId)
-            }
-            // Remove the block assignment from the train if the train is located in the block
-            if train.block?.id == b1.id {
-                train.block = nil
-            }
-            b1.trainInstance = nil
-        }
-    }
-
     // Remove the train from the layout (but not from the list of train)
     func remove(trainId: Identifier<Train>) throws {
         guard let train = trains[trainId] else {
@@ -99,7 +52,8 @@ extension Layout {
         turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
 
-        train.block = nil
+        train.positions.clear()
+        train.occupied.clear()
     }
 
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {

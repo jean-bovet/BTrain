@@ -558,6 +558,7 @@ class AutomaticRoutingTests: BTTestCase {
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
 
+    // TODO: do the same test but move from one block to another using the head position only
     func testBackwardRoute() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")

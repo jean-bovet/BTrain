@@ -43,6 +43,7 @@ extension Train.Reservation {
         return nil
     }
 
+    // TODO: still used?
     func directionInBlock(for blockId: Identifier<Block>) throws -> Direction? {
         if let block = occupied.blocks.first(where: { $0.id == blockId }) {
             if let ti = block.trainInstance {
