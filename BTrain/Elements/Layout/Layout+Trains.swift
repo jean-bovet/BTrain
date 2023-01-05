@@ -55,7 +55,17 @@ extension Layout {
         train.positions.clear()
         train.occupied.clear()
     }
-
+    
+    /// Removes from the layout any train that does not have a defined positions. This happens with
+    /// older layout that did not have a well defined positions associated with the train but relied
+    /// on a single block for the positioning.
+    /// Note: it is up to the user to add, manually, the train to the layout again.
+    func removeOrphanedTrains() {
+        for train in trains.elements.filter({$0.positions.defined == false}) {
+            try? remove(trainId: train.id)
+        }
+    }
+    
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
         switch step {
         case let .block(stepBlock):

@@ -320,7 +320,12 @@ extension Train: Codable {
         wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
-        positions = try container.decode(TrainPositions.self, forKey: CodingKeys.position)
+        // Note: previous version of the encoding did not include a direction with the positions
+        // so if it cannot be decoded, the train is simply removed from the layout and must be
+        // re-added by the user.
+        if let positions = try? container.decode(TrainPositions.self, forKey: CodingKeys.position) {
+            self.positions = positions
+        }
         maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
         turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []
