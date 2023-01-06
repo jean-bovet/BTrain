@@ -40,7 +40,6 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴􀼮1 ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
 
         // Free block b3
-        // TODO: refactor this into a single method?
         b3.trainInstance = nil
         b3.reservation = nil
 
