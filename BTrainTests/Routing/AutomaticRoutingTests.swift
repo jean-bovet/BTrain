@@ -558,7 +558,6 @@ class AutomaticRoutingTests: BTTestCase {
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
 
-    // TODO: do the same test but move from one block to another using the head position only
     func testBackwardRoute() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -608,6 +607,57 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
     }
 
+    func testBackwardRoute_HeadOnly() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+
+        let t1 = layout.trains[0]
+        t1.locomotive!.length = 20
+        t1.wagonsLength = s1.length! - 60
+
+        t1.locomotive!.directionForward = false
+        t1.locomotive!.allowedDirections = .any
+
+        // s1: [ >---- ]>
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .automatic, direction: .next, routeSteps: ["s1:next", "b1:next", "s2:next"])
+
+        // The route requires the train to move backward
+        XCTAssertFalse(t1.directionForward)
+        XCTAssertEqual(s1.trainInstance?.direction, .next)
+
+        try p.assert("automatic-0: {r0{s1 ≏ 🔵!􀼮⟷0 ≏ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+
+        try p.assert("automatic-0: {r0{s1 ≏ ≡ 🟢!􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼰{10.001}0 ≏ ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+
+        try p.assert("automatic-0: {r0{s1 ≏ ≡ 🟢!􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼰{10.001}0 ≏ ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🔵!􀼮0 ≏ 􀼰0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ ≡ 🟡!􀼮0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≏ 􀼰{25.001}0 ≏ }}", [])
+
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≡ 🔴!􀼮0 ≏ 􀼰0 }}", [])
+
+        // Start the train to go back to s1, by reversing its direction
+        try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
+
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 🔵!􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
+        
+        try p.printASCII()
+
+//
+//        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+//
+//        // Trigger a feedback near the back of the train, this feedback should be ignored (because it is
+//        // behind the front position of the train) and it won't be un-expected because it is located in
+//        // a block where the train is located (and because the train can move in any direction, it can
+//        // have a magnet at the rear of the train).
+//        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+//
+//        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼰0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡!􀼮0 ≏ }}", [])
+//
+//        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
+    }
     //    ┌─────────┐                      ┌─────────┐             ┌─────────┐
     //    │   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
     //    └─────────┘                      └─────────┘             └─────────┘
