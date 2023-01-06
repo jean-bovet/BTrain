@@ -36,7 +36,6 @@ struct LayoutSpeed {
 
         // Special case if the speed is 0 and the leading distance is 0,
         // the train should not be allowed to move forward.
-        // TODO: add unit test for this
         if leadingDistance == 0, speed == 0 {
             return false
         }
