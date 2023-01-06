@@ -46,25 +46,21 @@ struct TrainStateStateMachine {
                 train.state = .stopped
             }
         } else {
-            if try train.shouldStopInBlock() && train.brakeFeedbackActivated {
-                train.logDebug("brake feedback activated, braking.")
-                train.state = .braking
-            } else if try train.shouldStopInBlock() && train.stopFeedbackActivated {
-                train.logDebug("stop feedback activated, stopping.")
-                train.state = .stopping
-                // TODO: think about the implication of that change. Is there a situation
-                // in which a train should stop but won't because the block does not have
-                // or the train has already passed above a braking or stopping feedback?
-//            } else if try train.shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
-//                train.logDebug("stop in block because not enough reserved block length.")
-//                train.state = .stopping
+            if try train.shouldStopInBlock() {
+                if try train.pastStopFeedback() {
+                    train.logDebug("stop feedback activated, stopping.")
+                    train.state = .stopping
+                } else if try train.pastBrakeFeedback() {
+                    train.logDebug("brake feedback activated, braking.")
+                    train.state = .braking
+                }
             }
         }
     }
 
     private func handleBrakingState(train: TrainControlling) throws {
         if try train.shouldStopInBlock() {
-            if train.stopFeedbackActivated {
+            if try train.pastStopFeedback() {
                 train.logDebug("stop feedback activated, stopping.")
                 train.state = .stopping
             }

@@ -883,21 +883,22 @@ class FixedRoutingTests: BTTestCase {
 
         let p = Package(layout: layout)
 
-        try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid, position: .end)
+        try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid, position: .automatic)
 
         try p.assert("r1: {r0{s1 ≏ 􀼰0 ≏ 🔴􀼮0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
-
+        
         try p.start()
 
         try p.assert("r1: {r0{s1 ≏ 􀼰0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]]")
+        try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 􀼰0 ≡ 🟡􀼮0 ≏ ]]")
 
         // Stop the train for the first time - the train continues to run because it has not yet reached
         // the end of the block it is located in.
         p.stop()
         p.layoutController.waitUntilSettled()
 
-        XCTAssertEqual(p.train.speed!.actualKph, LayoutFactory.DefaultLimitedSpeed)
-        XCTAssertEqual(p.train.state, .running)
+        XCTAssertEqual(p.train.speed!.actualKph, LayoutFactory.DefaultBrakingSpeed)
+        XCTAssertEqual(p.train.state, .braking)
         XCTAssertEqual(p.train.scheduling, .stopManaged)
 
         // Stop the train for the second time, this time, the train will stop immedately.
@@ -908,7 +909,7 @@ class FixedRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.state, .stopped)
         XCTAssertEqual(p.train.scheduling, .unmanaged)
 
-        try p.assert("r1: {r0{s1 ≏ 􀼰0 ≏ 🔴􀼮0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
+        try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 􀼰0 ≏ 🔴􀼮0 ≏ ]]")
     }
 
     func testStraightLine1WithIncompleteRoute() throws {

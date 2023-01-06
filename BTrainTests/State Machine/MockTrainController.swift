@@ -24,9 +24,17 @@ final class MockTrainController: TrainControlling {
 
     var speed: SpeedKph = 0
 
-    var brakeFeedbackActivated: Bool = false
+    var trainIsPastBrakeFeedback = false
+    
+    var trainIsPastStopFeedback = false
 
-    var stopFeedbackActivated: Bool = false
+    func pastBrakeFeedback() throws -> Bool {
+        trainIsPastBrakeFeedback
+    }
+    
+    func pastStopFeedback() throws -> Bool {
+        trainIsPastStopFeedback
+    }
 
     var hasReservedBlocks = false
 

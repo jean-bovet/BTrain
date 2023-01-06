@@ -34,7 +34,7 @@ class TrainEventStateMachineTests: XCTestCase {
 
         train.state = .running
         train.mode = .stopManaged
-        train.stopFeedbackActivated = true
+        train.trainIsPastStopFeedback = true
         XCTAssertEqual(try tsm.handle(trainEvent: .position(train), train: train), .stateChanged(train))
 
         XCTAssertEqual(try tsm.handle(trainEvent: .position(anotherTrain), train: train), nil)
@@ -46,7 +46,7 @@ class TrainEventStateMachineTests: XCTestCase {
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
 
         train.onReservedBlocksLengthEnough = { _ in false }
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
 
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
@@ -75,7 +75,7 @@ class TrainEventStateMachineTests: XCTestCase {
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), nil)
 
         train.mode = .stopManaged
-        train.stopFeedbackActivated = true
+        train.trainIsPastStopFeedback = true
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .stateChanged(train))
     }
 

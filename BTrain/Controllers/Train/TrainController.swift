@@ -94,6 +94,14 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return isFeedbackTriggered(layout: layout, block: frontBlock, feedbackId: stopFeedback)
     }
 
+    func pastBrakeFeedback() throws -> Bool {
+        try layout.isPastFeedback(train: train, type: .brake)
+    }
+
+    func pastStopFeedback() throws -> Bool {
+        try layout.isPastFeedback(train: train, type: .stop)
+    }
+    
     var startedRouteIndex: Int {
         get {
             train.startRouteIndex ?? 0

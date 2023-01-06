@@ -32,11 +32,11 @@ protocol TrainControlling: AnyObject {
     /// The speed of the train
     var speed: SpeedKph { get set }
 
-    /// Returns true if the brake feedback is detected
-    var brakeFeedbackActivated: Bool { get }
-
-    /// Returns true if the stop feedback is detected
-    var stopFeedbackActivated: Bool { get }
+    /// Returns true if the train front position is located after the brake feedback
+    func pastBrakeFeedback() throws -> Bool
+    
+    /// Returns true if the train front position is located after the stop feedback
+    func pastStopFeedback() throws -> Bool
 
     /// The start index of the route where the train started.
     ///

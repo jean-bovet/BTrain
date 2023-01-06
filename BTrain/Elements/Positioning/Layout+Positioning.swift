@@ -78,4 +78,73 @@ extension Layout {
 
         return positions
     }
+    
+    enum FeedbackType {
+        case brake
+        case stop
+    }
+    
+    /// Returns true if the front of the train is after the specified feedback type
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - type: the type of feedback
+    /// - Returns: true if the front of the train is past the specified feedback type, false otherwise
+    // TODO: add unit test for this method only
+    func isPastFeedback(train: Train, type: FeedbackType) throws -> Bool {
+        guard let frontBlock = blocks[train.frontBlockId] else {
+            return false
+        }
+
+        guard let trainInstance = frontBlock.trainInstance else {
+            return false
+        }
+
+        let direction = trainInstance.direction
+
+        let feedback: Identifier<Feedback>?
+        switch type {
+        case .brake:
+            feedback = frontBlock.brakeFeedback(for: direction)
+        case .stop:
+            feedback = frontBlock.stopFeedback(for: direction)
+        }
+
+        guard let feedback = feedback else {
+            // TODO: throw?
+            fatalError()
+        }
+        
+        guard let bf = frontBlock.feedbacks.first(where: {$0.feedbackId == feedback }) else {
+            // TODO: throw?
+            fatalError()
+        }
+
+        guard let bfDistance = bf.distance else {
+            // TODO: throw?
+            fatalError()
+        }
+        
+        let frontDistance: Double
+        if train.directionForward {
+            guard let headDistance = train.positions.head?.distance else {
+                // TODO: throw?
+                fatalError()
+            }
+            frontDistance = headDistance
+        } else {
+            guard let tailDistance = train.positions.tail?.distance else {
+                // TODO: throw?
+                fatalError()
+            }
+            frontDistance = tailDistance
+        }
+        
+        if direction == .next {
+            return frontDistance > bfDistance
+        } else {
+            return frontDistance < bfDistance
+        }
+    }
+    
 }
