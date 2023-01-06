@@ -141,22 +141,18 @@ final class MockTrainController: TrainControlling {
 
     var adjustSpeedCount = 0
 
-    func adjustSpeed(stateChanged: Bool) {
+    func adjustSpeed() {
         adjustSpeedCount += 1
 
-        if stateChanged {
-            switch state {
-            case .running:
-                speed = LayoutFactory.DefaultMaximumSpeed
-            case .braking:
-                speed = LayoutFactory.DefaultBrakingSpeed
-            case .stopping:
-                speed = LayoutFactory.DefaultBrakingSpeed
-            case .stopped:
-                speed = 0
-            }
-        } else if state == .running {
+        switch state {
+        case .running:
             speed = LayoutFactory.DefaultMaximumSpeed
+        case .braking:
+            speed = LayoutFactory.DefaultBrakingSpeed
+        case .stopping:
+            speed = LayoutFactory.DefaultBrakingSpeed
+        case .stopped:
+            speed = 0
         }
     }
 

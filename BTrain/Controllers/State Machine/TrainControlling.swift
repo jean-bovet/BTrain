@@ -95,10 +95,7 @@ protocol TrainControlling: AnyObject {
     func removeReservedBlocks() throws -> Bool
 
     /// Adjusts the speed of the train given the current context.
-    ///
-    /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
-    /// - Parameter stateChanged: true if this method is called when the state of the train changed
-    func adjustSpeed(stateChanged: Bool) throws
+    func adjustSpeed() throws
 
     /// Stops the train immediately
     func stopImmediately() throws

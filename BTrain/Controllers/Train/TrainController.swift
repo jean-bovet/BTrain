@@ -259,38 +259,36 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         reservation.removeLeadingReservation(train: train)
     }
 
-    func adjustSpeed(stateChanged: Bool) throws {
+    func adjustSpeed() throws {
         guard let frontBlock = frontBlock else {
             // TODO: throw
             fatalError()
         }
+        
         let desiredKph: SpeedKph?
-        if stateChanged {
-            switch train.state {
-            case .running:
-                desiredKph = LayoutFactory.DefaultMaximumSpeed
-            case .braking:
-                desiredKph = frontBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed
-            case .stopping:
-                desiredKph = 0
-            case .stopped:
-                desiredKph = nil
-            }
-        } else if train.state == .running {
-            // When running, always try to use the maximum speed.
-            // Note: it will be lowered if necessary below.
+        switch train.state {
+        case .running:
             desiredKph = LayoutFactory.DefaultMaximumSpeed
-        } else {
+        case .braking:
+            desiredKph = frontBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed
+        case .stopping:
+            desiredKph = 0
+        case .stopped:
             desiredKph = nil
         }
 
-        if let desiredKph = desiredKph {
-            let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train, frontBlock: frontBlock))
-            let loc = try train.locomotiveOrThrow()
-            if requestedKph != loc.speed.requestedKph {
-                BTLogger.speed.debug("\(self.train.description(self.layout), privacy: .public): controller adjusts speed to \(requestedKph)")
-                try layoutController.setTrainSpeed(train, requestedKph)
-            }
+        guard let desiredKph = desiredKph else {
+            return
+        }
+        
+        // Ensure the desired speed respects any limitation due to any block or turnouts
+        let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train, frontBlock: frontBlock))
+        
+        // Change the requested speed only if it is different from the current requested speed
+        let loc = try train.locomotiveOrThrow()
+        if requestedKph != loc.speed.requestedKph {
+            BTLogger.speed.debug("\(self.train.description(self.layout), privacy: .public): controller adjusts speed to \(requestedKph)")
+            try layoutController.setTrainSpeed(train, requestedKph)
         }
     }
 
