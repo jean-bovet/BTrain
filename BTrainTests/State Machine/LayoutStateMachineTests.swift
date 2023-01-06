@@ -47,7 +47,7 @@ class LayoutStateMachineTests: XCTestCase {
         try handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
 
         XCTAssertEqual(train.state, .running)
-        XCTAssertEqual(train.adjustSpeedCount, 2)
+        XCTAssertEqual(train.adjustSpeedCount, 3)
         XCTAssertEqual(train.speed, LayoutFactory.DefaultMaximumSpeed)
     }
 
