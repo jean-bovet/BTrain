@@ -111,8 +111,8 @@ extension Layout {
         }
 
         guard let feedbackId = feedbackId else {
-            // TODO: throw?
-            fatalError()
+            BTLogger.warning("\(train): ⚠️ feedback \(type) not found in \(frontBlock)")
+            return false
         }
         
         guard let bf = frontBlock.feedbacks.first(where: {$0.feedbackId == feedbackId }) else {
