@@ -564,10 +564,7 @@ extension LayoutController {
             loc.directionForward = true
         }
 
-        train.positions.toggleDirection()
-
-        try layout.freeElements(train: train)
-        try layout.occupyBlocksWith(train: train)
+        try layout.setTrainPositions(train, train.positions.reversed())
     }
 
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
@@ -626,7 +623,7 @@ extension LayoutController {
             }
         }
 
-        try layout.setTrainToBlock(train, toBlockId, positions: train.positions)
+        try layout.setTrainPositions(train, train.positions)
     }
 }
 

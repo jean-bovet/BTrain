@@ -153,7 +153,7 @@ class MarklinSimulatorTests: XCTestCase {
         let blockB = layout.block(named: "B")
         let turnoutAB = layout.turnout(named: "AB")
 
-        try layout.setTrainToBlock(train, blockA.id, positions: .both(blockId: blockA.id, headIndex: 1, headDistance: train.length!, tailIndex: 0, tailDistance: 0, direction: .next))
+        try layout.setTrainPositions(train, .both(blockId: blockA.id, headIndex: 1, headDistance: train.length!, tailIndex: 0, tailDistance: 0, direction: .next))
 
         let delegate = MockSimulatorTrainDelegate(layout: layout)
         let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)
@@ -183,7 +183,7 @@ class MarklinSimulatorTests: XCTestCase {
         let turnoutAB = layout.turnout(named: "AB")
         turnoutAB.setState(.branchRight)
 
-        try layout.setTrainToBlock(train, blockA.id, positions: .both(blockId: blockA.id, headIndex: 1, headDistance: train.length!, tailIndex: 0, tailDistance: 0, direction: .next))
+        try layout.setTrainPositions(train, .both(blockId: blockA.id, headIndex: 1, headDistance: train.length!, tailIndex: 0, tailDistance: 0, direction: .next))
 
         let delegate = MockSimulatorTrainDelegate(layout: layout)
         let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)

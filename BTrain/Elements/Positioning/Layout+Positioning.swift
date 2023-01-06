@@ -17,9 +17,8 @@ extension Layout {
     ///
     /// - Parameters:
     ///   - train: the train
-    ///   - toBlockId: the block
-    ///   - positions: the position
-    func setTrainToBlock(_ train: Train, _: Identifier<Block>, positions: TrainPositions) throws {
+    ///   - positions: the positions
+    func setTrainPositions(_ train: Train, _ positions: TrainPositions) throws {
         train.positions = positions
 
         try freeElements(train: train)

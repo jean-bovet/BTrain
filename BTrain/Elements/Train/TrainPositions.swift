@@ -40,9 +40,8 @@ struct TrainPositions: Equatable, Codable, CustomStringConvertible {
         tail = nil
     }
 
-    mutating func toggleDirection() {
-        head?.toggleDirection()
-        tail?.toggleDirection()
+    func reversed() -> TrainPositions {
+        .init(head: head?.reversed(), tail: tail?.reversed())
     }
 
     func description(_ layout: Layout?) -> String {

@@ -546,7 +546,12 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     private func assertForward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), head: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
-        let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
+        let direction: Direction
+        if let nextBlockTrainDirection = nextBlockTrainDirection {
+            direction = nextBlockTrainDirection
+        } else {
+            direction = try reservation.directionInBlock(for: feedback.0)
+        }
         let detectedPosition: TrainPosition
         if direction == .next {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2, direction: direction)
@@ -568,7 +573,12 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     private func assertBackward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), tail: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
-        let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
+        let direction: Direction
+        if let nextBlockTrainDirection = nextBlockTrainDirection {
+            direction = nextBlockTrainDirection
+        } else {
+            direction = try reservation.directionInBlock(for: feedback.0)
+        }
         let detectedPosition: TrainPosition
         if direction == .next {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1 + 1, distance: feedback.2, direction: direction)

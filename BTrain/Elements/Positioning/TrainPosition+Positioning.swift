@@ -32,9 +32,7 @@ extension TrainPosition {
             return true
         } else {
             // Same block. Now the direction matters to compare
-            guard let direction = try reservation.directionInBlock(for: blockId) else {
-                throw LayoutError.directionNotFound(blockId: blockId)
-            }
+            let direction = try reservation.directionInBlock(for: blockId)
             if direction == .next {
                 return distance > other.distance
             } else {

@@ -33,7 +33,7 @@ final class LayoutFeedbackMonitor {
     }
 
     private func updateExpectedFeedbacks(train: Train) throws {
-        var blocks = train.occupied.blocks
+        let blocks = train.occupied.blocks
 
         // Gather all feedbacks in all the blocks occupied by the train
         for feedback in blocks.flatMap(\.feedbacks) {

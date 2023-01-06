@@ -39,8 +39,8 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         description(nil)
     }
 
-    mutating func toggleDirection() {
-        direction = direction.opposite
+    func reversed() -> TrainPosition {
+        .init(blockId: blockId, index: index, distance: distance, direction: direction.opposite)
     }
 
     /// When comparing to position, the distance is only compared up to a thousandth because with

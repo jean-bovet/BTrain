@@ -28,7 +28,7 @@ class LayoutTests: BTTestCase {
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
-        try layout.setTrainToBlock(t1, b1.id, positions: .both(blockId: b1.id, headIndex: 2, headDistance: 20, tailIndex: 0, tailDistance: 0, direction: .next))
+        try layout.setTrainPositions(t1, .both(blockId: b1.id, headIndex: 2, headDistance: 20, tailIndex: 0, tailDistance: 0, direction: .next))
         XCTAssertEqual(t1.frontBlockId, b1.id)
         XCTAssertEqual(layout.transitions.elements.count, 2)
 
