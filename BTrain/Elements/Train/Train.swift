@@ -12,78 +12,28 @@
 
 import Foundation
 
-// TODO: update the comment to be simpler
-// A train is an element that moves from one block to another.
-// A train consists of a locomotive and zero, one or more wagons.
-// From a geometry point of view, these are the measurements needed:
-//
-//
-//      │◀─────────────────────Train Length──────────────────────▶│
-//      │                                                         │
-//  B   │                                                         │   F
-//  a   │                                                         │   r
-//  c   ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐   o
-//  k   │                 │ │                 │ │                 │   n
-//      │      wagon      │ │      wagon      │ │   locomotive    │   t
-//      │                 │ │                 │ │      ▨          │
-//      └─────────────────┘ └─────────────────┘ └──────┬──────────┘
-//                                                     │          │
-//                                                     │          │
-//                                                     │          │
-//                                                     │ ◀────────│
-//
-//                                                    Magnet Distance
-//
-// ================ Train Direction Discussion =========================
-//
-// Axioms:
-// - A locomotive can move forward or backward
-// - The train direction within a block is determined by the locomotive direction
-//   and the side by which the train enters a new block.
-// - The wagons direction can only be changed by manual input from the user because
-//   they should not change (once a train is on the layout, the wagons are always oriented
-//   "behind" the locomotive, regardless of the direction of motion of the locomotive).
-// Let's look at some scenarios:
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     forward       forward       forward
-//    DIB:     next          previous      previous
-//    WAG:     previous      next          next
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ■■■■■■◀ │◀──│ ■■■■■■◀ │◀──│ ■■■■■■◀ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     backward      backward      backward
-//    DIB:     previous      next          next
-//    WAG:     previous      next          next
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     backward      backward      backward
-//    DIB:     next          previous      previous
-//    WAG:     next          previous      previous
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ◀■■■■■■ │◀──│ ◀■■■■■■ │◀──│ ◀■■■■■■ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     forward       forward       forward
-//    DIB:     previous      next          next
-//    WAG:     next          previous      previous
-//
-// Legends:
-// LOC: Locomotive direction of travel (forward or backward)
-// DIB: Direction of the train relative to the block natural direction
-// WAG: Direction of the wagons relative to the block natural direction
-// ▷: Orientation of the block (natural direction)
-// ◀: Locomotive
-// ■: Wagon
-// ──▶: Direction in which the train is moving from one block to another
+/// A train consists of a locomotive and zero, one or more wagons.
+///
+/// A train moves forward and, optionally, backward.
+/// - When moving forward, BTrain relies on the feedback at the head of the train to know where the train is located.
+/// - When moving backward, BTrain relies on the feedback at the tail of the train to know where the train is located. If there is
+/// no feedback at the tail of the train, BTrain uses the head feedback to estimate the tail position of the train.
+///
+/// Definitions:
+/// - Head: the portion of the train where the locomotive is located.
+/// - Tail: the portion of the train at the opposite end of the locomotive.
+///
+/// Limitations:
+/// - BTrain does not support locomotive at the tail of the train.
+/// - BTrain does not yet support computing real-time distance estimation of the train.
+///
+///                                                                                     locomotive
+///                                                                                     │
+///                                                                                     │
+///                            ◀─────────────────────────cars──────────────────────────▶▼
+///                      Tail ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■▶ Head
+///                            ┌─▶▼                                                 ▼◀─┐
+///              Tail Position─┘                                                       └──Head Position
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
@@ -173,7 +123,6 @@ final class Train: Element, ObservableObject {
     /// of the train is detected (that is, a sensor below the front locomotive is detected).
     /// However, to accurately drive a train moving backwards, a sensor in the last wagon
     /// should be installed and this is what this variable is about.
-    // TODO: change this when we have detection per element of the train
     @Published var isTailDetected = false
     
     struct BlockItem: Identifiable, Codable, Hashable {
