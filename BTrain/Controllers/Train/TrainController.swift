@@ -28,7 +28,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     var description: String {
-        "TrainController(layout=\(layout.name), train=\(train))"
+        "TrainController(layout=\(layout.name), train=\(train.description(layout)))"
     }
 
     var id: String {
@@ -261,8 +261,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
     func adjustSpeed() throws {
         guard let frontBlock = frontBlock else {
-            // TODO: throw
-            fatalError()
+            BTLogger.router.warning("\(self.train.description(self.layout), privacy: .public): cannot adjust speed because the front block is not defined")
+            return
         }
         
         let desiredKph: SpeedKph?
