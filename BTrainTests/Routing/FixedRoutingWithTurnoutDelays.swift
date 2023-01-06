@@ -33,17 +33,6 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         // The train will switch to managed scheduling but does not start yet because the turnout t0 hasn't settled.
         try p.start(expectedState: .stopped)
 
-        // TODO: think about this; it stops immediately because we return false
-        // when the leading settled distance is 0. Should we still take in consideration
-        // the remaining distance in the block taking into account if the train is past
-        // the stop feedback of the block?
-//        // t0 has still the state .branchLeft instead of the requested .straight
-//        try p.assert("r1: {r1{b1 🔵􀼮1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-//        try p.assert("r1: {r1{b1 ≡ 🔵􀼮1 ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≡ }}")
-//
-//        // The train stops because t0 has not yet settled, hence the leading distance is 0.
-//        try p.assert("r1: {r1{b1 ≏ ≡ 🔴􀼮1 }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≡ ≏ }}")
-
         // This will settle the turnout t0
         p.digitalController.resume()
         p.layoutController.runControllers(.turnoutChanged(t0))

@@ -102,40 +102,36 @@ extension Layout {
 
         let direction = trainInstance.direction
 
-        let feedback: Identifier<Feedback>?
+        let feedbackId: Identifier<Feedback>?
         switch type {
         case .brake:
-            feedback = frontBlock.brakeFeedback(for: direction)
+            feedbackId = frontBlock.brakeFeedback(for: direction)
         case .stop:
-            feedback = frontBlock.stopFeedback(for: direction)
+            feedbackId = frontBlock.stopFeedback(for: direction)
         }
 
-        guard let feedback = feedback else {
+        guard let feedbackId = feedbackId else {
             // TODO: throw?
             fatalError()
         }
         
-        guard let bf = frontBlock.feedbacks.first(where: {$0.feedbackId == feedback }) else {
-            // TODO: throw?
-            fatalError()
+        guard let bf = frontBlock.feedbacks.first(where: {$0.feedbackId == feedbackId }) else {
+            throw LayoutError.feedbackNotFound(feedbackId: feedbackId)
         }
 
         guard let bfDistance = bf.distance else {
-            // TODO: throw?
-            fatalError()
+            throw LayoutError.feedbackDistanceNotSet(feedback: bf)
         }
         
         let frontDistance: Double
         if train.directionForward {
             guard let headDistance = train.positions.head?.distance else {
-                // TODO: throw?
-                fatalError()
+                throw LayoutError.headPositionNotSpecified(position: train.positions)
             }
             frontDistance = headDistance
         } else {
             guard let tailDistance = train.positions.tail?.distance else {
-                // TODO: throw?
-                fatalError()
+                throw LayoutError.tailPositionNotSpecified(position: train.positions)
             }
             frontDistance = tailDistance
         }

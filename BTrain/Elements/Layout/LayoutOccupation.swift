@@ -83,7 +83,7 @@ struct LayoutOccupation {
                 directionOfSpread = head.direction.opposite
                 directionOfTrainSameAsSpread = false
             } else {
-                throw LayoutError.frontPositionNotSpecified(position: train.positions)
+                throw LayoutError.headPositionNotSpecified(position: train.positions)
             }
         } else {
             if let tail = train.positions.tail {

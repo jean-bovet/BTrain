@@ -39,12 +39,9 @@ enum LayoutError: Error {
     case blockContainsNoFeedback(block: Block)
     case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
 
-    case frontPositionNotSpecified(position: TrainPositions)
-    case backPositionNotSpecified(position: TrainPositions)
+    case headPositionNotSpecified(position: TrainPositions)
+    case tailPositionNotSpecified(position: TrainPositions)
     case noPositionsSpecified(position: TrainPositions)
-
-    case frontPositionBlockNotSpecified(position: TrainPositions)
-    case backPositionBlockNotSpecified(position: TrainPositions)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -137,14 +134,9 @@ extension LayoutError: LocalizedError {
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
-        case let .frontPositionBlockNotSpecified(position: position):
-            return "Head position block not specified: \(position)"
-        case let .backPositionBlockNotSpecified(position: position):
-            return "Tail position block not specified: \(position)"
-
-        case let .frontPositionNotSpecified(position: position):
+        case let .headPositionNotSpecified(position: position):
             return "Head position not specified: \(position)"
-        case let .backPositionNotSpecified(position: position):
+        case let .tailPositionNotSpecified(position: position):
             return "Tail position not specified: \(position)"
         case let .noPositionsSpecified(position: position):
             return "Head and tail positions not specified: \(position)"
