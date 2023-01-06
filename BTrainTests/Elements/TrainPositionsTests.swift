@@ -219,10 +219,9 @@ final class TrainPositionsTests: XCTestCase {
         let b2 = Block(name: "b2")
         b2.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
 
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
+        // Occupied blocks are ordered in the direction of travel of the train
         reservation.occupied.append(b1)
+        reservation.occupied.append(b2)
 
         var lines = [LineForwardAssertion]()
 
@@ -252,10 +251,9 @@ final class TrainPositionsTests: XCTestCase {
         let b2 = Block(name: "b2")
         b2.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
 
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
+        // Occupied blocks are ordered in the direction of travel of the train
         reservation.occupied.append(b1)
+        reservation.occupied.append(b2)
 
         var lines = [LineForwardAssertion]()
 
@@ -285,10 +283,9 @@ final class TrainPositionsTests: XCTestCase {
         let b2 = Block(name: "b2")
         b2.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
 
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
+        // Occupied blocks are ordered in the direction of travel of the train
         reservation.occupied.append(b1)
+        reservation.occupied.append(b2)
 
         var lines = [LineForwardAssertion]()
 
@@ -318,10 +315,9 @@ final class TrainPositionsTests: XCTestCase {
         let b2 = Block(name: "b2")
         b2.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
 
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
+        // Occupied blocks are ordered in the direction of travel of the train
         reservation.occupied.append(b1)
+        reservation.occupied.append(b2)
 
         var lines = [LineForwardAssertion]()
 

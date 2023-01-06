@@ -143,6 +143,12 @@ struct LayoutOccupation {
         let occupation = train.occupied
         occupation.clear()
 
+        // Note: the occupied elements are always ordered in the direction of travel of the train.
+        // - If the direction of the train is the same as the spread, it means the elements will be discovered and added in order.
+        // - If the direction of the train is the opposite as the spread, it means the elements will be discovered
+        //   in reverse order, so we need to insert them at the beginning of the occupied list to ensure proper ordering.
+        let insertAtBeginning = !directionOfTrainSameAsSpread
+        
         let spreader = TrainSpreader(layout: layout)
         let success = try spreader.spread(blockId: blockId, distance: distance, direction: directionOfSpread, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
@@ -150,7 +156,7 @@ struct LayoutOccupation {
             }
             transition.reserved = train.id
             transition.train = train.id
-            occupation.append(transition)
+            occupation.append(transition, atBeginning: insertAtBeginning)
         }, turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
 
@@ -159,7 +165,7 @@ struct LayoutOccupation {
             }
             turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
             turnout.train = train.id
-            occupation.append(turnout)
+            occupation.append(turnout, atBeginning: insertAtBeginning)
         }, blockCallback: { spreadBlockInfo in
             let blockInfo = spreadBlockInfo.blockInfo
             let block = blockInfo.block
@@ -202,7 +208,7 @@ struct LayoutOccupation {
             block.trainInstance = trainInstance
             block.reservation = Reservation(trainId: train.id, direction: directionOfTravel)
 
-            occupation.append(block)
+            occupation.append(block, atBeginning: insertAtBeginning)
         })
 
         if success == false {

@@ -52,18 +52,26 @@ class TrainReservation {
         }
     }
 
-    func append(_ block: Block) {
-        items.append(.block(block))
+    func append(_ block: Block, atBeginning: Bool = false) {
+        append(.block(block), atBeginning: atBeginning)
     }
 
-    func append(_ turnout: Turnout) {
-        items.append(.turnout(turnout))
+    func append(_ turnout: Turnout, atBeginning: Bool = false) {
+        append(.turnout(turnout), atBeginning: atBeginning)
     }
 
-    func append(_ transition: Transition) {
-        items.append(.transition(transition))
+    func append(_ transition: Transition, atBeginning: Bool = false) {
+        append(.transition(transition), atBeginning: atBeginning)
     }
 
+    func append(_ item: Item, atBeginning: Bool = false) {
+        if atBeginning {
+            items.insert(item, at: 0)
+        } else {
+            items.append(item)
+        }
+    }
+    
     func contains(_ block: Block) -> Bool {
         blocks.contains(where: { $0 == block })
     }
