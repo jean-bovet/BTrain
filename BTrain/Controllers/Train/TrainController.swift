@@ -330,7 +330,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             let detectedPosition = feedback.trainPosition
             train.positions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
                                                                    detectedPosition: detectedPosition,
-                                                                   reservation: train.reservation)
+                                                                   reservation: train.reservation,
+                                                                   tailDetected: train.isTailDetected)
             BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): updated location \(self.train.positions.description(self.layout)) by feedback \(feedback.description, privacy: .public)")
         }
 

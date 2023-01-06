@@ -48,6 +48,9 @@ struct TrainEventStateMachine {
                 if try tsm.handleTrainState(train: train) {
                     try adjustSpeed(ofTrain: train, stateChanged: true)
                     return .stateChanged(train)
+                } else {
+                    // TODO: can we adjust the speed after a proper state change only?
+                    try adjustSpeed(ofTrain: train, stateChanged: false)
                 }
             }
 
