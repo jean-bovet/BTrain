@@ -95,11 +95,11 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func pastBrakeFeedback() throws -> Bool {
-        try layout.isPastFeedback(train: train, type: .brake)
+        try layout.isTrainLocatedAfterFeedback(train: train, type: .brake)
     }
 
     func pastStopFeedback() throws -> Bool {
-        try layout.isPastFeedback(train: train, type: .stop)
+        try layout.isTrainLocatedAfterFeedback(train: train, type: .stop)
     }
     
     var startedRouteIndex: Int {

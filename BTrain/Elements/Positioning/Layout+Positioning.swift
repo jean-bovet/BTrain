@@ -91,7 +91,7 @@ extension Layout {
     ///   - type: the type of feedback
     /// - Returns: true if the front of the train is past the specified feedback type, false otherwise
     // TODO: add unit test for this method only
-    func isPastFeedback(train: Train, type: FeedbackType) throws -> Bool {
+    func isTrainLocatedAfterFeedback(train: Train, type: FeedbackType) throws -> Bool {
         guard let frontBlock = blocks[train.frontBlockId] else {
             return false
         }
