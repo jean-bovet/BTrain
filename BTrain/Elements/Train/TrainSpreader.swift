@@ -96,83 +96,16 @@ final class TrainSpreader {
                 try turnoutCallback(info)
 
             case let .block(index: index, info: info):
-                // TODO: simplify code?
-                guard let blockLength = info.block.length else {
-                    throw LayoutError.blockLengthNotDefined(block: info.block)
-                }
+                var parts = [BlockPartInfo]()
                 if info.direction == .next {
-                    var cursor: Double
-                    if index == 0 {
-                        cursor = distance
-                    } else {
-                        cursor = 0
-                    }
-
-                    var parts = [BlockPartInfo]()
-
-                    let feedbacks = info.block.feedbacks
-                    for (findex, fb) in feedbacks.enumerated() {
-                        guard let fbDistance = fb.distance else {
-                            throw LayoutError.feedbackDistanceNotSet(feedback: fb)
-                        }
-                        if cursor < fbDistance, remainingTrainLength >= 0 {
-                            let u = fbDistance - cursor
-                            assert(u >= 0)
-                            remainingTrainLength -= u
-                            cursor = fbDistance
-                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .next))
-                        }
-                    }
-
-                    if cursor <= blockLength, remainingTrainLength >= 0 {
-                        let u = blockLength - cursor
-                        assert(u >= 0)
-                        remainingTrainLength -= u
-                        parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
-                    }
-
-                    if parts.count > 0 {
-                        parts[parts.count - 1].lastPart = remainingTrainLength <= 0
-                    }
-
-                    try blockCallback(.init(blockInfo: info, parts: parts))
+                    try spreadNext(block: info.block, distance: distance, index: index,
+                                   remainingTrainLength: &remainingTrainLength, parts: &parts)
                 } else {
-                    var cursor: Double
-                    if index == 0 {
-                        cursor = distance
-                    } else {
-                        cursor = blockLength
-                    }
-
-                    var parts = [BlockPartInfo]()
-
-                    let feedbacks = info.block.feedbacks
-                    for (findex, fb) in feedbacks.enumerated().reversed() {
-                        guard let fbDistance = fb.distance else {
-                            throw LayoutError.feedbackDistanceNotSet(feedback: fb)
-                        }
-                        if cursor > fbDistance, remainingTrainLength >= 0 {
-                            let u = cursor - fbDistance
-                            assert(u >= 0)
-                            remainingTrainLength -= u
-                            cursor = fbDistance
-                            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex + 1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
-                        }
-                    }
-
-                    if cursor >= 0, remainingTrainLength >= 0 {
-                        let u = cursor - 0
-                        assert(u >= 0)
-                        remainingTrainLength -= u
-                        parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
-                    }
-
-                    if parts.count > 0 {
-                        parts[parts.count - 1].lastPart = remainingTrainLength <= 0
-                    }
-
-                    try blockCallback(.init(blockInfo: info, parts: parts))
+                    try spreadPrevious(block: info.block, distance: distance, index: index,
+                                       remainingTrainLength: &remainingTrainLength, parts: &parts)
                 }
+                
+                try blockCallback(.init(blockInfo: info, parts: parts))
             }
 
             if remainingTrainLength > 0 {
@@ -182,5 +115,81 @@ final class TrainSpreader {
             }
         })
         return remainingTrainLength <= 0
+    }
+    
+    private func spreadNext(block: Block, distance: Double, index: Int, remainingTrainLength: inout Double, parts: inout [BlockPartInfo]) throws {
+        guard let blockLength = block.length else {
+            throw LayoutError.blockLengthNotDefined(block: block)
+        }
+
+        var cursor: Double
+        if index == 0 {
+            cursor = distance
+        } else {
+            cursor = 0
+        }
+
+        let feedbacks = block.feedbacks
+        for (findex, fb) in feedbacks.enumerated() {
+            guard let fbDistance = fb.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: fb)
+            }
+            if cursor < fbDistance, remainingTrainLength >= 0 {
+                let u = fbDistance - cursor
+                assert(u >= 0)
+                remainingTrainLength -= u
+                cursor = fbDistance
+                parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .next))
+            }
+        }
+
+        if cursor <= blockLength, remainingTrainLength >= 0 {
+            let u = blockLength - cursor
+            assert(u >= 0)
+            remainingTrainLength -= u
+            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: feedbacks.count, remainingTrainLength: remainingTrainLength, feedbackDistance: blockLength, direction: .next))
+        }
+
+        if parts.count > 0 {
+            parts[parts.count - 1].lastPart = remainingTrainLength <= 0
+        }
+    }
+    
+    private func spreadPrevious(block: Block, distance: Double, index: Int, remainingTrainLength: inout Double, parts: inout [BlockPartInfo]) throws {
+        guard let blockLength = block.length else {
+            throw LayoutError.blockLengthNotDefined(block: block)
+        }
+
+        var cursor: Double
+        if index == 0 {
+            cursor = distance
+        } else {
+            cursor = blockLength
+        }
+
+        let feedbacks = block.feedbacks
+        for (findex, fb) in feedbacks.enumerated().reversed() {
+            guard let fbDistance = fb.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: fb)
+            }
+            if cursor > fbDistance, remainingTrainLength >= 0 {
+                let u = cursor - fbDistance
+                assert(u >= 0)
+                remainingTrainLength -= u
+                cursor = fbDistance
+                parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: findex + 1, remainingTrainLength: remainingTrainLength, feedbackDistance: fbDistance, direction: .previous))
+            }
+        }
+
+        if cursor >= 0, remainingTrainLength >= 0 {
+            let u = cursor - 0
+            assert(u >= 0)
+            remainingTrainLength -= u
+            parts.append(BlockPartInfo.info(firstPart: index == 0 && parts.isEmpty, partIndex: 0, remainingTrainLength: remainingTrainLength, feedbackDistance: 0, direction: .previous))
+        }
+
+        if parts.count > 0 {
+            parts[parts.count - 1].lastPart = remainingTrainLength <= 0
+        }
     }
 }
