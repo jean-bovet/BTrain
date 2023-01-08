@@ -27,13 +27,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @Published var locomotives = [SimulatorLocomotive]()
     @Published var trains = [SimulatorTrain]()
 
-    @AppStorage("simulatorSpeedFactor") var simulationSpeedFactor = 1.0 {
-        didSet {
-            BaseTimeFactor = 1.0 / simulationSpeedFactor
-            scheduleTimer()
-        }
-    }
-
     @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
 
     /// The interval of time between the simulation

@@ -39,31 +39,15 @@ struct SimulatorView: View {
                 }.disabled(!simulator.enabled)
             }
             HStack {
-                VStack(spacing: 0) {
-                    Text("Speed \(String(format: "%.1f", simulator.simulationSpeedFactor))x").font(.headline)
-                    HStack {
-                        Text("Slow")
-                        Slider(
-                            value: $simulator.simulationSpeedFactor,
-                            in: 0.5 ... Double(4.0),
-                            step: 0.5
-                        ) {} onEditingChanged: { _ in
-                        }
-                        Text("Fast")
+                Text("Turnouts:").font(.headline)
+                HStack {
+                    Text("Slow")
+                    Slider(
+                        value: $simulator.turnoutSpeedInverted,
+                        in: 0 ... Double(MarklinCommandSimulator.MaxTurnoutSpeedValue)
+                    ) {} onEditingChanged: { _ in
                     }
-                }
-                Divider().frame(maxHeight: 30)
-                VStack(spacing: 0) {
-                    Text("Turnouts").font(.headline)
-                    HStack {
-                        Text("Slow")
-                        Slider(
-                            value: $simulator.turnoutSpeedInverted,
-                            in: 0 ... Double(MarklinCommandSimulator.MaxTurnoutSpeedValue)
-                        ) {} onEditingChanged: { _ in
-                        }
-                        Text("Fast")
-                    }
+                    Text("Fast")
                 }
             }
         }
