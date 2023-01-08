@@ -35,35 +35,35 @@ import Foundation
 ///                            ┌─▶▼                                                 ▼◀─┐
 ///              Tail Position─┘                                                       └──Head Position
 final class Train: Element, ObservableObject {
-    // Unique identifier of the train
+    /// Unique identifier of the train
     let id: Identifier<Train>
 
-    // A train that is enabled will show up in the switchboard
+    /// A train that is enabled will show up in the switchboard
     @Published var enabled = true
 
-    // Name of the train
+    /// Name of the train
     @Published var name = ""
 
-    /// The locomotive assigned to this train or nil of no locomotive is assigned
+    /// The locomotive assigned to this train
     @ElementProperty var locomotive: Locomotive?
 
-    // Length of the wagons (in cm)
+    /// Length of the wagons (in cm)
     @Published var wagonsLength: DistanceCm?
 
-    // The route this train is associated with
+    /// The route associated with this train
     @Published var routeId: Identifier<Route>
 
-    // Keeping track of the route index when the train starts,
-    // to avoid stopping it immediately if it is still starting
-    // in the first block of the route.
+    /// Keeping track of the route index when the train starts,
+    /// to avoid stopping it immediately if it is still starting
+    /// in the first block of the route.
     @Published var startRouteIndex: Int?
 
-    // Index of the current route step that the train is located in.
+    /// Index of the current route step that the train is located in.
     @Published var routeStepIndex = 0
 
-    // The maximum number of blocks that should be reserved ahead of the train.
-    // The actual number of blocks might be smaller if a block cannot be reserved.
-    // The default is 2.
+    /// The maximum number of blocks that should be reserved ahead of the train.
+    /// The actual number of blocks might be smaller if a block cannot be reserved.
+    /// The default is 2.
     @Published var maxNumberOfLeadingReservedBlocks = 2
 
     struct Reservation {
@@ -103,7 +103,7 @@ final class Train: Element, ObservableObject {
         case finishManaged
     }
 
-    // The state of the schedule
+    /// The state of the schedule
     @Published var scheduling: Schedule = .unmanaged
 
     enum State {
@@ -136,9 +136,9 @@ final class Train: Element, ObservableObject {
         }
     }
 
-    // List of blocks to avoid. For example, specific blocks
-    // should be avoided for Intercity train because their
-    // radius is too small and causes derailing.
+    /// List of blocks to avoid. For example, specific blocks
+    /// should be avoided for Intercity train because their
+    /// radius is too small and causes derailing.
     @Published var blocksToAvoid = [BlockItem]()
 
     struct TurnoutItem: Identifiable, Codable, Hashable {
@@ -152,14 +152,14 @@ final class Train: Element, ObservableObject {
         }
     }
 
-    // List of turnouts to avoid. For example, specific turnouts
-    // should be avoided for Intercity train because their
-    // radius is too small and causes derailing.
+    /// List of turnouts to avoid. For example, specific turnouts
+    /// should be avoided for Intercity train because their
+    /// radius is too small and causes derailing.
     @Published var turnoutsToAvoid = [TurnoutItem]()
 
-    // The time remaining until the train is automatically restarted
-    // Note: we don't need to store this property because it is used only
-    // when running the layout.
+    /// The time remaining until the train is automatically restarted
+    /// Note: we don't need to persist this property because it is used only
+    /// when running the layout.
     var timeUntilAutomaticRestart: TimeInterval = 0
 
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {

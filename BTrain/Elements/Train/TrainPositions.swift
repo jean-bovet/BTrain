@@ -12,12 +12,11 @@
 
 import Foundation
 
-/// The train positions: a front position and a back position.
+/// Defines the train positions. Currently, there are two positions supported:
+/// - The head position is where the locomotive is located
+/// - The tail position is where the last wagon is located
 ///
-/// Notes:
-/// - Each of these positions correspond to a magnet that triggers a feedback in the layout.
-/// - A train that only moves forward needs only one magnet at the front of the train.
-/// - A train that moves forward and backward needs a magnet at the front and the back of the train
+/// Each of these positions correspond to a magnet that triggers a feedback in the layout.
 struct TrainPositions: Equatable, Codable, CustomStringConvertible {
     /// The position at the head of the train (where the locomotive is located)
     var head: TrainPosition?
@@ -34,7 +33,7 @@ struct TrainPositions: Equatable, Codable, CustomStringConvertible {
         head != nil || tail != nil
     }
 
-    /// Removes the train by clearing both the ``head`` and ``tail`` positions.
+    /// Removes the train by clearing both the ``BTrain/TrainPositions/head`` and ``BTrain/TrainPositions/tail`` positions.
     mutating func clear() {
         head = nil
         tail = nil

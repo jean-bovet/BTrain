@@ -12,6 +12,55 @@
 
 import Foundation
 
+/// Describes a specific feedback position with all the necessary information related
+/// to the train that moves on top of that feedback.
+struct FeedbackPosition: CustomStringConvertible {
+    /// The block in which the feedback is located
+    let block: Block
+
+    /// The feedback
+    let feedback: Feedback
+
+    /// The index of the feedback inside the block, start from 0 in the natural direction of the block
+    let feedbackIndex: Int
+
+    /// The distance of the feedback in the block, in the natural direction of the block
+    let distance: Double
+
+    /// The direction of travel of the train
+    let direction: Direction
+
+    /// Returns the train position corresponding to this feedback position.
+    ///
+    /// The feedback index is transformed into the part index of the block where the position resides.
+    /// The feedback distance is slightly incremented (or decremented) to fall into that part index.
+    ///
+    ///                          █             █             █
+    ///                          █             █             █
+    ///                    ──────█─────────────█─────────────█─────────▶
+    ///                       0  █      1      █      2      █      3
+    ///                       ▲  █             █             █
+    ///                       │  0             1             2
+    ///                       │                ▲
+    ///                       │                │
+    ///                       │                │
+    ///
+    ///                Position Index   Feedback Index
+    var trainPosition: TrainPosition {
+        switch direction {
+        case .previous:
+            return TrainPosition(blockId: block.id, index: feedbackIndex, distance: distance.before, direction: direction)
+
+        case .next:
+            return TrainPosition(blockId: block.id, index: feedbackIndex + 1, distance: distance.after, direction: direction)
+        }
+    }
+
+    var description: String {
+        "\(block.name):\(feedback.name):\(distance.distanceString):\(direction)"
+    }
+}
+
 extension Double {
     /// Distance used to shift the position of the train after it was detected by a feedback to either after
     /// or before the feedback, depending on the direction of travel of the train within the block. This is to
@@ -28,29 +77,5 @@ extension Double {
     /// Returns the distance right before this one
     var before: Double {
         self - Double.distanceDelta
-    }
-}
-
-/// Describes a specific feedback position with all the necessary information related
-/// to the train that moves on top of that feedback.
-struct FeedbackPosition: CustomStringConvertible {
-    let block: Block
-    let feedback: Feedback
-    let feedbackIndex: Int
-    let distance: Double
-    let direction: Direction
-
-    var trainPosition: TrainPosition {
-        switch direction {
-        case .previous:
-            return TrainPosition(blockId: block.id, index: feedbackIndex, distance: distance.before, direction: direction)
-
-        case .next:
-            return TrainPosition(blockId: block.id, index: feedbackIndex + 1, distance: distance.after, direction: direction)
-        }
-    }
-
-    var description: String {
-        "\(block.name):\(feedback.name):\(distance.distanceString):\(direction)"
     }
 }

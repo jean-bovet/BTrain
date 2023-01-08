@@ -71,7 +71,8 @@ extension Layout {
                     throw LayoutError.directionNotFound(blockId: block.id)
                 }
 
-                let fp = FeedbackPosition(block: block, feedback: f, feedbackIndex: feedbackIndex, distance: fd, direction: direction)
+                let fp = FeedbackPosition(block: block, feedback: f, feedbackIndex: feedbackIndex,
+                                          distance: fd, direction: direction)
                 positions.append(fp)
             }
         }

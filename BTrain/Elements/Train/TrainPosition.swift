@@ -39,6 +39,8 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         description(nil)
     }
 
+    /// Returns the position in the reverse direction
+    /// - Returns: the position in the reverse direction
     func reversed() -> TrainPosition {
         .init(blockId: blockId, index: index, distance: distance, direction: direction.opposite)
     }

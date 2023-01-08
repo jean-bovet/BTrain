@@ -89,15 +89,16 @@ extension Layout {
 
         // Lookup the corresponding block feedback and return the appropriate feedback position
         for (index, blockFeedback) in nextBlock.feedbacks.enumerated() {
-            if blockFeedback.feedbackId == entryFeedbackId {
-                guard let distance = blockFeedback.distance else {
-                    throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
-                }
-                guard let feedback = feedbacks[entryFeedbackId] else {
-                    throw LayoutError.feedbackNotFound(feedbackId: entryFeedbackId)
-                }
-                return FeedbackPosition(block: nextBlock, feedback: feedback, feedbackIndex: index, distance: distance, direction: nextBlockDirectionOfTravel)
+            guard blockFeedback.feedbackId == entryFeedbackId else {
+                continue
             }
+            guard let distance = blockFeedback.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+            }
+            guard let feedback = feedbacks[entryFeedbackId] else {
+                throw LayoutError.feedbackNotFound(feedbackId: entryFeedbackId)
+            }
+            return FeedbackPosition(block: nextBlock, feedback: feedback, feedbackIndex: index, distance: distance, direction: nextBlockDirectionOfTravel)
         }
 
         return nil
