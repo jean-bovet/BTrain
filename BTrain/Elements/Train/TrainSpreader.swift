@@ -104,7 +104,7 @@ final class TrainSpreader {
                     try spreadPrevious(block: info.block, distance: distance, index: index,
                                        remainingTrainLength: &remainingTrainLength, parts: &parts)
                 }
-                
+
                 try blockCallback(.init(blockInfo: info, parts: parts))
             }
 
@@ -116,7 +116,7 @@ final class TrainSpreader {
         })
         return remainingTrainLength <= 0
     }
-    
+
     private func spreadNext(block: Block, distance: Double, index: Int, remainingTrainLength: inout Double, parts: inout [BlockPartInfo]) throws {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
@@ -154,7 +154,7 @@ final class TrainSpreader {
             parts[parts.count - 1].lastPart = remainingTrainLength <= 0
         }
     }
-    
+
     private func spreadPrevious(block: Block, distance: Double, index: Int, remainingTrainLength: inout Double, parts: inout [BlockPartInfo]) throws {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)

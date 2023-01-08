@@ -51,7 +51,7 @@ extension Train.Reservation {
         if let nextBlock = nextBlock, nextBlock.id == blockId {
             return occupied.blocks.count
         }
-        
+
         return nil
     }
 

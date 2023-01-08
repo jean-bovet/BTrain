@@ -118,13 +118,13 @@ final class Train: Element, ObservableObject {
 
     /// The positions of the train
     @Published var positions = TrainPositions()
-    
+
     /// True if the tail of the train can be detected. By default, only the head
     /// of the train is detected (that is, a sensor below the front locomotive is detected).
     /// However, to accurately drive a train moving backwards, a sensor in the last wagon
     /// should be installed and this is what this variable is about.
     @Published var isTailDetected = false
-    
+
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
 

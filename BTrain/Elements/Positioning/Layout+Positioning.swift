@@ -78,12 +78,12 @@ extension Layout {
 
         return positions
     }
-    
+
     enum FeedbackType {
         case brake
         case stop
     }
-    
+
     /// Returns true if the front of the train is after the specified feedback type
     ///
     /// - Parameters:
@@ -113,15 +113,15 @@ extension Layout {
             BTLogger.warning("\(train): ⚠️ feedback \(type) not found in \(frontBlock)")
             return false
         }
-        
-        guard let bf = frontBlock.feedbacks.first(where: {$0.feedbackId == feedbackId }) else {
+
+        guard let bf = frontBlock.feedbacks.first(where: { $0.feedbackId == feedbackId }) else {
             throw LayoutError.feedbackNotFound(feedbackId: feedbackId)
         }
 
         guard let bfDistance = bf.distance else {
             throw LayoutError.feedbackDistanceNotSet(feedback: bf)
         }
-        
+
         let frontDistance: Double
         if train.directionForward {
             guard let headDistance = train.positions.head?.distance else {
@@ -134,12 +134,11 @@ extension Layout {
             }
             frontDistance = tailDistance
         }
-        
+
         if direction == .next {
             return frontDistance > bfDistance
         } else {
             return frontDistance < bfDistance
         }
     }
-    
 }

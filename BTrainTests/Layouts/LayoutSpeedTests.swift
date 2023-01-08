@@ -182,9 +182,9 @@ final class LayoutSpeedTests: XCTestCase {
         let speed = LayoutSpeed.speedToMove(distance: distance, forDuration: duration)
         XCTAssertEqual(speed, LayoutFactory.DefaultMaximumSpeed)
     }
-    
+
     // MARK: - Breaking Distance
-    
+
     func testBreakingDistanceWithZeroSpeed() {
         XCTAssertFalse(try layoutSpeed.isBrakingDistanceRespected(train: train, block: s1, speed: 0))
     }

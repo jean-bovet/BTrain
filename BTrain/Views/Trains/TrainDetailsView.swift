@@ -49,7 +49,7 @@ struct TrainDetailsGeometrySectionView: View {
                         }
                     }
                 }
-                
+
                 UndoProvider($train.wagonsLength) { value in
                     TextField("Wagons:", value: value, format: .number)
                         .unitStyle("cm")

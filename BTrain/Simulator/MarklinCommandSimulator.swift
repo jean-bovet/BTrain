@@ -101,7 +101,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             shouldInclude(locomotive: simLoc.id)
         })
 
-        for loc in layout.locomotives.elements.filter({shouldInclude(locomotive: $0.id)}) {
+        for loc in layout.locomotives.elements.filter({ shouldInclude(locomotive: $0.id) }) {
             if let simLoc = locomotives.first(where: { $0.id == loc.id }) {
                 simLoc.speed = loc.speed.actualSteps
                 simLoc.directionForward = loc.directionForward
@@ -124,10 +124,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         if layout.locomotives[locomotive] == nil {
             return false
         }
-        
+
         return layout.trains.elements.first(where: { $0.locomotive?.id == locomotive && $0.positions.defined }) != nil
     }
-    
+
     private func updateListOfTrains() {
         guard let layout = layout else {
             return

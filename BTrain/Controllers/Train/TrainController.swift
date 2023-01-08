@@ -101,7 +101,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     func pastStopFeedback() throws -> Bool {
         try layout.isTrainLocatedAfterFeedback(train: train, type: .stop)
     }
-    
+
     var startedRouteIndex: Int {
         get {
             train.startRouteIndex ?? 0
@@ -264,7 +264,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             BTLogger.router.warning("\(self.train.description(self.layout), privacy: .public): cannot adjust speed because the front block is not defined")
             return
         }
-        
+
         let desiredKph: SpeedKph?
         switch train.state {
         case .running:
@@ -280,10 +280,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         guard let desiredKph = desiredKph else {
             return
         }
-        
+
         // Ensure the desired speed respects any limitation due to any block or turnouts
         let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train, frontBlock: frontBlock))
-        
+
         // Change the requested speed only if it is different from the current requested speed
         let loc = try train.locomotiveOrThrow()
         if requestedKph != loc.speed.requestedKph {

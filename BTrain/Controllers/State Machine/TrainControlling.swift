@@ -34,7 +34,7 @@ protocol TrainControlling: AnyObject {
 
     /// Returns true if the train front position is located after the brake feedback
     func pastBrakeFeedback() throws -> Bool
-    
+
     /// Returns true if the train front position is located after the stop feedback
     func pastStopFeedback() throws -> Bool
 

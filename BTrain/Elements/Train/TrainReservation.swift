@@ -71,7 +71,7 @@ class TrainReservation {
             items.append(item)
         }
     }
-    
+
     func contains(_ block: Block) -> Bool {
         blocks.contains(where: { $0 == block })
     }

@@ -148,7 +148,7 @@ struct LayoutOccupation {
         // - If the direction of the train is the opposite as the spread, it means the elements will be discovered
         //   in reverse order, so we need to insert them at the beginning of the occupied list to ensure proper ordering.
         let insertAtBeginning = !directionOfTrainSameAsSpread
-        
+
         let spreader = TrainSpreader(layout: layout)
         let success = try spreader.spread(blockId: blockId, distance: distance, direction: directionOfSpread, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {

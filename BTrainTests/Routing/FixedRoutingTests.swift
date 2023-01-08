@@ -886,7 +886,7 @@ class FixedRoutingTests: BTTestCase {
         try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid, position: .automatic)
 
         try p.assert("r1: {r0{s1 ≏ 􀼰0 ≏ 🔴􀼮0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
-        
+
         try p.start()
 
         try p.assert("r1: {r0{s1 ≏ 􀼰0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]]")
