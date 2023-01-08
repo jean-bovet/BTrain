@@ -23,7 +23,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
 
-    /// True if CAN messages should be collected. The ``messages`` will be populated as the message arrive.
+    /// True if CAN messages should be collected. The ``BTrain/MarklinInterface/messages`` will be populated as the message arrive.
     @Published var collectMessages = false
 
     /// Public array of messages that the interface received from the CS3. Used mainly
