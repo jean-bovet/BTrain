@@ -12,77 +12,28 @@
 
 import Foundation
 
-// A train is an element that moves from one block to another.
-// A train consists of a locomotive and zero, one or more wagons.
-// From a geometry point of view, these are the measurements needed:
-//
-//
-//      │◀─────────────────────Train Length──────────────────────▶│
-//      │                                                         │
-//  B   │                                                         │   F
-//  a   │                                                         │   r
-//  c   ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐   o
-//  k   │                 │ │                 │ │                 │   n
-//      │      wagon      │ │      wagon      │ │   locomotive    │   t
-//      │                 │ │                 │ │      ▨          │
-//      └─────────────────┘ └─────────────────┘ └──────┬──────────┘
-//                                                     │          │
-//                                                     │          │
-//                                                     │          │
-//                                                     │ ◀────────│
-//
-//                                                    Magnet Distance
-//
-// ================ Train Direction Discussion =========================
-//
-// Axioms:
-// - A locomotive can move forward or backward
-// - The train direction within a block is determined by the locomotive direction
-//   and the side by which the train enters a new block.
-// - The wagons direction can only be changed by manual input from the user because
-//   they should not change (once a train is on the layout, the wagons are always oriented
-//   "behind" the locomotive, regardless of the direction of motion of the locomotive).
-// Let's look at some scenarios:
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     forward       forward       forward
-//    DIB:     next          previous      previous
-//    WAG:     previous      next          next
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ■■■■■■◀ │◀──│ ■■■■■■◀ │◀──│ ■■■■■■◀ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     backward      backward      backward
-//    DIB:     previous      next          next
-//    WAG:     previous      next          next
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     backward      backward      backward
-//    DIB:     next          previous      previous
-//    WAG:     next          previous      previous
-//
-//                  ▷             ◁             ◁
-//             ┌─────────┐   ┌─────────┐   ┌─────────┐
-//             │ ◀■■■■■■ │◀──│ ◀■■■■■■ │◀──│ ◀■■■■■■ │
-//             └─────────┘   └─────────┘   └─────────┘
-//    LOC:     forward       forward       forward
-//    DIB:     previous      next          next
-//    WAG:     next          previous      previous
-//
-// Legends:
-// LOC: Locomotive direction of travel (forward or backward)
-// DIB: Direction of the train relative to the block natural direction
-// WAG: Direction of the wagons relative to the block natural direction
-// ▷: Orientation of the block (natural direction)
-// ◀: Locomotive
-// ■: Wagon
-// ──▶: Direction in which the train is moving from one block to another
+/// A train consists of a locomotive and zero, one or more wagons.
+///
+/// A train moves forward and, optionally, backward.
+/// - When moving forward, BTrain relies on the feedback at the head of the train to know where the train is located.
+/// - When moving backward, BTrain relies on the feedback at the tail of the train to know where the train is located. If there is
+/// no feedback at the tail of the train, BTrain uses the head feedback to estimate the tail position of the train.
+///
+/// Definitions:
+/// - Head: the portion of the train where the locomotive is located.
+/// - Tail: the portion of the train at the opposite end of the locomotive.
+///
+/// Limitations:
+/// - BTrain does not support locomotive at the tail of the train.
+/// - BTrain does not yet support computing real-time distance estimation of the train.
+///
+///                                                                                     locomotive
+///                                                                                     │
+///                                                                                     │
+///                            ◀─────────────────────────cars──────────────────────────▶▼
+///                      Tail ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■▶ Head
+///                            ┌─▶▼                                                 ▼◀─┐
+///              Tail Position─┘                                                       └──Head Position
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
@@ -162,19 +113,18 @@ final class Train: Element, ObservableObject {
         case stopped
     }
 
-    // The state of the train
+    /// The state of the train
     @Published var state: State = .stopped
 
-    /// The block where the front of the train is located.
-    ///
-    /// The "front of the train" is the part of the train that is in the direction of travel of the train:
-    /// - If the train moves forward, it is the block where the locomotive is located
-    /// - If the train moves backward, it is the block where the last wagon is located
-    @ElementProperty var block: Block?
-
-    // The positions of the train.
+    /// The positions of the train
     @Published var positions = TrainPositions()
-
+    
+    /// True if the tail of the train can be detected. By default, only the head
+    /// of the train is detected (that is, a sensor below the front locomotive is detected).
+    /// However, to accurately drive a train moving backwards, a sensor in the last wagon
+    /// should be installed and this is what this variable is about.
+    @Published var isTailDetected = false
+    
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
 
@@ -229,9 +179,6 @@ extension Train {
     func description(_ layout: Layout) -> String {
         var text = "Train '\(name)' (\(id), \(state)"
         text += ", \(scheduling)"
-        if let block = block {
-            text += ", \(block.name)"
-        }
         text += ", \(positions.description(layout))"
         if locomotive != nil {
             text += ", \(directionForward ? "f" : "b")"
@@ -271,6 +218,26 @@ extension Train {
         reservation.occupied
     }
 
+    /// Returns the block that is located at the front of the train.
+    ///
+    /// The front of the train is the portion of the train that is towards the direction of travel:
+    /// - If the train moves forward, the front block is the block where the locomotive is located
+    /// - If the train moves backward, the front block is the block where the last wagon is located
+    var frontBlockId: Identifier<Block>? {
+        frontPosition?.blockId
+    }
+
+    var frontPosition: TrainPosition? {
+        guard let locomotive = locomotive else {
+            return nil
+        }
+        if locomotive.directionForward {
+            return positions.head
+        } else {
+            return positions.tail
+        }
+    }
+
     func locomotiveOrThrow() throws -> Locomotive {
         if let loc = locomotive {
             return loc
@@ -283,7 +250,6 @@ extension Train {
 extension Train: Restorable {
     func restore(layout: Layout) {
         _locomotive.restore(layout.locomotives)
-        _block.restore(layout.blocks)
     }
 }
 
@@ -295,7 +261,7 @@ extension Train: Comparable {
 
 extension Train: Codable {
     enum CodingKeys: CodingKey {
-        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -306,13 +272,17 @@ extension Train: Codable {
         self.init(id: id, name: name)
 
         _locomotive.elementId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
-        _block.elementId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
 
         enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
-        positions = try container.decode(TrainPositions.self, forKey: CodingKeys.position)
+        // Note: previous version of the encoding did not include a direction with the positions
+        // so if it cannot be decoded, the train is simply removed from the layout and must be
+        // re-added by the user.
+        if let positions = try? container.decode(TrainPositions.self, forKey: CodingKeys.position) {
+            self.positions = positions
+        }
         maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
         turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []
@@ -324,7 +294,6 @@ extension Train: Codable {
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(_locomotive.elementId, forKey: CodingKeys.locomotive)
-        try container.encode(_block.elementId, forKey: CodingKeys.block)
         try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)

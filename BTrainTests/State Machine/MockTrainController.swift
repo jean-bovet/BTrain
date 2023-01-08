@@ -24,9 +24,17 @@ final class MockTrainController: TrainControlling {
 
     var speed: SpeedKph = 0
 
-    var brakeFeedbackActivated: Bool = false
+    var trainIsPastBrakeFeedback = false
+    
+    var trainIsPastStopFeedback = false
 
-    var stopFeedbackActivated: Bool = false
+    func pastBrakeFeedback() throws -> Bool {
+        trainIsPastBrakeFeedback
+    }
+    
+    func pastStopFeedback() throws -> Bool {
+        trainIsPastStopFeedback
+    }
 
     var hasReservedBlocks = false
 
@@ -133,22 +141,18 @@ final class MockTrainController: TrainControlling {
 
     var adjustSpeedCount = 0
 
-    func adjustSpeed(stateChanged: Bool) {
+    func adjustSpeed() {
         adjustSpeedCount += 1
 
-        if stateChanged {
-            switch state {
-            case .running:
-                speed = LayoutFactory.DefaultMaximumSpeed
-            case .braking:
-                speed = LayoutFactory.DefaultBrakingSpeed
-            case .stopping:
-                speed = LayoutFactory.DefaultBrakingSpeed
-            case .stopped:
-                speed = 0
-            }
-        } else if state == .running {
+        switch state {
+        case .running:
             speed = LayoutFactory.DefaultMaximumSpeed
+        case .braking:
+            speed = LayoutFactory.DefaultBrakingSpeed
+        case .stopping:
+            speed = LayoutFactory.DefaultBrakingSpeed
+        case .stopped:
+            speed = 0
         }
     }
 

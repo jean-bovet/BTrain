@@ -107,7 +107,7 @@ final class LayoutReservation {
 
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try occupyBlocksWith(train: train)
+        try layout.occupyBlocksWith(train: train)
 
         // Reserve the number of leading blocks necessary
         if try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts) {
@@ -136,7 +136,7 @@ final class LayoutReservation {
         for item in train.leading.items {
             switch item {
             case let .block(block):
-                assert(block.trainInstance == nil || block == train.block)
+                assert(block.trainInstance == nil)
                 block.reservation = nil
             case let .turnout(turnout):
                 assert(turnout.train == nil)
@@ -155,10 +155,9 @@ final class LayoutReservation {
     /// Removes the reservation and train from the occupied blocks
     /// - Parameters:
     ///   - train: the train
-    ///   - removeFrontBlock: true if the front block of the train should be left untouched
     /// - Returns: true if any elements were freed, false otherwise
     @discardableResult
-    func removeOccupation(train: Train, removeFrontBlock: Bool = false) -> Bool {
+    func removeOccupation(train: Train) -> Bool {
         guard !train.occupied.items.isEmpty else {
             return false
         }
@@ -166,10 +165,8 @@ final class LayoutReservation {
         for item in train.occupied.items {
             switch item {
             case let .block(block):
-                if block != train.block || removeFrontBlock {
-                    block.trainInstance = nil
-                    block.reservation = nil
-                }
+                block.trainInstance = nil
+                block.reservation = nil
             case let .turnout(turnout):
                 turnout.train = nil
                 turnout.reserved = nil
@@ -371,62 +368,6 @@ final class LayoutReservation {
         let toSocket = step.entrySocket
         let trs = try layout.transitions(from: fromSocket, to: toSocket)
         transitions.append(contentsOf: trs)
-    }
-
-    // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
-    // the specified train with all its length, taking into account the length of each block.
-    func occupyBlocksWith(train: Train) throws {
-        let occupation = train.occupied
-        occupation.clear()
-
-        let spreader = TrainSpreader(layout: layout)
-        let remainingTrainLength = try spreader.spread(train: train) { transition in
-            guard transition.reserved == nil else {
-                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
-            }
-            transition.reserved = train.id
-            transition.train = train.id
-            occupation.append(transition)
-        } turnoutCallback: { turnoutInfo in
-            let turnout = turnoutInfo.turnout
-
-            guard turnout.reserved == nil else {
-                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
-            }
-            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
-            turnout.train = train.id
-            occupation.append(turnout)
-        } blockCallback: { block, attributes in
-            guard block.reservation == nil || attributes.frontBlock else {
-                throw LayoutError.blockAlreadyReserved(block: block)
-            }
-
-            let trainInstance = TrainInstance(train.id, attributes.trainDirection)
-            block.trainInstance = trainInstance
-            block.reservation = Reservation(trainId: train.id, direction: attributes.trainDirection)
-            occupation.append(block)
-        }
-        if remainingTrainLength > 0 {
-            throw LayoutError.cannotReserveAllElements(train: train)
-        }
-    }
-
-    // This methods frees all the reserved elements except the block in which the locomotive is located
-    func freeElements(train: Train) throws {
-        train.leading.clear()
-        train.occupied.clear()
-
-        layout.blocks.elements
-            .filter { $0.reservation?.trainId == train.id }
-            .forEach { block in
-                // Only free a block if the block is not the one the train is located on or
-                if block.id != train.block?.id {
-                    block.reservation = nil
-                    block.trainInstance = nil
-                }
-            }
-        layout.turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-        layout.transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
 
     private func debug(_ msg: String) {

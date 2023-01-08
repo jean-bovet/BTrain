@@ -33,7 +33,7 @@ extension Layout {
     private func possiblePaths(for train: Train, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool) throws -> [GraphPath] {
         var paths = [GraphPath]()
 
-        guard let fromBlock = train.block else {
+        guard let fromBlock = blocks[train.frontBlockId] else {
             return []
         }
 
@@ -80,7 +80,7 @@ extension Layout {
 
         let verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)
 
-        guard let fromBlock = train.block else {
+        guard let fromBlock = blocks[train.frontBlockId] else {
             return nil
         }
 

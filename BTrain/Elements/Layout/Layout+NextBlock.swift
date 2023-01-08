@@ -13,29 +13,14 @@
 import Foundation
 
 extension Layout {
-    /// The feedback that is indicating a specific train is entering a block.
-    struct EntryFeedback {
-        /// The block the train is entering when the ``feedback`` is triggered
-        let block: Block
-
-        /// The feedback that will be triggered by the train entering ``block``
-        let feedback: Feedback
-
-        /// The index of the feedback inside ``block``
-        let index: Int
-
-        /// The direction of travel of the train entering ``block``, relative to ``block``.
-        let direction: Direction
-    }
-
     /// Returns the entry feedback that is expected to be triggered when the train enters the next block.
     ///
     /// The next block is computed by taking into account the direction of travel of the train.
     ///
     /// - Parameter train: the train
     /// - Returns: the entry feedback or nil if no valid entry feedback is found
-    func entryFeedback(for train: Train) throws -> EntryFeedback? {
-        guard let currentBlock = train.block else {
+    func entryFeedback(for train: Train) throws -> FeedbackPosition? {
+        guard let currentBlock = blocks[train.frontBlockId] else {
             return nil
         }
 
@@ -66,7 +51,7 @@ extension Layout {
     ///   - fromBlock: the current block
     ///   - nextBlock: the next block that the train is about to enter
     /// - Returns: the feedback and the direction of travel of the train inside the ``nextBlock``
-    func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> Layout.EntryFeedback? {
+    func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> FeedbackPosition? {
         guard let direction = fromBlock.trainInstance?.direction else {
             throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
         }
@@ -97,19 +82,24 @@ extension Layout {
 
         let nextBlockDirectionOfTravel: Direction = lastTransition.b.socketId == Block.previousSocket ? .next : .previous
 
-        // Now return the appropriate feedback depending on the direction
-        // of travel of the train into the next block.
-        let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
-
-        // Determine the index of the feedback within the next block
-        guard let index = nextBlock.feedbacks.firstIndex(where: { $0.feedbackId == entryFeedbackId }) else {
+        // Lookup the feedback ID signaling if the train is entering the next block
+        guard let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel) else {
             return nil
         }
 
-        if let entryFeedback = feedbacks[entryFeedbackId] {
-            return Layout.EntryFeedback(block: nextBlock, feedback: entryFeedback, index: index, direction: nextBlockDirectionOfTravel)
-        } else {
-            return nil
+        // Lookup the corresponding block feedback and return the appropriate feedback position
+        for (index, blockFeedback) in nextBlock.feedbacks.enumerated() {
+            if blockFeedback.feedbackId == entryFeedbackId {
+                guard let distance = blockFeedback.distance else {
+                    throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+                }
+                guard let feedback = feedbacks[entryFeedbackId] else {
+                    throw LayoutError.feedbackNotFound(feedbackId: entryFeedbackId)
+                }
+                return FeedbackPosition(block: nextBlock, feedback: feedback, feedbackIndex: index, distance: distance, direction: nextBlockDirectionOfTravel)
+            }
         }
+
+        return nil
     }
 }

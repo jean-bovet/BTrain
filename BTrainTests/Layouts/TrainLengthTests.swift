@@ -27,8 +27,6 @@ import XCTest
 class TrainLengthTests: XCTestCase {
     func testReserveWagonsPulledByLocomotive() throws {
         let layout = LayoutFigure8().newLayout().removeTurnoutGeometry()
-        let doc = LayoutDocument(layout: layout, interface: MockCommandInterface())
-        let reservation = doc.layoutController.reservation
 
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
@@ -58,46 +56,45 @@ class TrainLengthTests: XCTestCase {
         let l1 = t1.locomotive!
 
         l1.length = 20
-        t1.block = b1
-        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85, direction: .next)
         b1.trainInstance = .init(t1.id, .next)
 
         l1.length = 100 + 40 + 100
-        try reservation.occupyBlocksWith(train: t1)
+        try layout.occupyBlocksWith(train: t1)
         assert(b1, t1)
         assert(b4, t1)
         assert(b3, t1)
         assert(b2, t1)
 
         l1.length = 100 + 40 + 60
-        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
-        try reservation.freeElements(train: t1)
-        try reservation.occupyBlocksWith(train: t1)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85, direction: .next)
+        try layout.freeElements(train: t1)
+        try layout.occupyBlocksWith(train: t1)
         assert(b1, t1)
         assert(b4, t1)
         assert(b3, t1)
         assert(b2, nil)
 
         l1.length = 80
-        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
-        try reservation.freeElements(train: t1)
-        try reservation.occupyBlocksWith(train: t1)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85, direction: .next)
+        try layout.freeElements(train: t1)
+        try layout.occupyBlocksWith(train: t1)
         assert(b1, t1)
         assert(b4, nil)
         assert(b3, nil)
         assert(b2, nil)
 
         l1.length = 80
-        t1.positions = .head(blockId: b1.id, index: 2, distance: 70)
-        try reservation.freeElements(train: t1)
-        try reservation.occupyBlocksWith(train: t1)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 70, direction: .next)
+        try layout.freeElements(train: t1)
+        try layout.occupyBlocksWith(train: t1)
         assert(b1, t1)
         assert(b4, t1)
         assert(b3, nil)
         assert(b2, nil)
 
         l1.length = 2000
-        XCTAssertThrowsError(try reservation.occupyBlocksWith(train: t1))
+        XCTAssertThrowsError(try layout.occupyBlocksWith(train: t1))
     }
 
     func assert(_ block: Block, _ train: Train?) {

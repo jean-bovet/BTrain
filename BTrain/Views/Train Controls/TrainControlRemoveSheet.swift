@@ -18,18 +18,16 @@ struct TrainControlRemoveSheet: View {
 
     @ObservedObject var train: Train
 
-    @State private var blockId: Identifier<Block>? = nil
-
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        VStack {
-            if let block = layout.blocks[blockId] {
+        VStack(alignment: .leading) {
+            if let block = layout.blocks[train.frontBlockId] {
                 Text("Remove \"\(train.name)\" from block \(block.name)?")
                     .fixedSize()
-            } else if let blockId = blockId {
+            } else if let blockId = train.frontBlockId {
                 Text("Remove \"\(train.name)\" from block \(blockId.uuid)?")
                     .fixedSize()
             }
@@ -56,18 +54,19 @@ struct TrainControlRemoveSheet: View {
                         errorStatus = error.localizedDescription
                     }
                 }
-                .disabled(blockId == nil)
+                .disabled(train.frontBlockId == nil)
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
-        }
-        .onAppear {
-            blockId = train.block?.id
         }
     }
 }
 
 struct TrainControlRemoveSheet_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    static let doc: LayoutDocument = {
+        let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+        doc.layout.trains[0].positions = .head(blockId: doc.layout.blocks[0].id, index: 0, distance: 0, direction: .next)
+        return doc
+    }()
 
     static var previews: some View {
         TrainControlRemoveSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])

@@ -71,7 +71,8 @@ class UnmanagedTrainOperationTests: BTTestCase {
     func testFollowTrainBackward() throws {
         let layout = LayoutLoop1().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
-
+        p.train.isTailDetected = true
+        
         connectToSimulator(doc: p.doc)
         defer {
             disconnectFromSimulator(doc: p.doc)

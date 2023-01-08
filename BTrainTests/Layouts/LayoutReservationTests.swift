@@ -51,8 +51,7 @@ final class LayoutReservationTests: XCTestCase {
         let blockA = layout.block(named: "A")
         let route = layout.route(named: "ABCDE")
 
-        train.block = blockA
-        train.positions = .both(blockId: blockA.id, headIndex: blockA.feedbacks.count, headDistance: blockA.feedbacks.last!.distance!.after, tailIndex: 0, tailDistance: 0.after)
+        train.positions = .both(blockId: blockA.id, headIndex: blockA.feedbacks.count, headDistance: blockA.feedbacks.last!.distance!.after, tailIndex: 0, tailDistance: 0.after, direction: .next)
         train.routeStepIndex = 0
         train.startRouteIndex = 0
         blockA.trainInstance = .init(train.id, .next)
@@ -85,10 +84,12 @@ final class LayoutReservationTests: XCTestCase {
 
         XCTAssertFalse(r.removeOccupation(train: train))
 
-        XCTAssertNotNil(train.block?.trainInstance)
+        XCTAssertNil(blockA.trainInstance)
+    }
+}
 
-        train.occupied.append(train.block!)
-        XCTAssertTrue(r.removeOccupation(train: train, removeFrontBlock: true))
-        XCTAssertNil(train.block?.trainInstance)
+extension Array where Element == Block {
+    var toBlockNames: [String] {
+        self.map(\.name)
     }
 }

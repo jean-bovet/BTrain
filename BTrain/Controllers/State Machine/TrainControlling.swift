@@ -32,11 +32,11 @@ protocol TrainControlling: AnyObject {
     /// The speed of the train
     var speed: SpeedKph { get set }
 
-    /// Returns true if the brake feedback is detected
-    var brakeFeedbackActivated: Bool { get }
-
-    /// Returns true if the stop feedback is detected
-    var stopFeedbackActivated: Bool { get }
+    /// Returns true if the train front position is located after the brake feedback
+    func pastBrakeFeedback() throws -> Bool
+    
+    /// Returns true if the train front position is located after the stop feedback
+    func pastStopFeedback() throws -> Bool
 
     /// The start index of the route where the train started.
     ///
@@ -95,10 +95,7 @@ protocol TrainControlling: AnyObject {
     func removeReservedBlocks() throws -> Bool
 
     /// Adjusts the speed of the train given the current context.
-    ///
-    /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
-    /// - Parameter stateChanged: true if this method is called when the state of the train changed
-    func adjustSpeed(stateChanged: Bool) throws
+    func adjustSpeed() throws
 
     /// Stops the train immediately
     func stopImmediately() throws

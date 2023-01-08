@@ -12,17 +12,17 @@
 
 import Foundation
 
-/// The position of a train includes the block in which that position is located, the index of the position (relative to the natural direction of the block
-/// and the feedbacks inside the block) and finally the direction of travel of the train within the block.
+/// Defines a single train position.
 ///
-/// Note: the direction of travel of the train is used to determine if a position is before (or after) another position in the same block.
-struct TrainPosition: Equatable, Codable {
+/// - A train can have multiple positions, such as the head and tail of the train.
+/// - Each position can be located in a different block if the train is moving between blocks.
+/// - Each position contains enough information to be sufficient to spread out the train in the layout. That includes: the block, the feedback index and the direction of travel.
+struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     enum TrainPositionError: Error {
         case occupiedBlockNotFound(blockId: Identifier<Block>)
     }
 
-    /// The index of the block in which that position is located.
-    /// Note: the index is increasing in the direction of travel of the train
+    /// The block in which this position is located
     var blockId: Identifier<Block>
 
     /// The index of the position within the block.
@@ -32,8 +32,19 @@ struct TrainPosition: Equatable, Codable {
     /// Distance, in cm, from the beginning of the block in the direction of travel of the train
     var distance: Double
 
+    /// Direction of travel of the train
+    var direction: Direction
+
+    var description: String {
+        description(nil)
+    }
+
+    func reversed() -> TrainPosition {
+        .init(blockId: blockId, index: index, distance: distance, direction: direction.opposite)
+    }
+
     /// When comparing to position, the distance is only compared up to a thousandth because with
-    /// double operations, there will be rouding errors.
+    /// double operations, there will be rounding errors.
     /// - Parameters:
     ///   - lhs: The left-hand side position
     ///   - rhs: The right-hand side position
@@ -45,11 +56,11 @@ struct TrainPosition: Equatable, Codable {
             && delta < 0.0001
     }
 
-    func description(_ layout: Layout) -> String {
-        if let block = layout.blocks[blockId] {
-            return "\(block.name):\(index):\(String(format: "%.3f", distance))"
+    func description(_ layout: Layout?) -> String {
+        if let block = layout?.blocks[blockId] {
+            return "\(block.name):\(index):\(String(format: "%.3f", distance)):\(direction)"
         } else {
-            return "\(blockId.uuid):\(index):\(String(format: "%.3f", distance))"
+            return "\(blockId.uuid):\(index):\(String(format: "%.3f", distance)):\(direction)"
         }
     }
 }

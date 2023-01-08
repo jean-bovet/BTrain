@@ -167,6 +167,7 @@
 		A74F3814281A1BFA0013FD23 /* StationElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3813281A1BFA0013FD23 /* StationElementView.swift */; };
 		A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */; };
 		A74F3818281A61230013FD23 /* RouteStepStationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3817281A61230013FD23 /* RouteStepStationView.swift */; };
+		A7507C8D296742CC0081FF4D /* Layout_v1.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7507C8C296742CC0081FF4D /* Layout_v1.btrain */; };
 		A7567AD92946B29A00AFF2F6 /* ElementProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7567AD82946B29A00AFF2F6 /* ElementProperty.swift */; };
 		A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */; };
 		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
@@ -362,6 +363,9 @@
 		A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */; };
 		A7C8A2F1279E6C6E000C7246 /* ElementVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */; };
 		A7C8A2F3279FA56C000C7246 /* TrainLengthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */; };
+		A7C8B23829625110009BA627 /* LayoutSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8B23729625110009BA627 /* LayoutSample.swift */; };
+		A7C8B23A29625892009BA627 /* LayoutOccupation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8B23929625892009BA627 /* LayoutOccupation.swift */; };
+		A7C8B23C296261D4009BA627 /* LayoutOccupationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8B23B296261D4009BA627 /* LayoutOccupationTests.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -586,6 +590,7 @@
 		A74F3813281A1BFA0013FD23 /* StationElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationElementView.swift; sourceTree = "<group>"; };
 		A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteNewElementSheet.swift; sourceTree = "<group>"; };
 		A74F3817281A61230013FD23 /* RouteStepStationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepStationView.swift; sourceTree = "<group>"; };
+		A7507C8C296742CC0081FF4D /* Layout_v1.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Layout_v1.btrain; sourceTree = "<group>"; };
 		A7567AD82946B29A00AFF2F6 /* ElementProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementProperty.swift; sourceTree = "<group>"; };
 		A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Listeners.swift"; sourceTree = "<group>"; };
 		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
@@ -775,6 +780,9 @@
 		A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTitleView.swift; sourceTree = "<group>"; };
 		A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementVisitor.swift; sourceTree = "<group>"; };
 		A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainLengthTests.swift; sourceTree = "<group>"; };
+		A7C8B23729625110009BA627 /* LayoutSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutSample.swift; sourceTree = "<group>"; };
+		A7C8B23929625892009BA627 /* LayoutOccupation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOccupation.swift; sourceTree = "<group>"; };
+		A7C8B23B296261D4009BA627 /* LayoutOccupationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOccupationTests.swift; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -1206,6 +1214,7 @@
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
 				A7966078293C7EEF00F689A2 /* LayoutReservationTests.swift */,
+				A7C8B23B296261D4009BA627 /* LayoutOccupationTests.swift */,
 				A744FDA6290B44D100852283 /* LayoutSpeedTests.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
@@ -1214,6 +1223,7 @@
 				A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */,
 				A700B21929270932001CC33E /* LayoutScriptConductorTests.swift */,
 				A794065C28087C5000F6A427 /* Parser */,
+				A7C8B23729625110009BA627 /* LayoutSample.swift */,
 			);
 			path = Layouts;
 			sourceTree = "<group>";
@@ -1406,6 +1416,7 @@
 				A795A03027AF6C8D00AE90EB /* Layout+AutomaticRouting.swift */,
 				A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
+				A7C8B23929625892009BA627 /* LayoutOccupation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A744FDAE290F379B00852283 /* Observers */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
@@ -1702,6 +1713,7 @@
 		A796FA2C2772BB8600FA41BA /* LayoutDocument */ = {
 			isa = PBXGroup;
 			children = (
+				A7507C8C296742CC0081FF4D /* Layout_v1.btrain */,
 				A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */,
 			);
 			path = LayoutDocument;
@@ -2014,6 +2026,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7507C8D296742CC0081FF4D /* Layout_v1.btrain in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2306,6 +2319,7 @@
 				A795A03D27B87CCE00AE90EB /* LocomotiveDiscovery.swift in Sources */,
 				A702F22D28FE25BF0076186D /* CGSize+Extension.swift in Sources */,
 				A733224E2923290C000648EA /* LayoutScriptLineView.swift in Sources */,
+				A7C8B23A29625892009BA627 /* LayoutOccupation.swift in Sources */,
 				A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */,
 				A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */,
 				A75F41C529453C63003C709F /* LocomotiveFunctionsCatalog.swift in Sources */,
@@ -2338,6 +2352,7 @@
 				A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */,
 				A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */,
 				A73E080D276ABB5C005F9D64 /* LayoutErrorTests.swift in Sources */,
+				A7C8B23C296261D4009BA627 /* LayoutOccupationTests.swift in Sources */,
 				A744FDB02913042C00852283 /* LocomotiveSpeedTests.swift in Sources */,
 				A790799D277ED8B000771A60 /* PluggableShapeTests.swift in Sources */,
 				A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */,
@@ -2375,6 +2390,7 @@
 				A794065928087C1800F6A427 /* LayoutParser.swift in Sources */,
 				A7FA9C54293859F500093CEE /* TrainSpreaderTests.swift in Sources */,
 				A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */,
+				A7C8B23829625110009BA627 /* LayoutSample.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
 				A73E0816276B0BC0005F9D64 /* FixedRoutingTests.swift in Sources */,
 				A717FB21281FAE2400310B5D /* FixedRoutingWithStationsTests.swift in Sources */,

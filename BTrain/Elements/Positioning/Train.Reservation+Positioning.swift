@@ -19,9 +19,20 @@ extension Train.Reservation {
     /// It is used to determine if a block is ahead or behind of another when computing
     /// the position of the train after a feedback has detected the train.
     ///
+    /// Note: the occupied blocks are always ordered in the direction of travel of the train.
+    ///
+    /// A train moving forward:
+    ///
     ///     Train:  --------------------->
-    ///     Blocks: [occupied2][occupied1][leading1][leading(n+1)]
-    ///     Index:     1           0         -1         -2
+    ///     Blocks: [occupied1][occupied2][leading1][leading(n+1)]
+    ///     Index:     0           1         2         3
+    ///
+    /// A train moving backward:
+    ///
+    ///     Train:  >--------------------
+    ///     Blocks: [occupied1][occupied2][leading1][leading(n+1)]
+    ///     Index:     0           1         2         3
+    ///
     /// - Parameter blockId: the block id
     /// - Returns: the index of the block id
     func blockIndex(for blockId: Identifier<Block>) -> Int? {
@@ -29,28 +40,30 @@ extension Train.Reservation {
             return blockIndex
         }
         if let blockIndex = leading.blocks.firstIndex(where: { $0.id == blockId }) {
-            return -1 - blockIndex
+            return occupied.blocks.count + blockIndex
         }
 
         // Note: during manual operation, because no leading blocks are reserved,
         // `nextBlock` contains the block in which the train will enter.
         // Train:  --------------------->
-        // Blocks: [occupied2][occupied1][nextBlock]
-        // Index:     1           0         -1
+        // Blocks: [occupied1][occupied2][nextBlock]
+        // Index:     0           1         2
         if let nextBlock = nextBlock, nextBlock.id == blockId {
-            return -1
+            return occupied.blocks.count
         }
+        
         return nil
     }
 
-    func directionInBlock(for blockId: Identifier<Block>) throws -> Direction? {
+    func directionInBlock(for blockId: Identifier<Block>) throws -> Direction {
         if let block = occupied.blocks.first(where: { $0.id == blockId }) {
             if let ti = block.trainInstance {
                 return ti.direction
             } else {
                 throw LayoutError.trainNotFoundInBlock(blockId: blockId)
             }
+        } else {
+            throw LayoutError.blockNotFound(blockId: blockId)
         }
-        return nil
     }
 }

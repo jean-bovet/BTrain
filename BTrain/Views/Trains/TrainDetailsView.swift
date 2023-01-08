@@ -39,6 +39,17 @@ struct TrainDetailsGeometrySectionView: View {
             SectionTitleView(label: "Geometry")
 
             Form {
+                if train.locomotive?.allowedDirections == .any {
+                    UndoProvider($train.isTailDetected) { value in
+                        VStack(alignment: .leading) {
+                            Toggle("Tail Detected", isOn: value)
+                            if train.isTailDetected == false {
+                                Text("⚠️ Without a proper tail feedback, the train might overshoot its block when moving backwards").font(.caption)
+                            }
+                        }
+                    }
+                }
+                
                 UndoProvider($train.wagonsLength) { value in
                     TextField("Wagons:", value: value, format: .number)
                         .unitStyle("cm")

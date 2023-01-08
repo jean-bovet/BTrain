@@ -47,7 +47,7 @@ class LayoutStateMachineTests: XCTestCase {
         try handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
 
         XCTAssertEqual(train.state, .running)
-        XCTAssertEqual(train.adjustSpeedCount, 2)
+        XCTAssertEqual(train.adjustSpeedCount, 3)
         XCTAssertEqual(train.speed, LayoutFactory.DefaultMaximumSpeed)
     }
 
@@ -118,7 +118,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             true
         }
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
@@ -139,7 +139,7 @@ class LayoutStateMachineTests: XCTestCase {
                 return true
             }
         }
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
 
@@ -164,14 +164,14 @@ class LayoutStateMachineTests: XCTestCase {
                 return true
             }
         }
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
 
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
 
         train.onReservedBlocksLengthEnough = { _ in false }
-        train.brakeFeedbackActivated = false
-        train.stopFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = false
+        train.trainIsPastStopFeedback = true
 
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
@@ -195,11 +195,10 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             true
         }
-        train.brakeFeedbackActivated = true
-        train.stopFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
+        train.trainIsPastStopFeedback = true
 
-        // Note: 2 state changes, running>braking>stopping because the length of the reserved block does not allow the train to run at all.
-        try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
+        try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
 
         try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
@@ -224,7 +223,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             true
         }
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
 
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
@@ -295,12 +294,12 @@ class LayoutStateMachineTests: XCTestCase {
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
 
-        train.brakeFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
 
-        train.brakeFeedbackActivated = false
-        train.stopFeedbackActivated = true
+        train.trainIsPastBrakeFeedback = false
+        train.trainIsPastStopFeedback = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
 
@@ -317,9 +316,9 @@ class LayoutStateMachineTests: XCTestCase {
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
 
-        train.brakeFeedbackActivated = true
-        train.stopFeedbackActivated = true
-        try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
+        train.trainIsPastBrakeFeedback = true
+        train.trainIsPastStopFeedback = true
+        try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 5)
     }
 
@@ -350,7 +349,7 @@ class LayoutStateMachineTests: XCTestCase {
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
 
-        train.stopFeedbackActivated = true
+        train.trainIsPastStopFeedback = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
 

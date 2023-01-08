@@ -21,7 +21,7 @@ extension TrainControlling {
     /// Returns true if the train should stop in the current block because there is not enough
     /// reserved (and settled) blocks for it.
     func shouldStopInBlockBecauseNotEnoughReservedBlocksLength() throws -> Bool {
-        try !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed)
+        try !reservedBlocksLengthEnough(forSpeed: speed)
     }
 
     /// Returns true if the train should stop in the current block

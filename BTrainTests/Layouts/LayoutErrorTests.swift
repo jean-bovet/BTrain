@@ -44,33 +44,12 @@ class LayoutErrorTests: XCTestCase {
         train0.locomotive = Locomotive()
     }
 
-    func testMissingBlock() {
-        let unknownBlock = Identifier<Block>(uuid: "foo")
-        do {
-            try layout.free(block: unknownBlock)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Block foo not found")
-        }
-    }
-
     func testMissingTrain() {
         do {
             try layout.remove(trainId: Identifier<Train>(uuid: "foo"))
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Train foo not found")
-        }
-    }
-
-    func testMissingTurnout() throws {
-        layout.link(from: b1.next, to: turnout.socket0)
-        layout.turnouts.elements.removeAll()
-        do {
-            try layout.free(fromBlock: b1.id, toBlockNotIncluded: b2.id, direction: .next)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Turnout t1 not found")
         }
     }
 

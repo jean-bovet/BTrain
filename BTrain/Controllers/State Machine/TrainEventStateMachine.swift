@@ -39,6 +39,8 @@ struct TrainEventStateMachine {
     private func handleSameTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         switch trainEvent {
         case .position:
+            try adjustSpeed(ofTrain: train)
+
             if try train.updateOccupiedAndReservedBlocks() {
                 return .reservedBlocksChanged(train)
             } else {
@@ -46,7 +48,6 @@ struct TrainEventStateMachine {
                 // to the reserved block. In this case, let's make sure the train state is handled
                 // in order to brake or stop the train within a block.
                 if try tsm.handleTrainState(train: train) {
-                    try adjustSpeed(ofTrain: train, stateChanged: true)
                     return .stateChanged(train)
                 }
             }
@@ -68,12 +69,13 @@ struct TrainEventStateMachine {
                 }
 
                 if try tsm.handleTrainState(train: train) {
-                    try adjustSpeed(ofTrain: train, stateChanged: true)
                     return .stateChanged(train)
                 }
             }
 
         case .stateChanged:
+            try adjustSpeed(ofTrain: train)
+
             if train.state == .stopped && train.mode == .unmanaged {
                 train.routeDidStop()
             }
@@ -88,7 +90,6 @@ struct TrainEventStateMachine {
             }
 
             if try tsm.handleTrainState(train: train) {
-                try adjustSpeed(ofTrain: train, stateChanged: true)
                 return .stateChanged(train)
             }
 
@@ -105,6 +106,8 @@ struct TrainEventStateMachine {
             }
 
         case .reservedBlocksChanged(_), .reservedBlocksSettledLengthChanged:
+            try adjustSpeed(ofTrain: train)
+
             if train.state == .stopped, train.mode == .managed, train.shouldChangeDirection {
                 // Trigger a change in direction for the train when it is stopped. That request is asynchronous;
                 // when the direction change acknowledge comes back from the Digital Controller,
@@ -114,16 +117,12 @@ struct TrainEventStateMachine {
             }
 
             if try tsm.handleTrainState(train: train) {
-                try adjustSpeed(ofTrain: train, stateChanged: true)
                 return .stateChanged(train)
-            } else {
-                try adjustSpeed(ofTrain: train, stateChanged: false)
             }
 
         case .speed:
             // Speed change can result in state change, for example when the speed reaches 0.
             if try tsm.handleTrainState(train: train) {
-                try adjustSpeed(ofTrain: train, stateChanged: true)
                 return .stateChanged(train)
             }
         }
@@ -139,9 +138,9 @@ struct TrainEventStateMachine {
         return nil
     }
 
-    private func adjustSpeed(ofTrain train: TrainControlling, stateChanged: Bool) throws {
+    private func adjustSpeed(ofTrain train: TrainControlling) throws {
         if train.mode != .unmanaged {
-            try train.adjustSpeed(stateChanged: stateChanged)
+            try train.adjustSpeed()
         }
     }
 }

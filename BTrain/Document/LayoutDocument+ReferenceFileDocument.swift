@@ -136,7 +136,8 @@ extension LayoutDocument: ReferenceFileDocument {
         layout.blocks.elements.forEach { $0.restore(layout: layout) }
         layout.turnouts.elements.forEach { $0.restore(layout: layout) }
         layout.transitions.elements.forEach { $0.restore(layout: layout) }
-        layout.updateRoutesUsingRouteScripts()
+        layout.updateRoutesUsingRouteScripts()        
+        layout.removeOrphanedTrains()
     }
 
     func snapshot(contentType _: UTType) throws -> Data {

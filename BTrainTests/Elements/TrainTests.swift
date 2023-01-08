@@ -24,9 +24,8 @@ class TrainTests: XCTestCase {
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
         t1.routeStepIndex = 1
-        t1.positions.head = .init(blockId: Identifier<Block>(uuid: "1"), index: 1, distance: 10)
-        t1.positions.tail = .init(blockId: Identifier<Block>(uuid: "2"), index: 2, distance: 20)
-        t1.block = layout.blocks[0]
+        t1.positions.head = .init(blockId: Identifier<Block>(uuid: "1"), index: 1, distance: 10, direction: .next)
+        t1.positions.tail = .init(blockId: Identifier<Block>(uuid: "2"), index: 2, distance: 20, direction: .next)
         t1.routeId = Identifier<Route>(uuid: "1212")
 
         let encoder = JSONEncoder()
@@ -40,7 +39,7 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.name, t2.name)
         XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
         XCTAssertEqual(t1.positions, t2.positions)
-        XCTAssertEqual(t1.block, t2.block)
+        XCTAssertEqual(t1.frontBlockId, t2.frontBlockId)
         XCTAssertEqual(t1.routeId, t2.routeId)
     }
 
@@ -52,21 +51,12 @@ class TrainTests: XCTestCase {
         }
         XCTAssertNotNil(tc)
 
-        var blocks = [Block?]()
-        let cancellable = train.$block.sink { block in
-            blocks.append(block)
-        }
-
-        XCTAssertNotNil(cancellable)
-
         let a1 = Block(name: "a1")
         let a2 = Block(name: "a2")
-        train.block = a1
-        train.block = nil
-        train.block = a2
+        train.positions = .head(blockId: a1.id, index: 0, distance: 0, direction: .next)
+        train.positions = .head(blockId: a1.id, index: 0, distance: 0, direction: .next)
+        train.positions = .head(blockId: a2.id, index: 1, distance: 0, direction: .next)
 
         XCTAssertEqual(trainChangeCount, 3)
-        XCTAssertEqual(blocks.count, 3)
-        XCTAssertEqual(blocks, [a1, nil, a2])
     }
 }

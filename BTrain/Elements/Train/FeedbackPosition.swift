@@ -31,18 +31,26 @@ extension Double {
     }
 }
 
-struct FeedbackPosition {
-    let blockId: Identifier<Block>
-    let index: Int
+/// Describes a specific feedback position with all the necessary information related
+/// to the train that moves on top of that feedback.
+struct FeedbackPosition: CustomStringConvertible {
+    let block: Block
+    let feedback: Feedback
+    let feedbackIndex: Int
     let distance: Double
+    let direction: Direction
 
-    func trainPosition(direction: Direction) -> TrainPosition {
+    var trainPosition: TrainPosition {
         switch direction {
         case .previous:
-            return TrainPosition(blockId: blockId, index: index, distance: distance.before)
+            return TrainPosition(blockId: block.id, index: feedbackIndex, distance: distance.before, direction: direction)
 
         case .next:
-            return TrainPosition(blockId: blockId, index: index + 1, distance: distance.after)
+            return TrainPosition(blockId: block.id, index: feedbackIndex + 1, distance: distance.after, direction: direction)
         }
+    }
+
+    var description: String {
+        "\(block.name):\(feedback.name):\(distance.distanceString):\(direction)"
     }
 }

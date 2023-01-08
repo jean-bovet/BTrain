@@ -31,14 +31,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         try p.assert("r1: {r1{b1 🔴􀼮1 ≏ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≏ }}")
 
         // The train will switch to managed scheduling but does not start yet because the turnout t0 hasn't settled.
-        try p.start(expectedState: .running)
-
-        // t0 has still the state .branchLeft instead of the requested .straight
-        try p.assert("r1: {r1{b1 🔵􀼮1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🔵􀼮1 ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≡ }}")
-
-        // The train stops because t0 has not yet settled, hence the leading distance is 0.
-        try p.assert("r1: {r1{b1 ≏ ≡ 🔴􀼮1 }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≡ ≏ }}")
+        try p.start(expectedState: .stopped)
 
         // This will settle the turnout t0
         p.digitalController.resume()
@@ -92,11 +85,11 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         p.digitalController.pause()
 
         // Train is now braking because not enough leading settled distance
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 􀼰1 ≡ 🔵􀼮1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
-        XCTAssertEqual(p.train.state, .running)
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 􀼰1 ≡ 🟡􀼮1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
+        XCTAssertEqual(p.train.state, .braking)
 
         try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [r1[b3 􀼰1 ≡ 🟡􀼮1 ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {r1{b1 ≏ ≏ }}")
-        XCTAssertEqual(p.train.state, .running)
+        XCTAssertEqual(p.train.state, .braking)
 
         p.digitalController.resume()
         p.layoutController.waitUntilSettled()

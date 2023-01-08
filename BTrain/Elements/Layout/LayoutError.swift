@@ -18,6 +18,7 @@ enum LayoutError: Error {
     case trainNotFoundInBlock(blockId: Identifier<Block>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
+    case trainLengthNotDefined(train: Train)
 
     case locomotiveNotAssignedToTrain(train: Train)
 
@@ -38,14 +39,9 @@ enum LayoutError: Error {
     case blockContainsNoFeedback(block: Block)
     case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
 
-    case frontPositionNotSpecified(position: TrainPositions)
-    case backPositionNotSpecified(position: TrainPositions)
-
-    case frontPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
-    case backPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
-
-    case frontPositionBlockNotSpecified(position: TrainPositions)
-    case backPositionBlockNotSpecified(position: TrainPositions)
+    case headPositionNotSpecified(position: TrainPositions)
+    case tailPositionNotSpecified(position: TrainPositions)
+    case noPositionsSpecified(position: TrainPositions)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -138,20 +134,12 @@ extension LayoutError: LocalizedError {
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
-        case let .frontPositionBlockNotSpecified(position: position):
-            return "Front position block not specified: \(position)"
-        case let .backPositionBlockNotSpecified(position: position):
-            return "Back position block not specified: \(position)"
-
-        case let .frontPositionNotSpecified(position: position):
-            return "Front position not specified: \(position)"
-        case let .backPositionNotSpecified(position: position):
-            return "Back position not specified: \(position)"
-
-        case let .frontPositionBlockIdMismatch(expected: expected, got: got):
-            return "Front position block mismatch: expected \(expected) but got \(got)"
-        case let .backPositionBlockIdMismatch(expected: expected, got: got):
-            return "Back position block mismatch: expected \(expected) but got \(got)"
+        case let .headPositionNotSpecified(position: position):
+            return "Head position not specified: \(position)"
+        case let .tailPositionNotSpecified(position: position):
+            return "Tail position not specified: \(position)"
+        case let .noPositionsSpecified(position: position):
+            return "Head and tail positions not specified: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.block is nil)"
@@ -161,6 +149,8 @@ extension LayoutError: LocalizedError {
             return "Train \(train.name) not found in route \(route.name)"
         case let .trainNotAssignedToARoute(train: train):
             return "Train \(train.name) has no associated route"
+        case let .trainLengthNotDefined(train: train):
+            return "Train \(train.name) has no length defined"
 
         case let .headWagonNotFound(train: train):
             return "No head wagon found for train \(train.name)"
