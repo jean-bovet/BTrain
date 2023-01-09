@@ -20,8 +20,8 @@ import Foundation
 /// For example, a user can build a route with a starting and ending station and only one block,
 /// leaving all the other blocks unspecified. The role of this algorithm is to find these unspecified blocks
 struct PathFinderResolver {
-    /// The settings
-    let settings: PathFinder.Settings
+    /// True to output debugging information
+    let verbose: Bool
 
     /// The constraints
     let constraints: PathFinder.Constraints
@@ -137,7 +137,7 @@ struct PathFinderResolver {
         // any number of turnouts and blocks can be situated in the path between the two elements).
         // Note: we cannot optimize if `from` and `to` are only separated by turnouts because even for turnouts, we need to find
         // the sortest path considering each turnout length.
-        if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose) {
+        if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: verbose) {
             return GraphPath(p.elements.dropFirst())
         } else {
             return GraphPath.empty()

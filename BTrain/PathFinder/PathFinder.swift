@@ -76,7 +76,7 @@ struct PathFinder {
     ///   - path: the unresolved path
     /// - Returns: the result of the resolver
     func resolve(graph: Graph, _ path: [Resolvable]) throws -> Result<[GraphPath], PathFinderResolver.ResolverError> {
-        let resolver = PathFinderResolver(settings: settings, constraints: constraints)
+        let resolver = PathFinderResolver(verbose: settings.verbose, constraints: constraints)
         return try resolver.resolve(graph: graph, path)
     }
 
