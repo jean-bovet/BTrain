@@ -23,7 +23,7 @@ extension Layout {
     ///   - toBlock: The destination block of the route
     ///   - toDirection: The optional direction when reaching the ``toBlock``
     ///   - shortestPath: true if the shortest path is to be found, false if any path is suitable
-    /// - Returns: a route, represented as a ``GraphPath`` or nil if no suitable route found.
+    /// - Returns: a route, represented as a ``BTrain/GraphPath`` or nil if no suitable route found.
     func bestPath(ofTrain train: Train, toReachBlock toBlock: Block?, withDirection toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled)) throws -> GraphPath? {
         let paths = try possiblePaths(for: train, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior, shortestPath: shortestPath)
             .sorted(by: { $0.count < $1.count })

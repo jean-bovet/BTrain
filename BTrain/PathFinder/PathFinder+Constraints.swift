@@ -147,7 +147,7 @@ extension PathFinder {
     }
 }
 
-extension GraphPath {
+private extension GraphPath {
     var numberOfBlocksIgnoringStartingBlock: Int {
         elements
             .dropFirst() // Remove the starting block
