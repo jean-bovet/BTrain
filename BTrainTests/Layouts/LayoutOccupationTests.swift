@@ -165,4 +165,21 @@ final class LayoutOccupationTests: XCTestCase {
         XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b3.id, index: 0, distance: 10, direction: .next),
                                                           tail: .init(blockId: ls.b2.id, index: 1, distance: 80, direction: .previous)))
     }
+    
+    // b0[ ]> b1[ f1 ]> b2[ f2.1 f2.2 ]> <t23> b3<[ f3.2 f3.1 ]
+    //                        >-------------
+    func testOccupyOneBlockAndTurnout() throws {
+        ls.loc.length = 20
+        ls.train.wagonsLength = 80
+        ls.loc.directionForward = false
+        try ls.reserve(block: ls.b2, positions: .head(blockId: ls.b2.id, index: 0, distance: 10, direction: .next))
+
+        ls.assert(ls.b2.trainInstance, .next, expectedParts: [0: .locomotive, 1: .wagon, 2: .wagon])
+        XCTAssertEqual(ls.t23.reserved?.train, ls.train.id)
+        XCTAssertNil(ls.b3.trainInstance)
+        XCTAssertEqual(ls.train.frontBlockId, .init(uuid: "b2"))
+
+        XCTAssertEqual(ls.train.positions, TrainPositions(head: .init(blockId: ls.b2.id, index: 0, distance: 10, direction: .next),
+                                                          tail: .init(blockId: ls.b2.id, index: 2, distance: 100, direction: .next)))
+    }
 }

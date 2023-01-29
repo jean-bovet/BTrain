@@ -13,7 +13,7 @@
 import AppKit
 import Foundation
 
-/// This is the context class being passed down all the elements being rendered in the switchboard.
+/// This is the context class used by all the elements rendered in the switchboard.
 final class ShapeContext {
     var simulator: Simulator?
 

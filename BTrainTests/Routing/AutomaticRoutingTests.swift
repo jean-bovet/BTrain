@@ -151,7 +151,7 @@ class AutomaticRoutingTests: BTTestCase {
         m1.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
 
         let p = try setup(layout: layout, fromBlockId: ol3.id, destination: .init(ne3.id, direction: .next), position: .end, routeSteps: ["OL3:next", "NE3:next"])
-        try p.assert("automatic-16390: [r16390[OL3 􀼯16390 ≏ 􀼯16390 ≏ 🔵􀼮16390 ]] <r16390<F.3{sr}(0,1),s>> <r16390<F.1{sr}(0,1),s>> <r16390<F.2{sr}(0,2),r>> <r16390<C.3{sr}(1,0),s>> {r16390{NE3 ≏ ≏ }}")
+        try p.assert("automatic-16390: [r16390[OL3 􀼰16390 ≏ 􀼯16390 ≏ 🔵􀼮16390 ]] <r16390<F.3{sr}(0,1),s>> <r16390<F.1{sr}(0,1),s>> <r16390<F.2{sr}(0,2),r>> <r16390<C.3{sr}(1,0),s>> {r16390{NE3 ≏ ≏ }}")
     }
 
     func testAutomaticRouteNoRouteToSiding() throws {

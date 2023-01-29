@@ -149,6 +149,11 @@ struct LayoutOccupation {
         //   in reverse order, so we need to insert them at the beginning of the occupied list to ensure proper ordering.
         let insertAtBeginning = !directionOfTrainSameAsSpread
 
+        // Keep track of the last position of the train as the spread is performed. This is important because if the train spread
+        // ends in a turnout, it is currently not possible to indicate the turnout as a position of the train (because a train position
+        // uses only block). If this happens, the position of the train will be set to the last position that was inside a block.
+        var lastPositionInBlock: TrainPosition?
+
         let spreader = TrainSpreader(layout: layout)
         let success = try spreader.spread(blockId: blockId, distance: distance, direction: directionOfSpread, lengthOfTrain: lengthOfTrain, transitionCallback: { transition in
             guard transition.reserved == nil else {
@@ -193,6 +198,8 @@ struct LayoutOccupation {
                 } else {
                     trainInstance.parts[part.partIndex] = .wagon
                 }
+                
+                lastPositionInBlock = TrainPosition(blockId: block.id, index: part.partIndex, distance: part.distance, direction: directionOfTravel)
             }
 
             // Update the position, tail or head, using the last part
@@ -211,7 +218,21 @@ struct LayoutOccupation {
             occupation.append(block, atBeginning: insertAtBeginning)
         })
 
-        if success == false {
+        if success {
+            // As noted above, if the train spread ends in a turnout, the tail (or head) position will not be set
+            // because only a block can be set as a position. If that happens, ensure the position is set
+            // to the last known position in the last block that was visited.
+            switch lastPartUpdatePosition {
+            case .tail:
+                if train.positions.tail == nil {
+                    train.positions.tail = lastPositionInBlock
+                }
+            case .head:
+                if train.positions.head == nil {
+                    train.positions.head = lastPositionInBlock
+                }
+            }
+        } else {
             throw LayoutError.cannotReserveAllElements(train: train)
         }
     }

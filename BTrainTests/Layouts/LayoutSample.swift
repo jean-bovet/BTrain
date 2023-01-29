@@ -22,6 +22,8 @@ struct LayoutSample {
     let b2: Block
     let b3: Block
 
+    let t23: Turnout
+    
     let train: Train
     let loc: Locomotive
 
@@ -49,7 +51,7 @@ struct LayoutSample {
         b3.feedbacks.append(.init(id: "f3.2", feedbackId: .init(uuid: "f3.2"), distance: 70))
         layout.blocks.add(b3)
 
-        let t23 = Turnout(name: "t23")
+        t23 = Turnout(name: "t23")
         t23.length = 10
         layout.turnouts.add(t23)
 
