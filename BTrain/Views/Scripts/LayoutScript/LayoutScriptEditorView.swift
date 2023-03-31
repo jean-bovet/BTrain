@@ -34,13 +34,11 @@ struct LayoutScriptEditorView: View {
                 List {
                     ForEach($script.commands, id: \.self) { command in
                         LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command, invalidCommandIds: $invalidCommandIds)
-                        if let children = command.children {
-                            ForEach(children, id: \.self) { command in
-                                HStack {
-                                    Spacer().fixedSpace()
-                                    Text("􀄵")
-                                    LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command, invalidCommandIds: $invalidCommandIds)
-                                }
+                        ForEach(command.children, id: \.self) { command in
+                            HStack {
+                                Spacer().fixedSpace()
+                                Text("􀄵")
+                                LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command, invalidCommandIds: $invalidCommandIds)
                             }
                         }
                     }

@@ -19,7 +19,7 @@ struct BlockAllFeedbacksView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Table(selection: $selection) {
+            Table(of: Binding<Block.BlockFeedback>.self, selection: $selection) {
                 TableColumn("Feedback") { blockFeedback in
                     Picker("Feedback:", selection: blockFeedback.feedbackId) {
                         ForEach(layout.feedbacks.elements, id: \.self) { feedback in

@@ -20,7 +20,7 @@ struct LocomotiveSpeedTableView: View {
 
     var body: some View {
         VStack {
-            Table(selection: $selection) {
+            Table(of: Binding<LocomotiveSpeed.SpeedTableEntry>.self, selection: $selection) {
                 TableColumn("Steps") { steps in
                     Text("\(steps.steps.value.wrappedValue)")
                 }.width(80)

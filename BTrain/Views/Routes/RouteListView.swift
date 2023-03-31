@@ -26,7 +26,7 @@ struct RouteListView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Table(selection: $selection) {
+                Table(of: Binding<Route>.self, selection: $selection) {
                     TableColumn("Name") { route in
                         TextField("Route", text: route.name)
                             .labelsHidden()

@@ -27,10 +27,8 @@ struct DocumentToolbarContent: ToolbarContent {
         ToolbarItemGroup {
             DeveloperCommandsView(document: document)
 
-            if let switchboard = document.switchboard {
-                SwitchboardSettingsButton(document: document)
-                SwitchboardEditButton(document: document, state: switchboard.state)
-            }
+            SwitchboardSettingsButton(document: document)
+            SwitchboardEditButton(document: document, state: document.switchboard.state)
         }
     }
 }

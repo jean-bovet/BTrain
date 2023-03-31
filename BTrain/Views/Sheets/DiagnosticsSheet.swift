@@ -40,7 +40,7 @@ struct DiagnosticsSheet: View {
                 Text("The layout is correct!")
                     .padding()
             } else {
-                Table {
+                Table(of: DisplayError.self) {
                     TableColumn("Error") { error in
                         Text("\(error.error)")
                     }

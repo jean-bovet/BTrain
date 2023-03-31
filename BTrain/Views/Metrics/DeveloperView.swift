@@ -20,7 +20,7 @@ struct DeveloperView: View {
     @State private var refresh = false
 
     var body: some View {
-        Table {
+        Table(of: Metric.self) {
             TableColumn("Key") { metric in
                 Text("\(metric.id)")
             }

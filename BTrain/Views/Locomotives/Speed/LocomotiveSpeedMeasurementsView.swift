@@ -82,7 +82,7 @@ struct LocomotiveSpeedMeasurementsView: View {
                     .disabled(running)
                 }
             } else {
-                if let loc = loc, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
+                if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
                     LocomotiveSpeedMeasureControlsView(document: document, loc: loc,
                                                        speedEntries: $selectedSpeedEntries,
                                                        feedbackA: feedbackA,

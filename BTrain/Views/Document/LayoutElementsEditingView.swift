@@ -141,7 +141,8 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
                     sort()
                 }
 
-                if let view = more(), !(view is EmptyView) {
+                let view = more()
+                if !(view is EmptyView) {
                     Spacer().fixedSpace()
                     view
                 }

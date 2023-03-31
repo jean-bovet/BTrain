@@ -33,12 +33,10 @@ struct RouteScriptEditorView: View {
                 List {
                     ForEach($script.commands, id: \.self) { command in
                         RouteScriptLineView(doc: doc, layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
-                        if let children = command.children {
-                            ForEach(children, id: \.self) { command in
-                                HStack {
-                                    Spacer().fixedSpace()
-                                    RouteScriptLineView(doc: doc, layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
-                                }
+                        ForEach(command.children, id: \.self) { command in
+                            HStack {
+                                Spacer().fixedSpace()
+                                RouteScriptLineView(doc: doc, layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
                             }
                         }
                     }
