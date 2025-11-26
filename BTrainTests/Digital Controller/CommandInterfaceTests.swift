@@ -164,12 +164,17 @@ class CommandInterfaceTests: XCTestCase {
 
         XCTAssertEqual(doc.layout.locomotives.elements.count, 18)
 
+        guard doc.layout.locomotives.elements.count > 0 else {
+            XCTFail("Must be at least one loco")
+            return
+        }
+        
         let loc1 = doc.layout.locomotives[0]
         XCTAssertEqual(loc1.name, "193 524 SBB")
         XCTAssertEqual(loc1.address, 14)
-
+            
         XCTAssertNotNil(doc.locomotiveIconManager.icon(for: loc1.id))
-    }
+        }
 
     func testFeedbackCallbackOrdering() {
         let doc = LayoutDocument(layout: Layout())
