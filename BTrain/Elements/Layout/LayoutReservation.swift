@@ -190,7 +190,7 @@ final class LayoutReservation {
 
         // We are going to iterate over all the remaining steps of the route until we
         // either (1) reach the end of the route or (2) we have reserved enough blocks.
-        let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex)
+        let startReservationIndex = min(route.lastStepIndex, max(0,train.routeStepIndex))
         let stepsToReserve = route.steps[startReservationIndex ... route.lastStepIndex]
 
         // First of all, resolve the route to discover all non-specified turnouts and blocks
