@@ -60,7 +60,7 @@ struct RouteScriptCommandView: View {
 
             if command.action.mutable {
                 Picker("Command", selection: $command.action) {
-                    ForEach(RouteScriptCommand.Action.allCases.filter { $0 != .start }, id: \.self) {
+                    ForEach(RouteScriptCommand.Action.allCases.filter { $0 != .start && $0 != .stop}, id: \.self) {
                         Text($0.rawValue).tag($0 as RouteScriptCommand.Action?)
                     }
                 }
