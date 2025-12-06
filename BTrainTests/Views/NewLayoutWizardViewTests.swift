@@ -35,7 +35,7 @@ class NewLayoutWizardViewTests: RootViewTests {
     func testWizardSelectLocomotive() throws {
         let doc = newDocument()
         let sut = WizardSelectLocomotive(document: doc, selectedTrains: .constant([doc.layout.trains[0].id]))
-        _ = try sut.inspect().find(text: "Select one ore more locomotive:")
+        _ = try sut.inspect().find(text: "Select one or more locomotive:")
     }
 
     func testHelper() throws {
