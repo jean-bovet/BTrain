@@ -99,9 +99,11 @@ extension RouteScriptCommand {
 
         case .loop:
             var items = [RouteItem]()
-            for _ in 1 ... repeatCount {
-                let routeItems = try children.toRouteItems()
-                items.append(contentsOf: routeItems)
+            if repeatCount > 0 {
+                for _ in 1 ... repeatCount {
+                    let routeItems = try children.toRouteItems()
+                    items.append(contentsOf: routeItems)
+                }
             }
             return items
         }
