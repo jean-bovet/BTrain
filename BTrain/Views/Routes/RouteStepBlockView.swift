@@ -50,6 +50,7 @@ struct RouteStepBlockView_Previews: PreviewProvider {
     static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {
-        RouteStepBlockView(layout: layout, stepBlock: .constant(layout.routes[0].blockSteps[0]))
+        RouteStepBlockView(layout: layout, stepBlock: .constant(RouteItemBlock(Block(name:"b1"),.next,0))
+        )
     }
 }
