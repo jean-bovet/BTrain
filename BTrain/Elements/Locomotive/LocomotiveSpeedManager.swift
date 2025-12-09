@@ -242,6 +242,9 @@ final class LocomotiveSpeedManager {
                 let (value, done) = stepValue(value: tf.stepValue(at: time), accelerating: delta > 0, desired: desired)
                 if done {
                     commands.append(value)
+                    if tf.acceleration == .bezier {   // Bezier curve can return duplicate values
+                        commands = commands.uniqued()
+                    }
                     return commands
                 } else {
                     commands.append(value)
@@ -279,5 +282,16 @@ final class LocomotiveSpeedManager {
         }
 
         return (actual, done)
+    }
+}
+
+// Source - https://stackoverflow.com/a
+// Posted by Jean-Philippe Pellet, modified by community. See post 'Timeline' for change history
+// Retrieved 2025-12-09, License - CC BY-SA 4.0
+
+extension Sequence where Element: Hashable {
+    func uniqued() -> [Element] {
+        var set = Set<Element>()
+        return filter { set.insert($0).inserted }
     }
 }
