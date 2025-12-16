@@ -246,7 +246,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
         for (index, route) in layout.routes.enumerated() {
             text += "\n  [\(String(format: "%02d", index))] " + route.description(layout)
         }
-        text += "*******************************************"
+        text += "\n*******************************************"
         BTLogger.router.error("\(text, privacy: .public)")
     }
 

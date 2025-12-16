@@ -30,7 +30,7 @@ struct WizardSelectLocomotive: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Select one ore more locomotive:")
+            Text("Select one or more locomotive:")
                 .font(.largeTitle)
                 .padding()
             ScrollView(.horizontal) {
