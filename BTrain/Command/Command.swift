@@ -83,6 +83,24 @@ enum DecoderType: String, CaseIterable, Codable {
             return 31
         }
     }
+    
+    // Source: CS2 protocol part 1.3.1.2
+    var mask: UInt16 {
+        switch self {
+        case .MM:
+            return 0x03ff
+        case .MM2:
+            return 0x03ff
+        case .DCC:
+            return 0x3fff
+        case .MFX:
+            return 0x3fff
+        case .SX1:
+            return 0x03ff
+/*      case .SX2:
+            return 0x3fff */
+        }
+    }
 }
 
 extension UInt32 {
