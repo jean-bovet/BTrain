@@ -31,7 +31,7 @@ class SwitchBoardViewTests: XCTestCase {
         let coordinator = LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface(), functionCatalog: nil)
         let v = SwitchBoardView(switchboard: switchboard, containerSize: switchboard.idealSize, state: switchboard.state, layout: layout, layoutController: coordinator, gestureEnabled: true)
 
-        let canvas = try v.inspect().view(Canvas<SwitchBoardView>.self)
+        let canvas = try v.inspect().canvas()
 
         let gesture = try canvas.gesture(DragGesture.self)
         try gesture.callOnChanged(value: DragGesture.Value(time: Date(), location: .zero, startLocation: .zero, velocity: .zero))
