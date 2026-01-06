@@ -149,7 +149,7 @@ final class LocomotiveSpeedManager {
             acc = .none
         }
         var steps = stepsArray(from: loc.speed.actualSteps, to: loc.speed.requestedSteps, acceleration: acc)
-        if acc != .none && loc.speed.actualKph == 0 && Int(steps[0].value) == 0 { steps.remove(at:0) }
+        if acc != .none && loc.speed.actualKph == loc.speed.speedKph(for: steps[0]) { steps.remove(at:0) }
         return LocomotiveSpeedCommand(requestUUID: requestUUID, requestedKph: loc.speed.requestedKph, requestedSteps: loc.speed.requestedSteps, acceleration: acceleration, steps: steps, completion: completion)
     }
 
