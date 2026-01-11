@@ -213,7 +213,21 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             callbacks.stateChanges.all.forEach { $0(false) }
 
         case let .speed(address, decoderType, value, _, _):
-            triggerCompletionBlock(for: msg)
+            if completionBlocks[msg.raw] == nil {
+                // If there isn't a completion block for this speed change,
+                // it is probably a programming or hardware error.
+                BTLogger.error("Unexpected speed change completion for loco \(address.toHex())")
+                let mask = decoderType?.mask ?? 0x3ff, addr = UInt16(address) & mask
+                for block in completionBlocks.filter(
+                       { addr == (( (UInt16($0.key.byte2) << 8) | UInt16($0.key.byte3) ) & mask) }
+                ) {
+                    // We are looking for a completion for a speed command ack from this loco
+                    BTLogger.error("...forcing completion of \(block.key)")
+                    triggerCompletionBlock(for: block.key)
+                }
+            } else {
+                triggerCompletionBlock(for: msg)
+            }
             callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         case let .direction(address, decoderType, direction, _, _):
