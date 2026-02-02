@@ -182,10 +182,13 @@ final class LocomotiveSpeedManager {
 
         assert(command.status == .working, "Only working speed command expected!")
 
-        let steps = command.steps.removeFirst()
+        var steps: SpeedStep
         if command.steps.isEmpty {
             command.status = .finished
             timer.invalidate()
+            steps = command.requestedSteps
+        } else {
+            steps = command.steps.removeFirst()
         }
 
         let value = interface.speedValue(for: steps, decoder: loc.decoder)
